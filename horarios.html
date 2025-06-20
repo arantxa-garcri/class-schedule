@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generador de Calendario de Clases</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-6">
+  <div class="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow">
+    <h1 class="text-3xl font-bold mb-6 text-center">Generador de Calendario de Clases</h1>
+    <form id="calForm" class="space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block font-semibold">Fecha inicio:</label>
+          <input type="date" id="startDate" required class="w-full border rounded px-3 py-2" />
+        </div>
+        <div>
+          <label class="block font-semibold">Fecha fin:</label>
+          <input type="date" id="endDate" required class="w-full border rounded px-3 py-2" />
+        </div>
+      </div>
+      <div>
+        <label class="block font-semibold">Días festivos (YYYY-MM-DD, separados por coma):</label>
+        <input type="text" id="holidays" placeholder="2025-02-14,2025-03-21" class="w-full border rounded px-3 py-2" />
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block font-semibold">Grupo:</label>
+          <input type="text" id="group" placeholder="Ej. 1022" class="w-full border rounded px-3 py-2" />
+        </div>
+        <div>
+          <label class="block font-semibold">Clase:</label>
+          <input type="text" id="className" placeholder="Cálculo I" class="w-full border rounded px-3 py-2" />
+        </div>
+      </div>
+      <div>
+        <label class="block font-semibold mb-2">Horario semanal:</label>
+        <table id="scheduleTable" class="w-full border-collapse">
+          <thead>
+            <tr class="bg-gray-200">
+              <th class="border px-2 py-1">Día</th>
+              <th class="border px-2 py-1">Horas</th>
+              <th class="border px-2 py-1">Acción</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <button type="button" id="addRow" class="mt-2 px-4 py-2 bg-blue-600 text-white rounded">+ Agregar día</button>
+      </div>
+      <button type="submit" class="w-full py-3 bg-green-600 text-white font-bold rounded">Generar PDF</button>
+    </form>
+  </div>
+
+  <script>
+    const days = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+    const tbody = document.querySelector('#scheduleTable tbody');
+    document.getElementById('addRow').onclick = () => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="border px-2 py-1">
+          <select class="day-select w-full">
+            ${days.map(d => `<option value="${d}">${d}</option>`).join('')}
+          </select>
+        </td>
+        <td class="border px-2 py-1">
+          <input type="number" class="hours-input w-full text-center" min="0" step="0.5" />
+        </td>
+        <td class="border px-2 py-1 text-center">
+          <button type="button" class="remove-row text-red-600">Eliminar</button>
+        </td>`;
+      tbody.appendChild(tr);
+      tr.querySelector('.remove-row').onclick = () => tr.remove();
+    };
+
+    document.getElementById('calForm').onsubmit = e => {
+      e.preventDefault();
+      const start = new Date(document.getElementById('startDate').value);
+      const end = new Date(document.getElementById('endDate').value);
+      const holidays = document.getElementById('holidays').value
+                        .split(',').map(s => s.trim())
+                        .filter(s => s)
+                        .map(s => new Date(s).toDateString());
+      const group = document.getElementById('group').value;
+      const className = document.getElementById('className').value;
+
+      const schedule = [];
+      document.querySelectorAll('#scheduleTable tbody tr').forEach(tr => {
+        const day = tr.querySelector('.day-select').value;
+        const hrs = parseFloat(tr.querySelector('.hours-input').value) || 0;
+        if (hrs > 0) schedule.push({day, hrs});
+      });
+
+      const sessions = [];
+      let cur = new Date(start);
+      while (cur <= end) {
+        const dStr = cur.toDateString();
+        if (!holidays.includes(dStr)) {
+          const dow = days[cur.getDay()];
+          schedule.forEach(s => {
+            if (s.day === dow) sessions.push({date: new Date(cur), hrs: s.hrs});
+          });
+        }
+        cur.setDate(cur.getDate()+1);
+      }
+
+      const totalSessions = sessions.length;
+      const totalHours = sessions.reduce((sum,s) => sum + s.hrs, 0);
+
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ unit: 'pt', format: 'letter' });
+      const margin = 40;
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const usableWidth = pageWidth - margin * 2;
+      const colWidth = usableWidth / 3;
+
+      doc.setFontSize(18);
+      doc.text(`Calendario de Clases - Grupo ${group}`, margin, 60);
+      doc.setFontSize(14);
+      doc.text(`Asignatura: ${className}`, margin, 80);
+      doc.text(`Clases totales: ${totalSessions}`, margin, 100);
+      doc.text(`Horas totales: ${totalHours}`, margin + 250, 100);
+
+      const rows = sessions.map((s,i) => [
+        `#${String(i+1).padStart(2,'0')}`,
+        s.date.toLocaleDateString('es-MX'),
+        s.hrs.toString()
+      ]);
+
+      doc.autoTable({
+        startY: 120,
+        head: [['Sesión','Fecha','Horas']],
+        body: rows,
+        margin: { left: margin, right: margin },
+        tableWidth: usableWidth,
+        styles: { cellPadding: 6, fontSize: 12, halign: 'center' },
+        headStyles: { fillColor: [220,220,220], textColor: 20, halign: 'center' },
+        columnStyles: {
+          0: { cellWidth: colWidth },
+          1: { cellWidth: colWidth },
+          2: { cellWidth: colWidth }
+        }
+      });
+
+      const finalY = doc.lastAutoTable.finalY + 20;
+      doc.setFontSize(12);
+      doc.text(`Total horas efectivas: ${totalHours}`, margin, finalY);
+
+      doc.save(`Calendario_Grupo_${group}.pdf`);
+    };
+  </script>
+</body>
+</html>
