@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Generador de Calendario de Clases</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -25,6 +25,7 @@
       <div>
         <label class="block font-semibold">Días festivos (YYYY-MM-DD, separados por coma):</label>
         <input type="text" id="holidays" placeholder="2025-02-14,2025-03-21" class="w-full border rounded px-3 py-2" />
+        <p class="text-sm text-gray-500 mt-1">Se excluirán exactamente esas fechas.</p>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
@@ -55,60 +56,100 @@
   </div>
 
   <script>
+    // --- Utilidades de fecha (local) ---
+    const toISODate = (d) => {
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const da = String(d.getDate()).padStart(2, '0');
+      return `${y}-${m}-${da}`;
+    };
+    const parseLocalDate = (str) => {
+      // Acepta exactamente YYYY-MM-DD
+      const m = /^\s*(\d{4})-(\d{2})-(\d{2})\s*$/.exec(str);
+      if (!m) return null;
+      const y = Number(m[1]);
+      const mo = Number(m[2]);
+      const da = Number(m[3]);
+      return new Date(y, mo - 1, da, 0, 0, 0, 0);
+    };
+
     const days = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
     const tbody = document.querySelector('#scheduleTable tbody');
+
     document.getElementById('addRow').onclick = () => {
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td class="border px-2 py-1">
-          <select class="day-select w-full">
-            ${days.map(d => `<option value="${d}">${d}</option>`).join('')}
+        <td class=\"border px-2 py-1\">
+          <select class=\"day-select w-full\">
+            ${days.map(d => `<option value=\"${d}\">${d}</option>`).join('')}
           </select>
         </td>
-        <td class="border px-2 py-1">
-          <input type="number" class="hours-input w-full text-center" min="0" step="0.5" />
+        <td class=\"border px-2 py-1\">
+          <input type=\"number\" class=\"hours-input w-full text-center\" min=\"0\" step=\"0.5\" />
         </td>
-        <td class="border px-2 py-1 text-center">
-          <button type="button" class="remove-row text-red-600">Eliminar</button>
+        <td class=\"border px-2 py-1 text-center\">
+          <button type=\"button\" class=\"remove-row text-red-600\">Eliminar</button>
         </td>`;
       tbody.appendChild(tr);
       tr.querySelector('.remove-row').onclick = () => tr.remove();
     };
 
-    document.getElementById('calForm').onsubmit = e => {
+    document.getElementById('calForm').onsubmit = (e) => {
       e.preventDefault();
-      const start = new Date(document.getElementById('startDate').value);
-      const end = new Date(document.getElementById('endDate').value);
-      const holidays = document.getElementById('holidays').value
-                        .split(',').map(s => s.trim())
-                        .filter(s => s)
-                        .map(s => new Date(s).toDateString());
-      const group = document.getElementById('group').value;
-      const className = document.getElementById('className').value;
 
-      const schedule = [];
-      document.querySelectorAll('#scheduleTable tbody tr').forEach(tr => {
-        const day = tr.querySelector('.day-select').value;
-        const hrs = parseFloat(tr.querySelector('.hours-input').value) || 0;
-        if (hrs > 0) schedule.push({day, hrs});
-      });
-
-      const sessions = [];
-      let cur = new Date(start);
-      while (cur <= end) {
-        const dStr = cur.toDateString();
-        if (!holidays.includes(dStr)) {
-          const dow = days[cur.getDay()];
-          schedule.forEach(s => {
-            if (s.day === dow) sessions.push({date: new Date(cur), hrs: s.hrs});
-          });
-        }
-        cur.setDate(cur.getDate()+1);
+      // 1) Parseo robusto de inicio/fin (incluir fin)
+      const startStr = document.getElementById('startDate').value;
+      const endStr = document.getElementById('endDate').value;
+      const start = parseLocalDate(startStr);
+      const end = parseLocalDate(endStr);
+      if (!start || !end || start > end) {
+        alert('Revisa fechas: inicio y fin en formato YYYY-MM-DD y que inicio ≤ fin.');
+        return;
       }
 
-      const totalSessions = sessions.length;
-      const totalHours = sessions.reduce((sum,s) => sum + s.hrs, 0);
+      // 2) Festivos como Set de YYYY-MM-DD (comparación exacta)
+      const holidaySet = new Set();
+      const rawH = (document.getElementById('holidays').value || '').split(',');
+      for (const h of rawH) {
+        const d = parseLocalDate(h);
+        if (d) holidaySet.add(toISODate(d));
+      }
 
+      // 3) Lectura de grupo/clase
+      const group = (document.getElementById('group').value || '').trim();
+      const className = (document.getElementById('className').value || '').trim();
+
+      // 4) Horario semanal
+      const schedule = [];
+      document.querySelectorAll('#scheduleTable tbody tr').forEach((tr) => {
+        const day = tr.querySelector('.day-select').value;
+        const hrs = parseFloat(tr.querySelector('.hours-input').value) || 0;
+        if (hrs > 0) schedule.push({ day, hrs });
+      });
+      if (schedule.length === 0) {
+        alert('Agrega al menos un día con horas.');
+        return;
+      }
+
+      // 5) Generar sesiones (omite festivos, incluye último día)
+      const sessions = [];
+      for (let cur = new Date(start); cur <= end; cur.setDate(cur.getDate() + 1)) {
+        const iso = toISODate(cur);
+        if (holidaySet.has(iso)) continue; // Excluir festivo exacto
+        const dow = days[cur.getDay()];
+        for (const s of schedule) {
+          if (s.day === dow) {
+            // Copia defensiva de la fecha actual
+            sessions.push({ date: new Date(cur.getFullYear(), cur.getMonth(), cur.getDate()), hrs: s.hrs });
+          }
+        }
+      }
+
+      // 6) Totales
+      const totalSessions = sessions.length;
+      const totalHours = sessions.reduce((sum, s) => sum + s.hrs, 0);
+
+      // 7) PDF con tabla centrada y columnas uniformes
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF({ unit: 'pt', format: 'letter' });
       const margin = 40;
@@ -117,38 +158,38 @@
       const colWidth = usableWidth / 3;
 
       doc.setFontSize(18);
-      doc.text(`Calendario de Clases - Grupo ${group}`, margin, 60);
+      doc.text(`Calendario de Clases - Grupo ${group || '—'}`, margin, 60);
       doc.setFontSize(14);
-      doc.text(`Asignatura: ${className}`, margin, 80);
+      doc.text(`Asignatura: ${className || '—'}`, margin, 80);
       doc.text(`Clases totales: ${totalSessions}`, margin, 100);
       doc.text(`Horas totales: ${totalHours}`, margin + 250, 100);
 
-      const rows = sessions.map((s,i) => [
-        `#${String(i+1).padStart(2,'0')}`,
-        s.date.toLocaleDateString('es-MX'),
-        s.hrs.toString()
+      const rows = sessions.map((s, i) => [
+        `#${String(i + 1).padStart(2, '0')}`,
+        toISODate(s.date),
+        s.hrs.toString(),
       ]);
 
       doc.autoTable({
         startY: 120,
-        head: [['Sesión','Fecha','Horas']],
+        head: [['Sesión', 'Fecha', 'Horas']],
         body: rows,
         margin: { left: margin, right: margin },
         tableWidth: usableWidth,
-        styles: { cellPadding: 6, fontSize: 12, halign: 'center' },
-        headStyles: { fillColor: [220,220,220], textColor: 20, halign: 'center' },
+        styles: { cellPadding: 6, fontSize: 12, halign: 'center', valign: 'middle' },
+        headStyles: { fillColor: [220, 220, 220], textColor: 20, halign: 'center' },
         columnStyles: {
-          0: { cellWidth: colWidth },
-          1: { cellWidth: colWidth },
-          2: { cellWidth: colWidth }
-        }
+          0: { cellWidth: colWidth, halign: 'center' },
+          1: { cellWidth: colWidth, halign: 'center' },
+          2: { cellWidth: colWidth, halign: 'center' },
+        },
       });
 
       const finalY = doc.lastAutoTable.finalY + 20;
       doc.setFontSize(12);
       doc.text(`Total horas efectivas: ${totalHours}`, margin, finalY);
 
-      doc.save(`Calendario_Grupo_${group}.pdf`);
+      doc.save(`Calendario_Grupo_${group || 'sin_grupo'}.pdf`);
     };
   </script>
 </body>
