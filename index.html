@@ -9,50 +9,46 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body class="bg-gray-100 min-h-screen p-6">
-  <div class="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow">
+  <div class="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow">
     <h1 class="text-3xl font-bold mb-6 text-center">Generador de Calendario de Clases</h1>
-    <form id="calForm" class="space-y-4">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label class="block font-semibold">Fecha inicio:</label>
-          <input type="date" id="startDate" required class="w-full border rounded px-3 py-2" />
+
+    <div class="space-y-6">
+      <!-- Rango de fechas y festivos -->
+      <section>
+        <h2 class="text-xl font-semibold mb-2">1) Configuración del periodo</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label class="block font-semibold">Fecha inicio</label>
+            <input type="date" id="startDate" required class="w-full border rounded px-3 py-2" />
+          </div>
+          <div>
+            <label class="block font-semibold">Fecha fin</label>
+            <input type="date" id="endDate" required class="w-full border rounded px-3 py-2" />
+          </div>
+          <div>
+            <label class="block font-semibold">Días festivos (YYYY-MM-DD, coma)</label>
+            <input type="text" id="holidays" placeholder="2025-09-16, 2025-11-18" class="w-full border rounded px-3 py-2" />
+            <p class="text-xs text-gray-500 mt-1">Se excluirán exactamente esas fechas.</p>
+          </div>
         </div>
-        <div>
-          <label class="block font-semibold">Fecha fin:</label>
-          <input type="date" id="endDate" required class="w-full border rounded px-3 py-2" />
+      </section>
+
+      <!-- Grupos -->
+      <section>
+        <h2 class="text-xl font-semibold mb-2">2) Grupos y horarios</h2>
+        <div id="groupsContainer" class="space-y-4"></div>
+        <button type="button" id="addGroup" class="mt-2 px-4 py-2 bg-blue-600 text-white rounded">+ Agregar grupo</button>
+      </section>
+
+      <!-- Acciones -->
+      <section class="pt-4 border-t">
+        <h2 class="text-xl font-semibold mb-3">3) Generar PDF</h2>
+        <div class="flex flex-col md:flex-row gap-3">
+          <button type="button" id="genPdfMatrix" class="flex-1 py-3 bg-green-600 text-white font-bold rounded">PDF: Tabla multi‑grupo</button>
+          <button type="button" id="genPdfDetail" class="flex-1 py-3 bg-teal-600 text-white font-bold rounded">PDF: Detalle por grupo</button>
         </div>
-      </div>
-      <div>
-        <label class="block font-semibold">Días festivos (YYYY-MM-DD, separados por coma):</label>
-        <input type="text" id="holidays" placeholder="2025-02-14,2025-03-21" class="w-full border rounded px-3 py-2" />
-        <p class="text-sm text-gray-500 mt-1">Se excluirán exactamente esas fechas.</p>
-      </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label class="block font-semibold">Grupo:</label>
-          <input type="text" id="group" placeholder="Ej. 1022" class="w-full border rounded px-3 py-2" />
-        </div>
-        <div>
-          <label class="block font-semibold">Clase:</label>
-          <input type="text" id="className" placeholder="Cálculo I" class="w-full border rounded px-3 py-2" />
-        </div>
-      </div>
-      <div>
-        <label class="block font-semibold mb-2">Horario semanal:</label>
-        <table id="scheduleTable" class="w-full border-collapse">
-          <thead>
-            <tr class="bg-gray-200">
-              <th class="border px-2 py-1">Día</th>
-              <th class="border px-2 py-1">Horas</th>
-              <th class="border px-2 py-1">Acción</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-        <button type="button" id="addRow" class="mt-2 px-4 py-2 bg-blue-600 text-white rounded">+ Agregar día</button>
-      </div>
-      <button type="submit" class="w-full py-3 bg-green-600 text-white font-bold rounded">Generar PDF</button>
-    </form>
+      </section>
+    </div>
   </div>
 
   <script>
@@ -64,133 +60,262 @@
       return `${y}-${m}-${da}`;
     };
     const parseLocalDate = (str) => {
-      // Acepta exactamente YYYY-MM-DD
-      const m = /^\s*(\d{4})-(\d{2})-(\d{2})\s*$/.exec(str);
+      const m = /^\s*(\d{4})-(\d{2})-(\d{2})\s*$/.exec(str || '');
       if (!m) return null;
-      const y = Number(m[1]);
-      const mo = Number(m[2]);
-      const da = Number(m[3]);
-      return new Date(y, mo - 1, da, 0, 0, 0, 0);
+      return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]), 0, 0, 0, 0);
     };
-
     const days = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
-    const tbody = document.querySelector('#scheduleTable tbody');
 
-    document.getElementById('addRow').onclick = () => {
+    // --- UI dinámico de grupos ---
+    const groupsContainer = document.getElementById('groupsContainer');
+    document.getElementById('addGroup').addEventListener('click', () => addGroup());
+
+    function addGroup(initial = {}) {
+      const card = document.createElement('div');
+      card.className = 'group-card border rounded-lg p-4 bg-gray-50';
+      card.innerHTML = `
+        <div class="flex items-start gap-3 justify-between">
+          <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+              <label class="block font-semibold">Grupo</label>
+              <input type="text" class="group-name w-full border rounded px-3 py-2" placeholder="Ej. 1022" value="${initial.group || ''}" />
+            </div>
+            <div>
+              <label class="block font-semibold">Clase</label>
+              <input type="text" class="class-name w-full border rounded px-3 py-2" placeholder="Ej. Matemáticas I" value="${initial.className || ''}" />
+            </div>
+          </div>
+          <button type="button" class="remove-group text-red-600 text-sm">Eliminar</button>
+        </div>
+        <div class="mt-3">
+          <label class="block font-semibold mb-2">Horario semanal</label>
+          <table class="w-full border-collapse">
+            <thead>
+              <tr class="bg-gray-200">
+                <th class="border px-2 py-1">Día</th>
+                <th class="border px-2 py-1">Horas</th>
+                <th class="border px-2 py-1">Acción</th>
+              </tr>
+            </thead>
+            <tbody class="sched-body"></tbody>
+          </table>
+          <button type="button" class="add-sched-row mt-2 px-3 py-1 bg-indigo-600 text-white rounded">+ Agregar día</button>
+        </div>
+      `;
+
+      groupsContainer.appendChild(card);
+
+      // Eventos del card
+      card.querySelector('.remove-group').addEventListener('click', () => card.remove());
+      const tbody = card.querySelector('.sched-body');
+      const addRowBtn = card.querySelector('.add-sched-row');
+      addRowBtn.addEventListener('click', () => addScheduleRow(tbody));
+
+      // Fila inicial
+      addScheduleRow(tbody);
+    }
+
+    function addScheduleRow(tbody) {
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td class=\"border px-2 py-1\">
-          <select class=\"day-select w-full\">
-            ${days.map(d => `<option value=\"${d}\">${d}</option>`).join('')}
+        <td class="border px-2 py-1">
+          <select class="day-select w-full">
+            ${days.map(d => `<option value="${d}">${d}</option>`).join('')}
           </select>
         </td>
-        <td class=\"border px-2 py-1\">
-          <input type=\"number\" class=\"hours-input w-full text-center\" min=\"0\" step=\"0.5\" />
+        <td class="border px-2 py-1">
+          <input type="number" class="hours-input w-full text-center" min="0" step="0.5" placeholder="2" />
         </td>
-        <td class=\"border px-2 py-1 text-center\">
-          <button type=\"button\" class=\"remove-row text-red-600\">Eliminar</button>
-        </td>`;
+        <td class="border px-2 py-1 text-center">
+          <button type="button" class="remove-row text-red-600">Eliminar</button>
+        </td>
+      `;
       tbody.appendChild(tr);
-      tr.querySelector('.remove-row').onclick = () => tr.remove();
-    };
+      tr.querySelector('.remove-row').addEventListener('click', () => tr.remove());
+    }
 
-    document.getElementById('calForm').onsubmit = (e) => {
-      e.preventDefault();
+    // Crear al menos un grupo por defecto
+    addGroup();
 
-      // 1) Parseo robusto de inicio/fin (incluir fin)
-      const startStr = document.getElementById('startDate').value;
-      const endStr = document.getElementById('endDate').value;
-      const start = parseLocalDate(startStr);
-      const end = parseLocalDate(endStr);
+    // --- Recolección de datos ---
+    function collectData() {
+      const start = parseLocalDate(document.getElementById('startDate').value);
+      const end = parseLocalDate(document.getElementById('endDate').value);
       if (!start || !end || start > end) {
         alert('Revisa fechas: inicio y fin en formato YYYY-MM-DD y que inicio ≤ fin.');
-        return;
+        return null;
       }
-
-      // 2) Festivos como Set de YYYY-MM-DD (comparación exacta)
       const holidaySet = new Set();
-      const rawH = (document.getElementById('holidays').value || '').split(',');
-      for (const h of rawH) {
-        const d = parseLocalDate(h);
+      (document.getElementById('holidays').value || '').split(',').forEach(s => {
+        const d = parseLocalDate(s);
         if (d) holidaySet.add(toISODate(d));
-      }
-
-      // 3) Lectura de grupo/clase
-      const group = (document.getElementById('group').value || '').trim();
-      const className = (document.getElementById('className').value || '').trim();
-
-      // 4) Horario semanal
-      const schedule = [];
-      document.querySelectorAll('#scheduleTable tbody tr').forEach((tr) => {
-        const day = tr.querySelector('.day-select').value;
-        const hrs = parseFloat(tr.querySelector('.hours-input').value) || 0;
-        if (hrs > 0) schedule.push({ day, hrs });
       });
-      if (schedule.length === 0) {
-        alert('Agrega al menos un día con horas.');
-        return;
+
+      const groups = [];
+      document.querySelectorAll('.group-card').forEach(card => {
+        const group = card.querySelector('.group-name').value.trim();
+        const className = card.querySelector('.class-name').value.trim();
+        const schedule = [];
+        card.querySelectorAll('.sched-body tr').forEach(tr => {
+          const day = tr.querySelector('.day-select').value;
+          const hrs = parseFloat(tr.querySelector('.hours-input').value) || 0;
+          if (hrs > 0) schedule.push({ day, hrs });
+        });
+        if (group && className && schedule.length > 0) {
+          groups.push({ group, className, schedule });
+        }
+      });
+
+      if (groups.length === 0) {
+        alert('Agrega al menos un grupo con horario.');
+        return null;
       }
 
-      // 5) Generar sesiones (omite festivos, incluye último día)
-      const sessions = [];
+      // Generar lista de fechas (excluye festivos, incluye fin)
+      const dates = [];
       for (let cur = new Date(start); cur <= end; cur.setDate(cur.getDate() + 1)) {
-        const iso = toISODate(cur);
-        if (holidaySet.has(iso)) continue; // Excluir festivo exacto
-        const dow = days[cur.getDay()];
-        for (const s of schedule) {
-          if (s.day === dow) {
-            // Copia defensiva de la fecha actual
-            sessions.push({ date: new Date(cur.getFullYear(), cur.getMonth(), cur.getDate()), hrs: s.hrs });
-          }
+        if (!holidaySet.has(toISODate(cur))) {
+          dates.push(new Date(cur.getFullYear(), cur.getMonth(), cur.getDate()));
         }
       }
 
-      // 6) Totales
-      const totalSessions = sessions.length;
-      const totalHours = sessions.reduce((sum, s) => sum + s.hrs, 0);
+      return { start, end, holidaySet, groups, dates };
+    }
 
-      // 7) PDF con tabla centrada y columnas uniformes
+    // --- Generación de PDF (detalle por grupo) ---
+    document.getElementById('genPdfDetail').addEventListener('click', () => {
+      const data = collectData();
+      if (!data) return;
+      const { start, end, holidaySet, groups } = data;
+
+      // Decidir orientación si el nombre es largo (aquí dejamos portrait)
       const { jsPDF } = window.jspdf;
-      const doc = new jsPDF({ unit: 'pt', format: 'letter' });
+      const doc = new jsPDF({ unit: 'pt', format: 'letter', orientation: 'portrait' });
+      const margin = 40;
+
+      groups.forEach((g, idx) => {
+        if (idx > 0) doc.addPage();
+
+        // Construir sesiones para ese grupo
+        const sessions = [];
+        for (let cur = new Date(start); cur <= end; cur.setDate(cur.getDate() + 1)) {
+          const iso = toISODate(cur);
+          if (holidaySet.has(iso)) continue;
+          const dow = days[cur.getDay()];
+          const totalHrsToday = g.schedule
+            .filter(s => s.day === dow)
+            .reduce((a, b) => a + b.hrs, 0);
+          if (totalHrsToday > 0) {
+            sessions.push({ date: new Date(cur.getFullYear(), cur.getMonth(), cur.getDate()), hrs: totalHrsToday });
+          }
+        }
+
+        const totalSessions = sessions.length;
+        const totalHours = sessions.reduce((sum, s) => sum + s.hrs, 0);
+
+        doc.setFontSize(18);
+        doc.text(`Calendario de Clases - Grupo ${g.group}`, margin, 60);
+        doc.setFontSize(14);
+        doc.text(`Asignatura: ${g.className}`, margin, 80);
+        doc.text(`Clases totales: ${totalSessions}`, margin, 100);
+        doc.text(`Horas totales: ${totalHours}`, margin + 250, 100);
+
+        const rows = sessions.map((s, i) => [
+          `#${String(i + 1).padStart(2, '0')}`,
+          toISODate(s.date),
+          s.hrs.toString(),
+        ]);
+
+        doc.autoTable({
+          startY: 120,
+          head: [['Sesión', 'Fecha', 'Horas']],
+          body: rows,
+          margin: { left: margin, right: margin },
+          styles: { cellPadding: 6, fontSize: 12, halign: 'center', valign: 'middle' },
+          headStyles: { fillColor: [220, 220, 220], textColor: 20, halign: 'center' },
+          columnStyles: { 0: { halign: 'center' }, 1: { halign: 'center' }, 2: { halign: 'center' } },
+        });
+
+        const finalY = doc.lastAutoTable.finalY + 20;
+        doc.setFontSize(12);
+        doc.text(`Total horas efectivas: ${totalHours}`, margin, finalY);
+      });
+
+      doc.save('Calendario_por_grupo.pdf');
+    });
+
+    // --- Generación de PDF (tabla multi‑grupo) ---
+    document.getElementById('genPdfMatrix').addEventListener('click', () => {
+      const data = collectData();
+      if (!data) return;
+      const { dates, groups } = data;
+
+      const orientation = groups.length > 4 ? 'landscape' : 'portrait';
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ unit: 'pt', format: 'letter', orientation });
+
       const margin = 40;
       const pageWidth = doc.internal.pageSize.getWidth();
       const usableWidth = pageWidth - margin * 2;
-      const colWidth = usableWidth / 3;
 
-      doc.setFontSize(18);
-      doc.text(`Calendario de Clases - Grupo ${group || '—'}`, margin, 60);
-      doc.setFontSize(14);
-      doc.text(`Asignatura: ${className || '—'}`, margin, 80);
-      doc.text(`Clases totales: ${totalSessions}`, margin, 100);
-      doc.text(`Horas totales: ${totalHours}`, margin + 250, 100);
-
-      const rows = sessions.map((s, i) => [
-        `#${String(i + 1).padStart(2, '0')}`,
-        toISODate(s.date),
-        s.hrs.toString(),
-      ]);
-
-      doc.autoTable({
-        startY: 120,
-        head: [['Sesión', 'Fecha', 'Horas']],
-        body: rows,
-        margin: { left: margin, right: margin },
-        tableWidth: usableWidth,
-        styles: { cellPadding: 6, fontSize: 12, halign: 'center', valign: 'middle' },
-        headStyles: { fillColor: [220, 220, 220], textColor: 20, halign: 'center' },
-        columnStyles: {
-          0: { cellWidth: colWidth, halign: 'center' },
-          1: { cellWidth: colWidth, halign: 'center' },
-          2: { cellWidth: colWidth, halign: 'center' },
-        },
+      // Totales por grupo
+      const totals = groups.map(g => {
+        let sessions = 0, hours = 0;
+        dates.forEach(d => {
+          const dow = days[d.getDay()];
+          const h = g.schedule.filter(s => s.day === dow).reduce((a,b) => a + b.hrs, 0);
+          if (h > 0) { sessions += 1; hours += h; }
+        });
+        return { group: g.group, className: g.className, sessions, hours };
       });
 
-      const finalY = doc.lastAutoTable.finalY + 20;
-      doc.setFontSize(12);
-      doc.text(`Total horas efectivas: ${totalHours}`, margin, finalY);
+      // Encabezado
+      doc.setFontSize(18);
+      doc.text('Calendario de Clases (multi‑grupo)', margin, 60);
 
-      doc.save(`Calendario_Grupo_${group || 'sin_grupo'}.pdf`);
-    };
+      // Tabla de totales
+      const totalsRows = totals.map(t => [t.group, t.className, String(t.sessions), String(t.hours)]);
+      doc.autoTable({
+        startY: 80,
+        head: [['Grupo','Clase','Clases totales','Horas totales']],
+        body: totalsRows,
+        margin: { left: margin, right: margin },
+        styles: { cellPadding: 6, fontSize: 12, halign: 'center', valign: 'middle' },
+        headStyles: { fillColor: [220,220,220], textColor: 20, halign: 'center' }
+      });
+
+      // Matriz: filas = fechas, columnas = grupos
+      const head = ['Fecha', ...groups.map(g => g.group)];
+
+      const matrixRows = dates.map(d => {
+        const row = [toISODate(d)];
+        groups.forEach(g => {
+          const dow = days[d.getDay()];
+          const h = g.schedule.filter(s => s.day === dow).reduce((a,b) => a + b.hrs, 0);
+          row.push(h > 0 ? String(h) : '');
+        });
+        return row;
+      });
+
+      // Column widths: fecha fija, resto distribuidas
+      const dateColWidth = 110;
+      const colWidth = (usableWidth - dateColWidth) / groups.length;
+      const colStyles = { 0: { cellWidth: dateColWidth, halign: 'center' } };
+      for (let i = 1; i <= groups.length; i++) colStyles[i] = { cellWidth: colWidth, halign: 'center' };
+
+      doc.autoTable({
+        startY: doc.lastAutoTable.finalY + 20,
+        head: [head],
+        body: matrixRows,
+        margin: { left: margin, right: margin },
+        styles: { cellPadding: 6, fontSize: 11, halign: 'center', valign: 'middle' },
+        headStyles: { fillColor: [220,220,220], textColor: 20, halign: 'center' },
+        columnStyles: colStyles,
+        tableWidth: 'auto'
+      });
+
+      doc.save('Calendario_multi_grupo.pdf');
+    });
   </script>
 </body>
 </html>
