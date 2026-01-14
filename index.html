@@ -1,321 +1,1218 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Generador de Calendario de Clases</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Calculadora de sesiones por grupo</title>
+
+  <style>
+    /* =========================================================
+       Paleta (inspirada en tu imagen)
+       - Azul:   #3F9AAE
+       - Aqua:   #79C9C5
+       - Crema:  #FFE2AF
+       - Coral:  #F96E5B
+       ========================================================= */
+
+    :root{
+      --radius: 16px;
+      --maxw: 1100px;
+
+      /* Colores base */
+      --p-blue:  #3F9AAE;
+      --p-aqua:  #79C9C5;
+      --p-cream: #FFE2AF;
+      --p-coral: #F96E5B;
+
+      /* =========================
+         TEMA OSCURO (default)
+         ========================= */
+      --bg0: #071014;
+      --bg1: #0a1a1e;
+
+      --text: #eaf2f3;
+      --muted: rgba(234,242,243,0.72);
+
+      /* Tarjetas y transparencias */
+      --card: rgba(255,255,255,0.06);
+      --card2: rgba(255,255,255,0.08);
+
+      /* Bordes y sombra */
+      --border: rgba(255,255,255,0.10);
+      --border2: rgba(255,255,255,0.14);
+      --shadow: 0 10px 30px rgba(0,0,0,0.28);
+
+      /* Enfoque (focus) */
+      --focus: rgba(121,201,197,0.55);
+
+      /* Acentos (botones principales) */
+      --accent: var(--p-blue);
+      --accent2: var(--p-aqua);
+      --accentBg: rgba(63,154,174,0.18);
+      --accentBd: rgba(63,154,174,0.55);
+
+      /* Peligro (borrar) */
+      --danger: var(--p-coral);
+      --dangerBg: rgba(249,110,91,0.14);
+      --dangerBd: rgba(249,110,91,0.55);
+
+      /* Suave (si luego quieres mensajes tipo aviso) */
+      --soft: var(--p-cream);
+      --softBg: rgba(255,226,175,0.14);
+      --softBd: rgba(255,226,175,0.50);
+    }
+
+    /* =========================
+       TEMA CLARO (overrides)
+       ========================= */
+    [data-theme="light"]{
+      --bg0: #f5fbfb;
+      --bg1: #eef7f7;
+
+      --text: #102027;
+      --muted: rgba(16,32,39,0.62);
+
+      --card: rgba(255,255,255,0.82);
+      --card2: rgba(255,255,255,0.68);
+
+      --border: rgba(16,32,39,0.12);
+      --border2: rgba(16,32,39,0.16);
+
+      --shadow: 0 10px 30px rgba(2,6,23,0.10);
+      --focus: rgba(63,154,174,0.35);
+
+      --accentBg: rgba(63,154,174,0.14);
+      --accentBd: rgba(63,154,174,0.40);
+
+      --dangerBg: rgba(249,110,91,0.12);
+      --dangerBd: rgba(249,110,91,0.40);
+
+      --softBg: rgba(255,226,175,0.24);
+      --softBd: rgba(255,226,175,0.55);
+    }
+
+    /* =======================
+       Base
+       ======================= */
+    * { box-sizing: border-box; }
+
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+
+      /* Fondo suave con transparencias (se ve minimalista pero con "vida") */
+      background:
+        radial-gradient(900px 450px at 10% 0%, rgba(121,201,197,0.14), transparent 60%),
+        radial-gradient(900px 450px at 90% 10%, rgba(63,154,174,0.12), transparent 60%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+
+      color: var(--text);
+    }
+
+    header{
+      position: sticky;
+      top:0;
+      z-index: 10;
+
+      border-bottom: 1px solid var(--border);
+      background: color-mix(in srgb, var(--bg1) 86%, transparent);
+      backdrop-filter: blur(10px);
+
+      padding: 16px;
+    }
+
+    .headerGrid{
+      max-width: var(--maxw);
+      margin: 0 auto;
+
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+    }
+
+    header h1{
+      margin:0;
+      font-size: 18px;
+      letter-spacing: 0.2px;
+    }
+    header p{
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    main{
+      max-width: var(--maxw);
+      margin: 0 auto;
+      padding: 16px;
+
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 16px;
+
+      align-items: start;
+    }
+    @media (max-width: 980px){
+      main{ grid-template-columns: 1fr; }
+    }
+
+    .card{
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .card h2{
+      margin: 0 0 10px;
+      font-size: 15px;
+    }
+
+    .muted{ color: var(--muted); font-size: 12px; }
+    .hint{ font-size: 12px; color: var(--muted); margin-top: 6px; }
+    .hr{ height:1px; background: var(--border); margin: 12px 0; }
+
+    .row{ display:flex; gap: 10px; align-items: center; }
+    .row.wrap{ flex-wrap: wrap; }
+
+    label{
+      display:block;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+      font-weight: 650;
+    }
+
+    input, select, button, textarea{
+      border-radius: 12px;
+      border: 1px solid var(--border2);
+
+      /* Fondo con transparencia para mantener el estilo */
+      background: color-mix(in srgb, var(--card2) 70%, transparent);
+
+      color: var(--text);
+      padding: 10px 10px;
+      font-size: 13px;
+
+      outline: none;
+      min-width: 0; /* clave para que grids no se desborden */
+    }
+
+    input:focus, select:focus, textarea:focus{
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 60%, transparent);
+      border-color: color-mix(in srgb, var(--accent2) 55%, var(--border2));
+    }
+
+    textarea{
+      width:100%;
+      min-height: 70px;
+      resize: vertical;
+    }
+
+    /* =========================================================
+       BOTONES FLEXIBLES (ajustan al texto y se acomodan solos)
+       - Quitamos el nowrap global para que el texto pueda partirse
+       ========================================================= */
+    button{
+      cursor: pointer;
+      font-weight: 750;
+      white-space: normal; /* ahora puede partir línea */
+      line-height: 1.15;
+    }
+
+    button.primary{
+      background: var(--accentBg);
+      border-color: var(--accentBd);
+    }
+    button.primary:hover{
+      background: color-mix(in srgb, var(--accentBg) 72%, var(--accent) 12%);
+    }
+
+    button.ghost{
+      background: transparent;
+    }
+    button.ghost:hover{
+      background: color-mix(in srgb, var(--card2) 70%, transparent);
+    }
+
+    button.danger{
+      background: var(--dangerBg);
+      border-color: var(--dangerBd);
+    }
+    button.danger:hover{
+      background: color-mix(in srgb, var(--dangerBg) 78%, var(--danger) 10%);
+    }
+
+    .kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      padding: 2px 6px;
+      border-radius: 8px;
+      border: 1px solid var(--border2);
+      background: color-mix(in srgb, var(--card2) 85%, transparent);
+    }
+
+    .list{ display: grid; gap: 10px; }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+
+      padding: 6px 10px;
+      border-radius: 999px;
+
+      border: 1px solid var(--border2);
+      background: color-mix(in srgb, var(--card2) 78%, transparent);
+
+      font-size: 12px;
+      width: fit-content;
+      max-width: 100%;
+    }
+
+    .pill small{ color: var(--muted); font-weight: 800; }
+
+    /* En botones dentro de "pill" sí conviene que NO partan línea */
+    .pill button{
+      padding: 6px 8px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .groupCard{
+      padding: 12px;
+      border-radius: var(--radius);
+
+      border: 1px solid var(--border);
+      background: color-mix(in srgb, var(--card2) 75%, transparent);
+    }
+
+    .groupCard h3{ margin: 0 0 8px; font-size: 14px; }
+    .groupCard .meta{ color: var(--muted); font-size: 12px; margin-bottom: 8px; }
+
+    /* =======================
+       Tablas
+       ======================= */
+    table{
+      width:100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      overflow: hidden;
+      border-radius: 14px;
+    }
+    th, td{
+      padding: 8px 8px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    th{
+      text-align:left;
+      font-weight: 850;
+      background: color-mix(in srgb, var(--card) 70%, transparent);
+      position: sticky;
+      top: 0;
+    }
+    .tableWrap{
+      max-height: 340px;
+      overflow: auto;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+    }
+
+    .totals{
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+    .totals .pill{
+      background: color-mix(in srgb, var(--accent2) 14%, var(--card2) 70%);
+      border-color: color-mix(in srgb, var(--accent2) 28%, var(--border2));
+    }
+
+    /* =========================================================
+       Action bar responsive "inteligente"
+       - auto-fit: mete el mayor número de columnas que quepan
+       - minmax(190px, 1fr): cada botón mínimo 190px para que no se vea apretado
+       - si no cabe, automáticamente se baja a 1 columna
+       ========================================================= */
+    .actionBar{
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .actionBar > button{
+      width: 100%;
+      padding: 12px 10px; /* un poquito más alto para dos líneas */
+      text-align: center;
+    }
+
+    /* =======================
+       Fix overflow: filas de horario
+       ======================= */
+    .scheduleRow{
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: end;
+    }
+
+    .scheduleRow select,
+    .scheduleRow input{
+      width: 100%;
+      min-width: 0;
+    }
+
+    /* El botón "Quitar" conviene que no rompa línea */
+    .scheduleRow .removeBtn{
+      white-space: nowrap;
+    }
+
+    /* En pantallas medianas: el botón se baja y ocupa todo el ancho */
+    @media (max-width: 760px){
+      .scheduleRow{
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      }
+      .scheduleRow .removeBtn{
+        grid-column: 1 / -1;
+        width: 100%;
+      }
+    }
+
+    /* En pantallas muy pequeñas: todo en una sola columna */
+    @media (max-width: 420px){
+      .scheduleRow{ grid-template-columns: 1fr; }
+    }
+
+    /* Ajuste de inputs para que no se "desmadren" (en buen plan 😄) */
+    input[type="date"]{ width: clamp(160px, 40vw, 200px); }
+    input[type="number"]{ width: clamp(120px, 24vw, 170px); }
+
+    /* =======================
+       Toggle de tema (modo claro/oscuro)
+       ======================= */
+    .themeToggle{
+      display: inline-flex;
+      gap: 10px;
+      align-items: center;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: color-mix(in srgb, var(--card) 60%, transparent);
+    }
+    .themeToggle span{
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    /* El botón del tema sí lo dejamos en una sola línea */
+    .themeToggle button{
+      white-space: nowrap;
+    }
+  </style>
 </head>
-<body class="bg-gray-100 min-h-screen p-6">
-  <div class="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow">
-    <h1 class="text-3xl font-bold mb-6 text-center">Generador de Calendario de Clases</h1>
 
-    <div class="space-y-6">
-      <!-- Rango de fechas y festivos -->
-      <section>
-        <h2 class="text-xl font-semibold mb-2">1) Configuración del periodo</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <label class="block font-semibold">Fecha inicio</label>
-            <input type="date" id="startDate" required class="w-full border rounded px-3 py-2" />
-          </div>
-          <div>
-            <label class="block font-semibold">Fecha fin</label>
-            <input type="date" id="endDate" required class="w-full border rounded px-3 py-2" />
-          </div>
-          <div>
-            <label class="block font-semibold">Días festivos (YYYY-MM-DD, coma)</label>
-            <input type="text" id="holidays" placeholder="2025-09-16, 2025-11-18" class="w-full border rounded px-3 py-2" />
-            <p class="text-xs text-gray-500 mt-1">Se excluirán exactamente esas fechas.</p>
-          </div>
-        </div>
-      </section>
+<body>
+  <header>
+    <div class="headerGrid">
+      <div>
+        <h1>Calculadora de clases por semestre (por grupo)</h1>
+        <p>Define grupos, días y horas. Excluye festivos y vacaciones. Genera reporte y expórtalo a PDF.</p>
+      </div>
 
-      <!-- Grupos -->
-      <section>
-        <h2 class="text-xl font-semibold mb-2">2) Grupos y horarios</h2>
-        <div id="groupsContainer" class="space-y-4"></div>
-        <button type="button" id="addGroup" class="mt-2 px-4 py-2 bg-blue-600 text-white rounded">+ Agregar grupo</button>
-      </section>
-
-      <!-- Acciones -->
-      <section class="pt-4 border-t">
-        <h2 class="text-xl font-semibold mb-3">3) Generar PDF</h2>
-        <div class="flex flex-col md:flex-row gap-3">
-          <button type="button" id="genPdfMatrix" class="flex-1 py-3 bg-green-600 text-white font-bold rounded">PDF: Tabla multi‑grupo</button>
-          <button type="button" id="genPdfDetail" class="flex-1 py-3 bg-teal-600 text-white font-bold rounded">PDF: Detalle por grupo</button>
-        </div>
-      </section>
+      <!-- ✅ Toggle de tema con emojis -->
+      <div class="themeToggle" aria-label="Selector de tema">
+        <span id="themeLabel">Tema</span>
+        <button id="toggleThemeBtn" class="primary" type="button">🌙 Oscuro</button>
+      </div>
     </div>
-  </div>
+  </header>
+
+  <main>
+    <!-- =========================================================
+         PANEL IZQUIERDO: Configuración
+         ========================================================= -->
+    <section class="card">
+      <h2>1) Rango del semestre</h2>
+
+      <div class="row wrap">
+        <div>
+          <label for="startDate">Inicio</label>
+          <input id="startDate" type="date" />
+        </div>
+        <div>
+          <label for="endDate">Fin</label>
+          <input id="endDate" type="date" />
+        </div>
+      </div>
+
+      <div class="hint">Tip: primero fija el rango, luego agrega exclusiones. 🧩</div>
+
+      <div class="hr"></div>
+
+      <h2>2) Excluir fechas sin clase</h2>
+
+      <!-- Festivos -->
+      <div>
+        <label>Días festivos (fechas sueltas)</label>
+
+        <div class="row wrap">
+          <input id="holidayDate" type="date" />
+        </div>
+
+        <div class="actionBar">
+          <button class="primary" id="addHolidayBtn" type="button">Agregar festivo</button>
+          <button class="ghost" id="clearHolidaysBtn" type="button">Limpiar festivos</button>
+        </div>
+
+        <div id="holidaysList" class="list" style="margin-top:10px;"></div>
+      </div>
+
+      <div class="hr"></div>
+
+      <!-- Vacaciones -->
+      <div>
+        <label>Periodos vacacionales (rangos)</label>
+
+        <div class="row wrap">
+          <div>
+            <label for="vacStart" class="muted">Inicio</label>
+            <input id="vacStart" type="date" />
+          </div>
+          <div>
+            <label for="vacEnd" class="muted">Fin</label>
+            <input id="vacEnd" type="date" />
+          </div>
+        </div>
+
+        <div class="actionBar">
+          <button class="primary" id="addVacationBtn" type="button">Agregar vacaciones</button>
+          <button class="ghost" id="clearVacationsBtn" type="button">Limpiar vacaciones</button>
+        </div>
+
+        <div id="vacationsList" class="list" style="margin-top:10px;"></div>
+      </div>
+
+      <div class="hr"></div>
+
+      <h2>3) Agregar grupos</h2>
+
+      <div>
+        <label for="groupName">Nombre del grupo</label>
+        <input id="groupName" type="text" placeholder="Ej. 1022" style="width:100%;" />
+      </div>
+
+      <div class="hr"></div>
+
+      <!-- Horario semanal -->
+      <div>
+        <div class="row" style="justify-content: space-between;">
+          <h2 style="margin:0; font-size: 14px;">Horario semanal del grupo</h2>
+          <button class="primary" id="addScheduleRowBtn" type="button">Agregar día</button>
+        </div>
+
+        <!-- Aquí se agregan dinámicamente las filas Día + Horas + Quitar -->
+        <div id="scheduleRows" class="list" style="margin-top:10px;"></div>
+
+        <div class="hint">Ejemplo: Lunes 2 horas, Martes 2 horas, Viernes 1 hora.</div>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="actionBar">
+        <button class="primary" id="saveGroupBtn" type="button">Guardar grupo</button>
+        <button class="danger" id="clearGroupsBtn" type="button">Eliminar todos los grupos</button>
+      </div>
+
+      <div class="hr"></div>
+
+      <h2>Grupos registrados</h2>
+      <div id="groupsList" class="list"></div>
+
+      <div class="hr"></div>
+
+      <div class="actionBar">
+        <button class="primary" id="calculateBtn" type="button">Calcular reporte</button>
+        <button class="primary" id="exportPdfBtn" type="button">Exportar PDF</button>
+      </div>
+
+      <div class="hint">
+        El PDF se genera en tu navegador usando <span class="kbd">jsPDF</span> + <span class="kbd">autoTable</span>.
+      </div>
+    </section>
+
+    <!-- =========================================================
+         PANEL DERECHO: Reporte
+         ========================================================= -->
+    <section class="card">
+      <h2>Reporte</h2>
+      <div class="muted" id="reportMeta">Aún no calculado.</div>
+      <div class="hr"></div>
+      <div id="reportArea" class="list"></div>
+    </section>
+  </main>
+
+  <!-- =========================================================
+       Librerías para PDF
+       - jsPDF: crea el PDF
+       - autoTable: crea tablas fácilmente en PDF
+       ========================================================= -->
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.5.31/dist/jspdf.plugin.autotable.min.js"></script>
 
   <script>
-    // --- Utilidades de fecha (local) ---
-    const toISODate = (d) => {
-      const y = d.getFullYear();
-      const m = String(d.getMonth() + 1).padStart(2, '0');
-      const da = String(d.getDate()).padStart(2, '0');
-      return `${y}-${m}-${da}`;
-    };
-    const parseLocalDate = (str) => {
-      const m = /^\s*(\d{4})-(\d{2})-(\d{2})\s*$/.exec(str || '');
-      if (!m) return null;
-      return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]), 0, 0, 0, 0);
-    };
-    const days = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+    /* =========================================================
+       Toggle de tema (Claro/Oscuro) con emojis 🌙☀️
+       - Guardamos preferencia en localStorage para que se recuerde
+       ========================================================= */
+    const THEME_KEY = "calcTheme";
+    const toggleBtn = document.getElementById("toggleThemeBtn");
+    const themeLabel = document.getElementById("themeLabel");
 
-    // --- UI dinámico de grupos ---
-    const groupsContainer = document.getElementById('groupsContainer');
-    document.getElementById('addGroup').addEventListener('click', () => addGroup());
+    function applyTheme(theme){
+      // Ponemos el atributo data-theme en <html> para que el CSS cambie variables
+      document.documentElement.setAttribute("data-theme", theme);
 
-    function addGroup(initial = {}) {
-      const card = document.createElement('div');
-      card.className = 'group-card border rounded-lg p-4 bg-gray-50';
-      card.innerHTML = `
-        <div class="flex items-start gap-3 justify-between">
-          <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div>
-              <label class="block font-semibold">Grupo</label>
-              <input type="text" class="group-name w-full border rounded px-3 py-2" placeholder="Ej. 1022" value="${initial.group || ''}" />
-            </div>
-            <div>
-              <label class="block font-semibold">Clase</label>
-              <input type="text" class="class-name w-full border rounded px-3 py-2" placeholder="Ej. Matemáticas I" value="${initial.className || ''}" />
-            </div>
-          </div>
-          <button type="button" class="remove-group text-red-600 text-sm">Eliminar</button>
-        </div>
-        <div class="mt-3">
-          <label class="block font-semibold mb-2">Horario semanal</label>
-          <table class="w-full border-collapse">
-            <thead>
-              <tr class="bg-gray-200">
-                <th class="border px-2 py-1">Día</th>
-                <th class="border px-2 py-1">Horas</th>
-                <th class="border px-2 py-1">Acción</th>
-              </tr>
-            </thead>
-            <tbody class="sched-body"></tbody>
-          </table>
-          <button type="button" class="add-sched-row mt-2 px-3 py-1 bg-indigo-600 text-white rounded">+ Agregar día</button>
-        </div>
-      `;
+      const isLight = theme === "light";
+      themeLabel.textContent = isLight ? "☀️ Claro" : "🌙 Oscuro";
+      toggleBtn.textContent = isLight ? "☀️ Claro" : "🌙 Oscuro";
 
-      groupsContainer.appendChild(card);
-
-      // Eventos del card
-      card.querySelector('.remove-group').addEventListener('click', () => card.remove());
-      const tbody = card.querySelector('.sched-body');
-      const addRowBtn = card.querySelector('.add-sched-row');
-      addRowBtn.addEventListener('click', () => addScheduleRow(tbody));
-
-      // Fila inicial
-      addScheduleRow(tbody);
+      // Guardamos la preferencia
+      localStorage.setItem(THEME_KEY, theme);
     }
 
-    function addScheduleRow(tbody) {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td class="border px-2 py-1">
-          <select class="day-select w-full">
-            ${days.map(d => `<option value="${d}">${d}</option>`).join('')}
-          </select>
-        </td>
-        <td class="border px-2 py-1">
-          <input type="number" class="hours-input w-full text-center" min="0" step="0.5" placeholder="2" />
-        </td>
-        <td class="border px-2 py-1 text-center">
-          <button type="button" class="remove-row text-red-600">Eliminar</button>
-        </td>
-      `;
-      tbody.appendChild(tr);
-      tr.querySelector('.remove-row').addEventListener('click', () => tr.remove());
+    // Cargamos el tema guardado (si no hay, usamos oscuro)
+    const savedTheme = localStorage.getItem(THEME_KEY);
+    applyTheme(savedTheme === "light" ? "light" : "dark");
+
+    // Al dar clic, cambiamos de tema
+    toggleBtn.addEventListener("click", () => {
+      const current = document.documentElement.getAttribute("data-theme") || "dark";
+      applyTheme(current === "dark" ? "light" : "dark");
+    });
+
+    /* =========================================================
+       Helpers de fechas
+       - parseLocalDate: convierte "YYYY-MM-DD" a Date (en horario local)
+       - formatISO: regresa "YYYY-MM-DD" para comparaciones y listas
+       ========================================================= */
+    function parseLocalDate(yyyyMmDd) {
+      if (!yyyyMmDd) return null;
+      const [y, m, d] = yyyyMmDd.split("-").map(Number);
+      return new Date(y, m - 1, d, 0, 0, 0, 0);
     }
 
-    // Crear al menos un grupo por defecto
-    addGroup();
+    function formatISO(date) {
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, "0");
+      const d = String(date.getDate()).padStart(2, "0");
+      return `${y}-${m}-${d}`;
+    }
 
-    // --- Recolección de datos ---
-    function collectData() {
-      const start = parseLocalDate(document.getElementById('startDate').value);
-      const end = parseLocalDate(document.getElementById('endDate').value);
-      if (!start || !end || start > end) {
-        alert('Revisa fechas: inicio y fin en formato YYYY-MM-DD y que inicio ≤ fin.');
-        return null;
+    function addDays(date, n) {
+      const d = new Date(date.getTime());
+      d.setDate(d.getDate() + n);
+      return d;
+    }
+
+    function isDateInRange(date, start, end) {
+      // Rango inclusivo
+      return date.getTime() >= start.getTime() && date.getTime() <= end.getTime();
+    }
+
+    // Nombres de días (JavaScript usa 0=Domingo ... 6=Sábado)
+    const weekdayNames = ["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
+
+    /* =========================================================
+       Estado en memoria
+       - groups: grupos guardados con su horario
+       - holidays: festivos (fechas sueltas)
+       - vacations: rangos de vacaciones
+       - lastReport: último reporte calculado (para exportar PDF sin recalcular)
+       ========================================================= */
+    let groups = [];          // {id, name, schedule:[{weekday,hours}]}
+    let holidays = new Set(); // "YYYY-MM-DD"
+    let vacations = [];       // [{startISO,endISO}]
+    let lastReport = null;
+
+    /* =========================================================
+       UI: Filas del horario del grupo
+       - Cada fila tiene: Día (select), Horas (input), Quitar (button)
+       - Usamos la clase scheduleRow para que sea 100% responsiva
+       ========================================================= */
+    const scheduleRowsEl = document.getElementById("scheduleRows");
+
+    function makeScheduleRow(weekday = 1, hours = 2) {
+      const wrap = document.createElement("div");
+      wrap.className = "groupCard scheduleRow";
+
+      // Columna 1: select de día
+      const dayDiv = document.createElement("div");
+      const dayLabel = document.createElement("label");
+      dayLabel.textContent = "Día";
+      const daySelect = document.createElement("select");
+
+      weekdayNames.forEach((name, i) => {
+        const opt = document.createElement("option");
+        opt.value = String(i);
+        opt.textContent = name;
+        daySelect.appendChild(opt);
+      });
+
+      daySelect.value = String(weekday);
+      dayDiv.appendChild(dayLabel);
+      dayDiv.appendChild(daySelect);
+
+      // Columna 2: input de horas
+      const hoursDiv = document.createElement("div");
+      const hoursLabel = document.createElement("label");
+      hoursLabel.textContent = "Horas por sesión";
+
+      const hoursInput = document.createElement("input");
+      hoursInput.type = "number";
+      hoursInput.min = "0.5";
+      hoursInput.step = "0.5";
+      hoursInput.value = String(hours);
+
+      hoursDiv.appendChild(hoursLabel);
+      hoursDiv.appendChild(hoursInput);
+
+      // Columna 3: botón quitar
+      const delBtn = document.createElement("button");
+      delBtn.className = "danger removeBtn";
+      delBtn.type = "button";
+      delBtn.textContent = "Quitar";
+      delBtn.addEventListener("click", () => wrap.remove());
+
+      // Armamos la fila
+      wrap.appendChild(dayDiv);
+      wrap.appendChild(hoursDiv);
+      wrap.appendChild(delBtn);
+
+      // Guardamos una función para leer el valor de esta fila cuando guardemos el grupo
+      wrap._getValue = () => ({
+        weekday: Number(daySelect.value),
+        hours: Number(hoursInput.value)
+      });
+
+      return wrap;
+    }
+
+    function addScheduleRow(defaultWeekday, defaultHours) {
+      scheduleRowsEl.appendChild(makeScheduleRow(defaultWeekday, defaultHours));
+    }
+
+    // Arrancamos con 2 filas de ejemplo (puedes borrarlas y empezar en blanco si quieres)
+    addScheduleRow(1, 2); // Lunes 2h
+    addScheduleRow(2, 2); // Martes 2h
+
+    // Botón: agregar otra fila de horario
+    document.getElementById("addScheduleRowBtn")
+      .addEventListener("click", () => addScheduleRow(5, 1)); // Viernes 1h
+
+    /* =========================================================
+       UI: Festivos y vacaciones
+       - Renderiza "píldoras" con botón eliminar
+       ========================================================= */
+    const holidaysListEl = document.getElementById("holidaysList");
+    const vacationsListEl = document.getElementById("vacationsList");
+
+    function renderHolidays() {
+      holidaysListEl.innerHTML = "";
+      const arr = Array.from(holidays).sort();
+
+      if (arr.length === 0) {
+        holidaysListEl.innerHTML = `<div class="muted">Sin festivos registrados.</div>`;
+        return;
       }
-      const holidaySet = new Set();
-      (document.getElementById('holidays').value || '').split(',').forEach(s => {
-        const d = parseLocalDate(s);
-        if (d) holidaySet.add(toISODate(d));
-      });
 
-      const groups = [];
-      document.querySelectorAll('.group-card').forEach(card => {
-        const group = card.querySelector('.group-name').value.trim();
-        const className = card.querySelector('.class-name').value.trim();
-        const schedule = [];
-        card.querySelectorAll('.sched-body tr').forEach(tr => {
-          const day = tr.querySelector('.day-select').value;
-          const hrs = parseFloat(tr.querySelector('.hours-input').value) || 0;
-          if (hrs > 0) schedule.push({ day, hrs });
+      arr.forEach(iso => {
+        const pill = document.createElement("div");
+        pill.className = "pill";
+        pill.innerHTML = `<small>Festivo</small> <span>${iso}</span>`;
+
+        const btn = document.createElement("button");
+        btn.className = "danger";
+        btn.type = "button";
+        btn.textContent = "Eliminar";
+        btn.addEventListener("click", () => {
+          holidays.delete(iso);
+          renderHolidays();
         });
-        if (group && className && schedule.length > 0) {
-          groups.push({ group, className, schedule });
-        }
+
+        pill.appendChild(btn);
+        holidaysListEl.appendChild(pill);
       });
+    }
+
+    function renderVacations() {
+      vacationsListEl.innerHTML = "";
+
+      if (vacations.length === 0) {
+        vacationsListEl.innerHTML = `<div class="muted">Sin periodos vacacionales registrados.</div>`;
+        return;
+      }
+
+      vacations
+        .slice()
+        .sort((a,b) => a.startISO.localeCompare(b.startISO))
+        .forEach((v, idx) => {
+          const pill = document.createElement("div");
+          pill.className = "pill";
+          pill.innerHTML = `<small>Vacaciones</small> <span>${v.startISO} a ${v.endISO}</span>`;
+
+          const btn = document.createElement("button");
+          btn.className = "danger";
+          btn.type = "button";
+          btn.textContent = "Eliminar";
+          btn.addEventListener("click", () => {
+            vacations.splice(idx, 1);
+            renderVacations();
+          });
+
+          pill.appendChild(btn);
+          vacationsListEl.appendChild(pill);
+        });
+    }
+
+    // Botón: agregar festivo
+    document.getElementById("addHolidayBtn").addEventListener("click", () => {
+      const iso = document.getElementById("holidayDate").value;
+      if (!iso) return;
+
+      holidays.add(iso);
+      document.getElementById("holidayDate").value = "";
+      renderHolidays();
+    });
+
+    // Botón: limpiar festivos
+    document.getElementById("clearHolidaysBtn").addEventListener("click", () => {
+      holidays.clear();
+      renderHolidays();
+    });
+
+    // Botón: agregar vacaciones
+    document.getElementById("addVacationBtn").addEventListener("click", () => {
+      const startISO = document.getElementById("vacStart").value;
+      const endISO = document.getElementById("vacEnd").value;
+      if (!startISO || !endISO) return;
+
+      const s = parseLocalDate(startISO);
+      const e = parseLocalDate(endISO);
+      if (!s || !e) return;
+
+      // Si alguien pone fin antes que inicio, lo arreglamos
+      const start = s.getTime() <= e.getTime() ? startISO : endISO;
+      const end = s.getTime() <= e.getTime() ? endISO : startISO;
+
+      vacations.push({ startISO: start, endISO: end });
+
+      document.getElementById("vacStart").value = "";
+      document.getElementById("vacEnd").value = "";
+      renderVacations();
+    });
+
+    // Botón: limpiar vacaciones
+    document.getElementById("clearVacationsBtn").addEventListener("click", () => {
+      vacations = [];
+      renderVacations();
+    });
+
+    renderHolidays();
+    renderVacations();
+
+    /* =========================================================
+       UI: Grupos registrados
+       ========================================================= */
+    const groupsListEl = document.getElementById("groupsList");
+
+    function renderGroups() {
+      groupsListEl.innerHTML = "";
 
       if (groups.length === 0) {
-        alert('Agrega al menos un grupo con horario.');
-        return null;
+        groupsListEl.innerHTML = `<div class="muted">Aún no has agregado grupos.</div>`;
+        return;
       }
 
-      // Generar lista de fechas (excluye festivos, incluye fin)
-      const dates = [];
-      for (let cur = new Date(start); cur <= end; cur.setDate(cur.getDate() + 1)) {
-        if (!holidaySet.has(toISODate(cur))) {
-          dates.push(new Date(cur.getFullYear(), cur.getMonth(), cur.getDate()));
-        }
-      }
+      groups.forEach(g => {
+        const card = document.createElement("div");
+        card.className = "groupCard";
 
-      return { start, end, holidaySet, groups, dates };
+        const scheduleTxt = g.schedule
+          .slice()
+          .sort((a,b) => a.weekday - b.weekday)
+          .map(s => `${weekdayNames[s.weekday]}: ${s.hours}h`)
+          .join(" | ");
+
+        card.innerHTML = `
+          <h3>${escapeHtml(g.name)}</h3>
+          <div class="meta">${escapeHtml(scheduleTxt)}</div>
+        `;
+
+        const row = document.createElement("div");
+        row.className = "row wrap";
+
+        const del = document.createElement("button");
+        del.className = "danger";
+        del.type = "button";
+        del.textContent = "Eliminar";
+        del.addEventListener("click", () => {
+          groups = groups.filter(x => x.id !== g.id);
+          renderGroups();
+        });
+
+        row.appendChild(del);
+        card.appendChild(row);
+        groupsListEl.appendChild(card);
+      });
     }
 
-    // --- Generación de PDF (detalle por grupo) ---
-    document.getElementById('genPdfDetail').addEventListener('click', () => {
-      const data = collectData();
-      if (!data) return;
-      const { start, end, holidaySet, groups } = data;
+    // Botón: guardar grupo
+    document.getElementById("saveGroupBtn").addEventListener("click", () => {
+      const name = document.getElementById("groupName").value.trim();
+      if (!name) return;
 
-      // Decidir orientación si el nombre es largo (aquí dejamos portrait)
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF({ unit: 'pt', format: 'letter', orientation: 'portrait' });
-      const margin = 40;
+      const rows = Array.from(scheduleRowsEl.children);
 
-      groups.forEach((g, idx) => {
-        if (idx > 0) doc.addPage();
+      // Leemos cada fila y filtramos solo las válidas
+      const schedule = rows
+        .map(r => r._getValue ? r._getValue() : null)
+        .filter(Boolean)
+        .filter(s => Number.isFinite(s.hours) && s.hours > 0);
 
-        // Construir sesiones para ese grupo
-        const sessions = [];
-        for (let cur = new Date(start); cur <= end; cur.setDate(cur.getDate() + 1)) {
-          const iso = toISODate(cur);
-          if (holidaySet.has(iso)) continue;
-          const dow = days[cur.getDay()];
-          const totalHrsToday = g.schedule
-            .filter(s => s.day === dow)
-            .reduce((a, b) => a + b.hrs, 0);
-          if (totalHrsToday > 0) {
-            sessions.push({ date: new Date(cur.getFullYear(), cur.getMonth(), cur.getDate()), hrs: totalHrsToday });
-          }
+      if (schedule.length === 0) return;
+
+      const id = cryptoRandomId();
+      groups.push({ id, name, schedule });
+
+      // Reseteamos el formulario de grupo
+      document.getElementById("groupName").value = "";
+      scheduleRowsEl.innerHTML = "";
+      addScheduleRow(1, 2);
+      addScheduleRow(2, 2);
+
+      renderGroups();
+    });
+
+    // Botón: eliminar todos los grupos
+    document.getElementById("clearGroupsBtn").addEventListener("click", () => {
+      groups = [];
+      renderGroups();
+    });
+
+    renderGroups();
+
+    /* =========================================================
+       Cálculo del reporte
+       - Recorre cada día del rango
+       - Si el día coincide con el horario del grupo y NO está excluido, suma
+       ========================================================= */
+    function isExcluded(date) {
+      const iso = formatISO(date);
+
+      // 1) Festivos sueltos
+      if (holidays.has(iso)) return true;
+
+      // 2) Vacaciones por rango
+      for (const v of vacations) {
+        const s = parseLocalDate(v.startISO);
+        const e = parseLocalDate(v.endISO);
+        if (s && e && isDateInRange(date, s, e)) return true;
+      }
+
+      return false;
+    }
+
+    function buildReport() {
+      const start = parseLocalDate(document.getElementById("startDate").value);
+      const end = parseLocalDate(document.getElementById("endDate").value);
+
+      if (!start || !end) return { error: "Falta capturar el rango del semestre (inicio y fin)." };
+      if (start.getTime() > end.getTime()) return { error: "El inicio del semestre no puede ser posterior al fin." };
+      if (groups.length === 0) return { error: "No hay grupos registrados." };
+
+      const meta = {
+        startISO: formatISO(start),
+        endISO: formatISO(end),
+        holidays: Array.from(holidays).sort(),
+        vacations: vacations.slice()
+      };
+
+      const byGroup = [];
+      let grandTotalHours = 0;
+
+      for (const g of groups) {
+        // Consolidamos horas por día por si se repite el mismo día dos veces
+        const hoursByWeekday = new Map();
+        for (const s of g.schedule) {
+          hoursByWeekday.set(s.weekday, (hoursByWeekday.get(s.weekday) || 0) + s.hours);
         }
 
-        const totalSessions = sessions.length;
-        const totalHours = sessions.reduce((sum, s) => sum + s.hrs, 0);
+        const sessions = [];
+        let totalHours = 0;
 
-        doc.setFontSize(18);
-        doc.text(`Calendario de Clases - Grupo ${g.group}`, margin, 60);
-        doc.setFontSize(14);
-        doc.text(`Asignatura: ${g.className}`, margin, 80);
-        doc.text(`Clases totales: ${totalSessions}`, margin, 100);
-        doc.text(`Horas totales: ${totalHours}`, margin + 250, 100);
+        // Recorremos el rango día por día
+        for (let d = new Date(start.getTime()); d.getTime() <= end.getTime(); d = addDays(d, 1)) {
+          const wd = d.getDay();
 
-        const rows = sessions.map((s, i) => [
-          `#${String(i + 1).padStart(2, '0')}`,
-          toISODate(s.date),
-          s.hrs.toString(),
-        ]);
+          // Si ese día NO está en el horario, seguimos
+          if (!hoursByWeekday.has(wd)) continue;
+
+          // Si es festivo o vacaciones, se omite
+          if (isExcluded(d)) continue;
+
+          const hours = hoursByWeekday.get(wd);
+
+          sessions.push({
+            iso: formatISO(d),
+            weekday: weekdayNames[wd],
+            hours
+          });
+
+          totalHours += hours;
+        }
+
+        grandTotalHours += totalHours;
+        byGroup.push({ group: g, sessions, totalHours });
+      }
+
+      return { meta, byGroup, grandTotalHours };
+    }
+
+    /* =========================================================
+       Render del reporte en pantalla
+       ========================================================= */
+    const reportAreaEl = document.getElementById("reportArea");
+    const reportMetaEl = document.getElementById("reportMeta");
+
+    function renderReport(report) {
+      reportAreaEl.innerHTML = "";
+
+      if (report.error) {
+        reportMetaEl.textContent = report.error;
+        lastReport = null;
+        return;
+      }
+
+      const { meta, byGroup, grandTotalHours } = report;
+
+      reportMetaEl.textContent =
+        `Semestre: ${meta.startISO} a ${meta.endISO} | Grupos: ${byGroup.length} | Total general: ${grandTotalHours.toFixed(1)} horas`;
+
+      // Tarjeta de exclusiones aplicadas
+      const exclCard = document.createElement("div");
+      exclCard.className = "groupCard";
+
+      const vacText = meta.vacations.length
+        ? meta.vacations.map(v => `${v.startISO} a ${v.endISO}`).join(" | ")
+        : "Ninguno";
+
+      const holText = meta.holidays.length ? meta.holidays.join(" | ") : "Ninguno";
+
+      exclCard.innerHTML = `
+        <h3>Exclusiones aplicadas</h3>
+        <div class="meta"><b>Festivos:</b> ${escapeHtml(holText)}</div>
+        <div class="meta"><b>Vacaciones:</b> ${escapeHtml(vacText)}</div>
+      `;
+      reportAreaEl.appendChild(exclCard);
+
+      // Tarjeta por cada grupo
+      byGroup.forEach(entry => {
+        const g = entry.group;
+
+        const scheduleTxt = g.schedule
+          .slice()
+          .sort((a,b) => a.weekday - b.weekday)
+          .map(s => `${weekdayNames[s.weekday]}: ${s.hours}h`)
+          .join(" | ");
+
+        const card = document.createElement("div");
+        card.className = "groupCard";
+
+        card.innerHTML = `
+          <h3>${escapeHtml(g.name)}</h3>
+          <div class="meta">Horario: ${escapeHtml(scheduleTxt)}</div>
+          <div class="totals">
+            <div class="pill"><small>Sesiones</small> <span>${entry.sessions.length}</span></div>
+            <div class="pill"><small>Total horas</small> <span>${entry.totalHours.toFixed(1)}</span></div>
+          </div>
+        `;
+
+        // Tabla de sesiones
+        const tableWrap = document.createElement("div");
+        tableWrap.className = "tableWrap";
+
+        const table = document.createElement("table");
+        table.innerHTML = `
+          <thead>
+            <tr>
+              <th style="width:140px;">Fecha</th>
+              <th>Día</th>
+              <th style="width:90px;">Horas</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${entry.sessions.map(s => `
+              <tr>
+                <td>${escapeHtml(s.iso)}</td>
+                <td>${escapeHtml(s.weekday)}</td>
+                <td>${escapeHtml(String(s.hours))}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        `;
+        tableWrap.appendChild(table);
+
+        const hr = document.createElement("div");
+        hr.className = "hr";
+
+        card.appendChild(hr);
+        card.appendChild(tableWrap);
+        reportAreaEl.appendChild(card);
+      });
+
+      // Resumen final
+      const finalCard = document.createElement("div");
+      finalCard.className = "groupCard";
+      finalCard.innerHTML = `
+        <h3>Resumen general</h3>
+        <div class="meta">Total general de horas programadas (todos los grupos): <b>${grandTotalHours.toFixed(1)}</b></div>
+      `;
+      reportAreaEl.appendChild(finalCard);
+
+      lastReport = report;
+    }
+
+    // Botón: calcular reporte
+    document.getElementById("calculateBtn").addEventListener("click", () => {
+      renderReport(buildReport());
+    });
+
+    /* =========================================================
+       Exportar a PDF
+       - Usa el último reporte si ya se calculó
+       - Si no, calcula y exporta
+       ========================================================= */
+    document.getElementById("exportPdfBtn").addEventListener("click", () => {
+      const report = lastReport && !lastReport.error ? lastReport : buildReport();
+
+      if (report.error) {
+        renderReport(report);
+        return;
+      }
+
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ unit: "pt", format: "a4" });
+
+      const marginX = 40;
+      let y = 44;
+
+      // Encabezado del PDF
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(16);
+      doc.text("Reporte de sesiones por grupo", marginX, y);
+      y += 18;
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+      doc.text(`Semestre: ${report.meta.startISO} a ${report.meta.endISO}`, marginX, y);
+      y += 14;
+
+      const hol = report.meta.holidays.length ? report.meta.holidays.join(", ") : "Ninguno";
+      const vac = report.meta.vacations.length ? report.meta.vacations.map(v => `${v.startISO} a ${v.endISO}`).join(" | ") : "Ninguno";
+
+      doc.text(`Festivos excluidos: ${hol}`, marginX, y);
+      y += 14;
+      doc.text(`Vacaciones excluidas: ${vac}`, marginX, y);
+      y += 16;
+
+      doc.text(`Total general de horas (todos los grupos): ${report.grandTotalHours.toFixed(1)}`, marginX, y);
+      y += 18;
+
+      // Tabla resumen
+      const summaryBody = report.byGroup.map(e => ([
+        e.group.name,
+        String(e.sessions.length),
+        e.totalHours.toFixed(1)
+      ]));
+
+      doc.autoTable({
+        startY: y,
+        head: [["Grupo","Sesiones","Total horas"]],
+        body: summaryBody,
+        styles: { font: "helvetica", fontSize: 10, cellPadding: 6 },
+        headStyles: { fontStyle: "bold" },
+        margin: { left: marginX, right: marginX }
+      });
+
+      y = doc.lastAutoTable.finalY + 14;
+
+      // Sección por grupo
+      for (const entry of report.byGroup) {
+        if (y > 700) { doc.addPage(); y = 44; }
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(13);
+        doc.text(`Grupo: ${entry.group.name}`, marginX, y);
+        y += 14;
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(10);
+
+        const scheduleTxt = entry.group.schedule
+          .slice()
+          .sort((a,b) => a.weekday - b.weekday)
+          .map(s => `${weekdayNames[s.weekday]}: ${s.hours}h`)
+          .join(" | ");
+
+        doc.text(`Horario semanal: ${scheduleTxt}`, marginX, y);
+        y += 12;
+
+        doc.text(`Sesiones: ${entry.sessions.length} | Total horas: ${entry.totalHours.toFixed(1)}`, marginX, y);
+        y += 10;
+
+        const body = entry.sessions.map(s => ([s.iso, s.weekday, String(s.hours)]));
 
         doc.autoTable({
-          startY: 120,
-          head: [['Sesión', 'Fecha', 'Horas']],
-          body: rows,
-          margin: { left: margin, right: margin },
-          styles: { cellPadding: 6, fontSize: 12, halign: 'center', valign: 'middle' },
-          headStyles: { fillColor: [220, 220, 220], textColor: 20, halign: 'center' },
-          columnStyles: { 0: { halign: 'center' }, 1: { halign: 'center' }, 2: { halign: 'center' } },
+          startY: y + 6,
+          head: [["Fecha","Día","Horas"]],
+          body,
+          styles: { font: "helvetica", fontSize: 10, cellPadding: 6 },
+          headStyles: { fontStyle: "bold" },
+          margin: { left: marginX, right: marginX },
+          pageBreak: "auto"
         });
 
-        const finalY = doc.lastAutoTable.finalY + 20;
-        doc.setFontSize(12);
-        doc.text(`Total horas efectivas: ${totalHours}`, margin, finalY);
-      });
+        y = doc.lastAutoTable.finalY + 18;
+      }
 
-      doc.save('Calendario_por_grupo.pdf');
+      // Guardamos el archivo
+      const filename = `reporte_sesiones_${report.meta.startISO}_a_${report.meta.endISO}.pdf`;
+      doc.save(filename);
     });
 
-    // --- Generación de PDF (tabla multi‑grupo) ---
-    document.getElementById('genPdfMatrix').addEventListener('click', () => {
-      const data = collectData();
-      if (!data) return;
-      const { dates, groups } = data;
+    /* =========================================================
+       Utilidades generales
+       ========================================================= */
+    function escapeHtml(str) {
+      // Evita que texto con caracteres especiales rompa el HTML
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
 
-      const orientation = groups.length > 4 ? 'landscape' : 'portrait';
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF({ unit: 'pt', format: 'letter', orientation });
-
-      const margin = 40;
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const usableWidth = pageWidth - margin * 2;
-
-      // Totales por grupo
-      const totals = groups.map(g => {
-        let sessions = 0, hours = 0;
-        dates.forEach(d => {
-          const dow = days[d.getDay()];
-          const h = g.schedule.filter(s => s.day === dow).reduce((a,b) => a + b.hrs, 0);
-          if (h > 0) { sessions += 1; hours += h; }
-        });
-        return { group: g.group, className: g.className, sessions, hours };
-      });
-
-      // Encabezado
-      doc.setFontSize(18);
-      doc.text('Calendario de Clases (multi‑grupo)', margin, 60);
-
-      // Tabla de totales
-      const totalsRows = totals.map(t => [t.group, t.className, String(t.sessions), String(t.hours)]);
-      doc.autoTable({
-        startY: 80,
-        head: [['Grupo','Clase','Clases totales','Horas totales']],
-        body: totalsRows,
-        margin: { left: margin, right: margin },
-        styles: { cellPadding: 6, fontSize: 12, halign: 'center', valign: 'middle' },
-        headStyles: { fillColor: [220,220,220], textColor: 20, halign: 'center' }
-      });
-
-      // Matriz: filas = fechas, columnas = grupos
-      const head = ['Fecha', ...groups.map(g => g.group)];
-
-      const matrixRows = dates.map(d => {
-        const row = [toISODate(d)];
-        groups.forEach(g => {
-          const dow = days[d.getDay()];
-          const h = g.schedule.filter(s => s.day === dow).reduce((a,b) => a + b.hrs, 0);
-          row.push(h > 0 ? String(h) : '');
-        });
-        return row;
-      });
-
-      // Column widths: fecha fija, resto distribuidas
-      const dateColWidth = 110;
-      const colWidth = (usableWidth - dateColWidth) / groups.length;
-      const colStyles = { 0: { cellWidth: dateColWidth, halign: 'center' } };
-      for (let i = 1; i <= groups.length; i++) colStyles[i] = { cellWidth: colWidth, halign: 'center' };
-
-      doc.autoTable({
-        startY: doc.lastAutoTable.finalY + 20,
-        head: [head],
-        body: matrixRows,
-        margin: { left: margin, right: margin },
-        styles: { cellPadding: 6, fontSize: 11, halign: 'center', valign: 'middle' },
-        headStyles: { fillColor: [220,220,220], textColor: 20, halign: 'center' },
-        columnStyles: colStyles,
-        tableWidth: 'auto'
-      });
-
-      doc.save('Calendario_multi_grupo.pdf');
-    });
+    function cryptoRandomId() {
+      // ID corto y suficientemente único para uso local
+      const a = new Uint32Array(2);
+      crypto.getRandomValues(a);
+      return `${a[0].toString(16)}${a[1].toString(16)}`;
+    }
   </script>
 </body>
 </html>
