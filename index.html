@@ -577,8 +577,8 @@
       document.documentElement.setAttribute("data-theme", theme);
 
       const isLight = theme === "light";
-      themeLabel.textContent = isLight ? "☀️ Claro" : "🌙 Oscuro";
-      toggleBtn.textContent = isLight ? "☀️ Claro" : "🌙 Oscuro";
+      themeLabel.textContent = isLight ? "☀️" : "🌙";
+      toggleBtn.textContent = isLight ? "☀️" : "🌙";
 
       // Guardamos la preferencia
       localStorage.setItem(THEME_KEY, theme);
