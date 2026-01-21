@@ -1,741 +1,871 @@
 <!doctype html>
-<html lang="es">
+<html lang="es" data-theme="dark">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Calculadora de sesiones por grupo</title>
+  <title>Calculadora de sesiones por semestre</title>
 
   <style>
-    /* =========================================================
-       Paleta (inspirada en tu imagen)
-       - Azul:   #3F9AAE
-       - Aqua:   #79C9C5
-       - Crema:  #FFE2AF
-       - Coral:  #F96E5B
-       ========================================================= */
+    /* ============================================================
+       GUÍA RÁPIDA PARA MODIFICAR (sin perderte)
+       1) Colores/tema: busca "CONFIG: COLORES Y TEMA"
+       2) Layout responsivo: busca "CONFIG: LAYOUT"
+       3) Componentes UI: busca "CONFIG: COMPONENTES"
+       4) Cálculo de sesiones: en JS busca "CALCULO DE SESIONES"
+       5) Unidades: en JS busca "CALCULO: UNIDADES" y "UI: UNIDADES"
+       ============================================================ */
 
+    /* ============================================================
+       CONFIG: COLORES Y TEMA
+       - Cambia variables aquí y cambias todo el look.
+       ============================================================ */
     :root{
-      --radius: 16px;
-      --maxw: 1100px;
+      --teal:  #3F9AAE;
+      --aqua:  #79C9C5;
+      --cream: #FFE2AF;
+      --coral: #F96E5B;
 
-      /* Colores base */
-      --p-blue:  #3F9AAE;
-      --p-aqua:  #79C9C5;
-      --p-cream: #FFE2AF;
-      --p-coral: #F96E5B;
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      --radius: 18px;
+      --radius-sm: 12px;
+      --gap: 14px;
 
-      /* =========================
-         TEMA OSCURO (default)
-         ========================= */
-      --bg0: #071014;
-      --bg1: #0a1a1e;
+      --shadow: 0 18px 50px rgba(0,0,0,0.28);
+      --blur: 12px;
 
-      --text: #eaf2f3;
-      --muted: rgba(234,242,243,0.72);
+      --maxw: 1220px;
+      --sidebarW: 360px;
 
-      /* Tarjetas y transparencias */
-      --card: rgba(255,255,255,0.06);
-      --card2: rgba(255,255,255,0.08);
+      /* ========== TEMA OSCURO ========== */
+      --bg0: #061014;
+      --bg1: #0b1b22;
 
-      /* Bordes y sombra */
-      --border: rgba(255,255,255,0.10);
-      --border2: rgba(255,255,255,0.14);
-      --shadow: 0 10px 30px rgba(0,0,0,0.28);
+      --text: #EAF4F6;
+      --muted: rgba(234,244,246,0.70);
 
-      /* Enfoque (focus) */
+      --glass: rgba(255,255,255,0.07);
+      --glass2: rgba(255,255,255,0.10);
+
+      --bd: rgba(255,255,255,0.12);
+      --bd2: rgba(255,255,255,0.18);
+
       --focus: rgba(121,201,197,0.55);
 
-      /* Acentos (botones principales) */
-      --accent: var(--p-blue);
-      --accent2: var(--p-aqua);
-      --accentBg: rgba(63,154,174,0.18);
-      --accentBd: rgba(63,154,174,0.55);
+      --btn: rgba(255,255,255,0.06);
+      --btnHover: rgba(255,255,255,0.10);
 
-      /* Peligro (borrar) */
-      --danger: var(--p-coral);
-      --dangerBg: rgba(249,110,91,0.14);
-      --dangerBd: rgba(249,110,91,0.55);
+      --primaryBg: rgba(63,154,174,0.20);
+      --primaryBd: rgba(63,154,174,0.62);
 
-      /* Suave (si luego quieres mensajes tipo aviso) */
-      --soft: var(--p-cream);
-      --softBg: rgba(255,226,175,0.14);
-      --softBd: rgba(255,226,175,0.50);
+      --dangerBg: rgba(249,110,91,0.16);
+      --dangerBd: rgba(249,110,91,0.62);
+
+      --warnBg: rgba(255,226,175,0.16);
+      --warnBd: rgba(255,226,175,0.60);
     }
 
-    /* =========================
-       TEMA CLARO (overrides)
-       ========================= */
-    [data-theme="light"]{
+    /* ========== TEMA CLARO ========== */
+    html[data-theme="light"]{
       --bg0: #f5fbfb;
       --bg1: #eef7f7;
 
-      --text: #102027;
-      --muted: rgba(16,32,39,0.62);
+      --text: #0f262d;
+      --muted: rgba(15,38,45,0.62);
 
-      --card: rgba(255,255,255,0.82);
-      --card2: rgba(255,255,255,0.68);
+      --glass: rgba(255,255,255,0.86);
+      --glass2: rgba(255,255,255,0.68);
 
-      --border: rgba(16,32,39,0.12);
-      --border2: rgba(16,32,39,0.16);
+      --bd: rgba(15,38,45,0.12);
+      --bd2: rgba(15,38,45,0.18);
 
-      --shadow: 0 10px 30px rgba(2,6,23,0.10);
-      --focus: rgba(63,154,174,0.35);
+      --shadow: 0 18px 50px rgba(2,6,23,0.12);
+      --focus: rgba(63,154,174,0.33);
 
-      --accentBg: rgba(63,154,174,0.14);
-      --accentBd: rgba(63,154,174,0.40);
+      --btn: rgba(255,255,255,0.72);
+      --btnHover: rgba(255,255,255,0.88);
+
+      --primaryBg: rgba(63,154,174,0.16);
+      --primaryBd: rgba(63,154,174,0.40);
 
       --dangerBg: rgba(249,110,91,0.12);
-      --dangerBd: rgba(249,110,91,0.40);
+      --dangerBd: rgba(249,110,91,0.45);
 
-      --softBg: rgba(255,226,175,0.24);
-      --softBd: rgba(255,226,175,0.55);
+      --warnBg: rgba(255,226,175,0.22);
+      --warnBd: rgba(255,226,175,0.55);
     }
 
-    /* =======================
-       Base
-       ======================= */
-    * { box-sizing: border-box; }
+    /* ============================================================
+       BASE
+       ============================================================ */
+    *{ box-sizing: border-box; }
+    html, body{ height: 100%; }
 
     body{
-      margin:0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-
-      /* Fondo suave con transparencias (se ve minimalista pero con "vida") */
-      background:
-        radial-gradient(900px 450px at 10% 0%, rgba(121,201,197,0.14), transparent 60%),
-        radial-gradient(900px 450px at 90% 10%, rgba(63,154,174,0.12), transparent 60%),
-        linear-gradient(180deg, var(--bg0), var(--bg1));
-
+      margin: 0;
+      font-family: var(--font);
       color: var(--text);
+      overflow-x: hidden;
+
+      background:
+        radial-gradient(900px 520px at 12% 0%, rgba(121,201,197,0.18), transparent 60%),
+        radial-gradient(900px 520px at 88% 8%, rgba(63,154,174,0.16), transparent 60%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
     }
 
-    header{
+    /* ============================================================
+       CONFIG: LAYOUT
+       ============================================================ */
+    .topbar{
       position: sticky;
-      top:0;
-      z-index: 10;
+      top: 0;
+      z-index: 50;
 
-      border-bottom: 1px solid var(--border);
-      background: color-mix(in srgb, var(--bg1) 86%, transparent);
-      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--bd);
+      background: color-mix(in srgb, var(--bg1) 82%, transparent);
+      backdrop-filter: blur(var(--blur));
 
-      padding: 16px;
+      padding: 14px 16px;
     }
 
-    .headerGrid{
+    .topbarInner{
       max-width: var(--maxw);
       margin: 0 auto;
 
-      display: grid;
-      grid-template-columns: 1fr auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       gap: 12px;
+    }
+
+    .brand{
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .brandTitle{
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .brandTitle h1{
+      margin: 0;
+      font-size: 16px;
+      letter-spacing: 0.2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .brandTitle .tag{
+      font-size: 12px;
+      font-weight: 900;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .brandSub{
+      margin: 0;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.3;
+    }
+
+    .actionsTop{
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
       align-items: center;
     }
 
-    header h1{
-      margin:0;
-      font-size: 18px;
-      letter-spacing: 0.2px;
-    }
-    header p{
-      margin: 6px 0 0;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    main{
+    .app{
       max-width: var(--maxw);
       margin: 0 auto;
       padding: 16px;
 
       display: grid;
-      grid-template-columns: 380px 1fr;
-      gap: 16px;
-
+      grid-template-columns: var(--sidebarW) 1fr;
+      gap: var(--gap);
       align-items: start;
     }
+
     @media (max-width: 980px){
-      main{ grid-template-columns: 1fr; }
+      .app{ grid-template-columns: 1fr; }
     }
 
+    .backdrop{ display: none; }
+
+    .sidebar{
+      position: sticky;
+      top: 82px;
+      align-self: start;
+    }
+
+    @media (max-width: 980px){
+      .sidebar{
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: min(92vw, 420px);
+        transform: translateX(-110%);
+        transition: transform 220ms ease;
+
+        z-index: 60;
+        overflow: auto;
+        padding: 16px;
+      }
+      .sidebar.open{ transform: translateX(0); }
+
+      .backdrop{
+        display: block;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.35);
+        backdrop-filter: blur(2px);
+        z-index: 55;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 220ms ease;
+      }
+      .backdrop.open{
+        opacity: 1;
+        pointer-events: auto;
+      }
+    }
+
+    /* ============================================================
+       CONFIG: COMPONENTES
+       ============================================================ */
     .card{
-      background: var(--card);
-      border: 1px solid var(--border);
+      border: 1px solid var(--bd);
       border-radius: var(--radius);
-      padding: 14px;
+      background: var(--glass);
       box-shadow: var(--shadow);
     }
 
-    .card h2{
-      margin: 0 0 10px;
-      font-size: 15px;
+    .cardHeader{
+      padding: 14px 14px 10px;
+      border-bottom: 1px solid var(--bd);
+      background: color-mix(in srgb, var(--glass) 82%, transparent);
+      backdrop-filter: blur(var(--blur));
+      border-top-left-radius: var(--radius);
+      border-top-right-radius: var(--radius);
     }
 
-    .muted{ color: var(--muted); font-size: 12px; }
-    .hint{ font-size: 12px; color: var(--muted); margin-top: 6px; }
-    .hr{ height:1px; background: var(--border); margin: 12px 0; }
+    .cardHeader h2{
+      margin: 0;
+      font-size: 14px;
+      letter-spacing: 0.2px;
+    }
 
-    .row{ display:flex; gap: 10px; align-items: center; }
-    .row.wrap{ flex-wrap: wrap; }
-
-    label{
-      display:block;
+    .cardHeader p{
+      margin: 6px 0 0;
       font-size: 12px;
       color: var(--muted);
+      line-height: 1.35;
+    }
+
+    .cardBody{ padding: 14px; }
+
+    .divider{
+      height: 1px;
+      background: var(--bd);
+      margin: 14px 0;
+    }
+
+    label{
+      display: block;
+      font-size: 12px;
+      font-weight: 900;
+      color: var(--muted);
       margin-bottom: 6px;
-      font-weight: 650;
     }
 
     input, select, button, textarea{
-      border-radius: 12px;
-      border: 1px solid var(--border2);
-
-      /* Fondo con transparencia para mantener el estilo */
-      background: color-mix(in srgb, var(--card2) 70%, transparent);
-
+      font: inherit;
       color: var(--text);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--bd2);
+      background: color-mix(in srgb, var(--glass2) 72%, transparent);
+
       padding: 10px 10px;
       font-size: 13px;
-
       outline: none;
-      min-width: 0; /* clave para que grids no se desborden */
+      min-width: 0;
     }
 
     input:focus, select:focus, textarea:focus{
       box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 60%, transparent);
-      border-color: color-mix(in srgb, var(--accent2) 55%, var(--border2));
+      border-color: color-mix(in srgb, var(--aqua) 45%, var(--bd2));
     }
 
-    textarea{
-      width:100%;
-      min-height: 70px;
-      resize: vertical;
+    .grid2{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    @media (max-width: 520px){
+      .grid2{ grid-template-columns: 1fr; }
     }
 
-    /* =========================================================
-       BOTONES FLEXIBLES (ajustan al texto y se acomodan solos)
-       - Quitamos el nowrap global para que el texto pueda partirse
-       ========================================================= */
+    .row{
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .hint{
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.35;
+    }
+
+    /* Botones: flexibles, no se desbordan por texto */
     button{
       cursor: pointer;
-      font-weight: 750;
-      white-space: normal; /* ahora puede partir línea */
+      font-weight: 950;
+      white-space: normal;
       line-height: 1.15;
     }
 
-    button.primary{
-      background: var(--accentBg);
-      border-color: var(--accentBd);
+    .btn{
+      background: var(--btn);
+      border-color: var(--bd2);
     }
-    button.primary:hover{
-      background: color-mix(in srgb, var(--accentBg) 72%, var(--accent) 12%);
+    .btn:hover{ background: var(--btnHover); }
+
+    .btnPrimary{
+      background: var(--primaryBg);
+      border-color: var(--primaryBd);
+    }
+    .btnPrimary:hover{
+      background: color-mix(in srgb, var(--primaryBg) 72%, var(--teal) 12%);
     }
 
-    button.ghost{
-      background: transparent;
-    }
-    button.ghost:hover{
-      background: color-mix(in srgb, var(--card2) 70%, transparent);
-    }
-
-    button.danger{
+    .btnDanger{
       background: var(--dangerBg);
       border-color: var(--dangerBd);
     }
-    button.danger:hover{
-      background: color-mix(in srgb, var(--dangerBg) 78%, var(--danger) 10%);
+    .btnDanger:hover{
+      background: color-mix(in srgb, var(--dangerBg) 72%, var(--coral) 12%);
     }
 
-    .kbd{
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      padding: 2px 6px;
-      border-radius: 8px;
-      border: 1px solid var(--border2);
-      background: color-mix(in srgb, var(--card2) 85%, transparent);
+    .btnWarn{
+      background: var(--warnBg);
+      border-color: var(--warnBd);
+    }
+    .btnWarn:hover{
+      background: color-mix(in srgb, var(--warnBg) 70%, var(--cream) 14%);
     }
 
+    .chipBtn{
+      border-radius: 999px;
+      padding: 10px 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .actionsGrid{
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    /* Listas */
     .list{ display: grid; gap: 10px; }
 
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap: 8px;
+    .chip{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
 
-      padding: 6px 10px;
+      padding: 10px 10px;
       border-radius: 999px;
+      border: 1px solid var(--bd2);
+      background: color-mix(in srgb, var(--glass2) 70%, transparent);
+    }
 
-      border: 1px solid var(--border2);
-      background: color-mix(in srgb, var(--card2) 78%, transparent);
+    .chipInfo{
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
 
+    .chipInfo b{ font-size: 12px; letter-spacing: 0.2px; }
+    .chipInfo span{
       font-size: 12px;
-      width: fit-content;
-      max-width: 100%;
-    }
-
-    .pill small{ color: var(--muted); font-weight: 800; }
-
-    /* En botones dentro de "pill" sí conviene que NO partan línea */
-    .pill button{
-      padding: 6px 8px;
-      border-radius: 999px;
+      color: var(--muted);
       white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
+    .chip button{
+      white-space: nowrap;
+      border-radius: 999px;
+      padding: 8px 10px;
+    }
+
+    /* Tarjetas internas */
     .groupCard{
       padding: 12px;
       border-radius: var(--radius);
-
-      border: 1px solid var(--border);
-      background: color-mix(in srgb, var(--card2) 75%, transparent);
+      border: 1px solid var(--bd);
+      background: color-mix(in srgb, var(--glass2) 70%, transparent);
     }
-
-    .groupCard h3{ margin: 0 0 8px; font-size: 14px; }
-    .groupCard .meta{ color: var(--muted); font-size: 12px; margin-bottom: 8px; }
-
-    /* =======================
-       Tablas
-       ======================= */
-    table{
-      width:100%;
-      border-collapse: collapse;
+    .groupCard h3{ margin: 0; font-size: 14px; }
+    .groupMeta{
+      margin-top: 6px;
       font-size: 12px;
-      overflow: hidden;
-      border-radius: 14px;
-    }
-    th, td{
-      padding: 8px 8px;
-      border-bottom: 1px solid var(--border);
-      vertical-align: top;
-    }
-    th{
-      text-align:left;
-      font-weight: 850;
-      background: color-mix(in srgb, var(--card) 70%, transparent);
-      position: sticky;
-      top: 0;
-    }
-    .tableWrap{
-      max-height: 340px;
-      overflow: auto;
-      border-radius: 14px;
-      border: 1px solid var(--border);
+      color: var(--muted);
+      line-height: 1.35;
     }
 
-    .totals{
-      display:flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 8px;
-    }
-    .totals .pill{
-      background: color-mix(in srgb, var(--accent2) 14%, var(--card2) 70%);
-      border-color: color-mix(in srgb, var(--accent2) 28%, var(--border2));
-    }
-
-    /* =========================================================
-       Action bar responsive "inteligente"
-       - auto-fit: mete el mayor número de columnas que quepan
-       - minmax(190px, 1fr): cada botón mínimo 190px para que no se vea apretado
-       - si no cabe, automáticamente se baja a 1 columna
-       ========================================================= */
-    .actionBar{
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-      gap: 10px;
-      margin-top: 8px;
-    }
-    .actionBar > button{
-      width: 100%;
-      padding: 12px 10px; /* un poquito más alto para dos líneas */
-      text-align: center;
-    }
-
-    /* =======================
-       Fix overflow: filas de horario
-       ======================= */
+    /* Filas: horario */
     .scheduleRow{
       display: grid;
       grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
       gap: 10px;
       align-items: end;
+
+      padding: 12px;
+      border-radius: var(--radius);
+      border: 1px solid var(--bd);
+      background: color-mix(in srgb, var(--glass2) 70%, transparent);
     }
 
-    .scheduleRow select,
-    .scheduleRow input{
-      width: 100%;
-      min-width: 0;
-    }
-
-    /* El botón "Quitar" conviene que no rompa línea */
     .scheduleRow .removeBtn{
       white-space: nowrap;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
     }
 
-    /* En pantallas medianas: el botón se baja y ocupa todo el ancho */
     @media (max-width: 760px){
-      .scheduleRow{
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-      }
-      .scheduleRow .removeBtn{
-        grid-column: 1 / -1;
-        width: 100%;
-      }
+      .scheduleRow{ grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+      .scheduleRow .removeBtn{ grid-column: 1 / -1; width: 100%; }
     }
-
-    /* En pantallas muy pequeñas: todo en una sola columna */
-    @media (max-width: 420px){
+    @media (max-width: 460px){
       .scheduleRow{ grid-template-columns: 1fr; }
     }
 
-    /* Ajuste de inputs para que no se "desmadren" (en buen plan 😄) */
-    input[type="date"]{ width: clamp(160px, 40vw, 200px); }
-    input[type="number"]{ width: clamp(120px, 24vw, 170px); }
-
-    /* =======================
-       Toggle de tema (modo claro/oscuro)
-       ======================= */
-    .themeToggle{
-      display: inline-flex;
+    /* UI: filas de unidades */
+    .unitRow{
+      display: grid;
+      grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.7fr) auto;
       gap: 10px;
-      align-items: center;
+      align-items: end;
+
+      padding: 12px;
+      border-radius: var(--radius);
+      border: 1px solid var(--bd);
+      background: color-mix(in srgb, var(--glass2) 70%, transparent);
+    }
+
+    .unitRow .removeBtn{
+      white-space: nowrap;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+    }
+
+    @media (max-width: 760px){
+      .unitRow{ grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+      .unitRow .removeBtn{ grid-column: 1 / -1; width: 100%; }
+    }
+    @media (max-width: 460px){
+      .unitRow{ grid-template-columns: 1fr; }
+    }
+
+    /* Reporte */
+    .reportMeta{
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .badges{
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .badge{
       padding: 8px 10px;
       border-radius: 999px;
-      border: 1px solid var(--border);
-      background: color-mix(in srgb, var(--card) 60%, transparent);
-    }
-    .themeToggle span{
+      border: 1px solid color-mix(in srgb, var(--aqua) 26%, var(--bd2));
+      background: color-mix(in srgb, var(--aqua) 14%, var(--glass2) 70%);
       font-size: 12px;
-      color: var(--muted);
-      font-weight: 800;
+      font-weight: 950;
     }
 
-    /* El botón del tema sí lo dejamos en una sola línea */
-    .themeToggle button{
-      white-space: nowrap;
+    .badgeWarn{
+      border-color: color-mix(in srgb, var(--cream) 45%, var(--bd2));
+      background: color-mix(in srgb, var(--cream) 16%, var(--glass2) 70%);
+    }
+
+    .badgeDanger{
+      border-color: color-mix(in srgb, var(--coral) 40%, var(--bd2));
+      background: color-mix(in srgb, var(--coral) 14%, var(--glass2) 70%);
+    }
+
+    .tableWrap{
+      margin-top: 12px;
+      max-height: 360px;
+      overflow: auto;
+      border-radius: var(--radius);
+      border: 1px solid var(--bd);
+      background: color-mix(in srgb, var(--glass2) 60%, transparent);
+    }
+
+    table{
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    th, td{
+      padding: 10px 10px;
+      border-bottom: 1px solid var(--bd);
+      vertical-align: top;
+    }
+    th{
+      text-align: left;
+      font-weight: 980;
+      position: sticky;
+      top: 0;
+      background: color-mix(in srgb, var(--glass) 82%, transparent);
+      backdrop-filter: blur(8px);
+    }
+
+    .subTitle{
+      margin: 14px 0 0;
+      font-size: 12px;
+      font-weight: 980;
+      color: color-mix(in srgb, var(--text) 88%, white 12%);
+      letter-spacing: 0.2px;
     }
   </style>
 </head>
 
 <body>
-  <header>
-    <div class="headerGrid">
-      <div>
-        <h1>Calculadora de clases por semestre (por grupo)</h1>
-        <p>Define grupos, días y horas. Excluye festivos y vacaciones. Genera reporte y expórtalo a PDF.</p>
+  <div id="backdrop" class="backdrop" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <div class="topbarInner">
+      <div class="brand">
+        <div class="brandTitle">
+          <h1>Calculadora de sesiones</h1>
+          <span class="tag">por grupo</span>
+        </div>
+        <p class="brandSub">Con exclusiones y PDF. Ahora incluye: “Se completa unidad”.</p>
       </div>
 
-      <!-- ✅ Toggle de tema con emojis -->
-      <div class="themeToggle" aria-label="Selector de tema">
-        <span id="themeLabel">Tema</span>
-        <button id="toggleThemeBtn" class="primary" type="button">🌙 Oscuro</button>
+      <div class="actionsTop">
+        <button id="menuBtn" class="btn chipBtn" type="button" title="Abrir configuración (móvil)">☰ Menú</button>
+        <button id="themeBtn" class="btn chipBtn" type="button" title="Cambiar tema">🌙/☀️</button>
+        <button id="quickCalcBtn" class="btn btnPrimary chipBtn" type="button" title="Calcular reporte">🧮 Calcular</button>
+        <button id="quickPdfBtn" class="btn btnPrimary chipBtn" type="button" title="Exportar PDF">📄 PDF</button>
       </div>
     </div>
   </header>
 
-  <main>
-    <!-- =========================================================
-         PANEL IZQUIERDO: Configuración
-         ========================================================= -->
-    <section class="card">
-      <h2>1) Rango del semestre</h2>
-
-      <div class="row wrap">
-        <div>
-          <label for="startDate">Inicio</label>
-          <input id="startDate" type="date" />
-        </div>
-        <div>
-          <label for="endDate">Fin</label>
-          <input id="endDate" type="date" />
-        </div>
+  <div class="app">
+    <!-- =========================
+         SIDEBAR
+         ========================= -->
+    <aside id="sidebar" class="sidebar card" aria-label="Configuración">
+      <div class="cardHeader">
+        <h2>Configuración</h2>
+        <p>Rango, exclusiones, grupos, y plan de unidades (para saber cuándo se completa cada unidad).</p>
       </div>
 
-      <div class="hint">Tip: primero fija el rango, luego agrega exclusiones. 🧩</div>
-
-      <div class="hr"></div>
-
-      <h2>2) Excluir fechas sin clase</h2>
-
-      <!-- Festivos -->
-      <div>
-        <label>Días festivos (fechas sueltas)</label>
-
-        <div class="row wrap">
-          <input id="holidayDate" type="date" />
-        </div>
-
-        <div class="actionBar">
-          <button class="primary" id="addHolidayBtn" type="button">Agregar festivo</button>
-          <button class="ghost" id="clearHolidaysBtn" type="button">Limpiar festivos</button>
-        </div>
-
-        <div id="holidaysList" class="list" style="margin-top:10px;"></div>
-      </div>
-
-      <div class="hr"></div>
-
-      <!-- Vacaciones -->
-      <div>
-        <label>Periodos vacacionales (rangos)</label>
-
-        <div class="row wrap">
-          <div>
-            <label for="vacStart" class="muted">Inicio</label>
-            <input id="vacStart" type="date" />
+      <div class="cardBody">
+        <!-- Rango del semestre -->
+        <section aria-label="Rango del semestre">
+          <label>Rango del semestre</label>
+          <div class="grid2">
+            <div>
+              <label for="startDate">Inicio</label>
+              <input id="startDate" type="date" />
+            </div>
+            <div>
+              <label for="endDate">Fin</label>
+              <input id="endDate" type="date" />
+            </div>
           </div>
-          <div>
-            <label for="vacEnd" class="muted">Fin</label>
-            <input id="vacEnd" type="date" />
+          <div class="hint">Captura el rango primero. Luego agrega festivos/vacaciones y grupos.</div>
+        </section>
+
+        <div class="divider"></div>
+
+        <!-- Festivos -->
+        <section aria-label="Festivos">
+          <label>Festivos (fechas sueltas)</label>
+          <div class="row">
+            <input id="holidayDate" type="date" />
           </div>
-        </div>
 
-        <div class="actionBar">
-          <button class="primary" id="addVacationBtn" type="button">Agregar vacaciones</button>
-          <button class="ghost" id="clearVacationsBtn" type="button">Limpiar vacaciones</button>
-        </div>
+          <div class="actionsGrid">
+            <button id="addHolidayBtn" class="btn btnPrimary" type="button">Agregar festivo</button>
+            <button id="clearHolidaysBtn" class="btn" type="button">Limpiar festivos</button>
+          </div>
 
-        <div id="vacationsList" class="list" style="margin-top:10px;"></div>
+          <div id="holidaysList" class="list" style="margin-top:10px;"></div>
+        </section>
+
+        <div class="divider"></div>
+
+        <!-- Vacaciones -->
+        <section aria-label="Vacaciones">
+          <label>Vacaciones (rangos)</label>
+          <div class="grid2">
+            <div>
+              <label for="vacStart">Inicio</label>
+              <input id="vacStart" type="date" />
+            </div>
+            <div>
+              <label for="vacEnd">Fin</label>
+              <input id="vacEnd" type="date" />
+            </div>
+          </div>
+
+          <div class="actionsGrid">
+            <button id="addVacationBtn" class="btn btnPrimary" type="button">Agregar vacaciones</button>
+            <button id="clearVacationsBtn" class="btn" type="button">Limpiar vacaciones</button>
+          </div>
+
+          <div id="vacationsList" class="list" style="margin-top:10px;"></div>
+        </section>
+
+        <div class="divider"></div>
+
+        <!-- Grupos -->
+        <section aria-label="Grupos">
+          <label>Agregar grupo</label>
+
+          <div>
+            <label for="groupName">Nombre del grupo</label>
+            <input id="groupName" type="text" placeholder="Ej. 1022" style="width:100%;" />
+          </div>
+
+          <!-- Horario -->
+          <div style="margin-top:12px;">
+            <div class="row" style="justify-content: space-between;">
+              <label style="margin:0;">Horario semanal</label>
+              <button id="addScheduleRowBtn" class="btn btnPrimary" type="button">+ Agregar día</button>
+            </div>
+
+            <div id="scheduleRows" class="list" style="margin-top:10px;"></div>
+
+            <div class="hint">Ejemplo: Lunes 2h, Martes 2h, Viernes 1h.</div>
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- =========================
+               UI: UNIDADES (NUEVO)
+               - Capturas las horas por unidad.
+               - Con esto el reporte puede decir: “Se completa Unidad X” y si sobran/faltan horas.
+               ========================= -->
+          <div>
+            <div class="row" style="justify-content: space-between;">
+              <label style="margin:0;">Plan de unidades (opcional)</label>
+              <button id="addUnitRowBtn" class="btn btnPrimary" type="button">+ Agregar unidad</button>
+            </div>
+
+            <div id="unitRows" class="list" style="margin-top:10px;"></div>
+
+            <div class="hint">
+              Captura las horas asignadas a cada unidad. El sistema calculará en qué fecha se completa cada una,
+              y si sobran o faltan horas respecto al calendario real.
+            </div>
+          </div>
+
+          <div class="actionsGrid">
+            <button id="saveGroupBtn" class="btn btnPrimary" type="button">Guardar grupo</button>
+            <button id="clearGroupsBtn" class="btn btnDanger" type="button">Eliminar todos</button>
+          </div>
+
+          <div class="divider"></div>
+
+          <label>Grupos registrados</label>
+          <div id="groupsList" class="list"></div>
+
+          <div class="divider"></div>
+
+          <div class="actionsGrid">
+            <button id="calculateBtn" class="btn btnPrimary" type="button">Calcular reporte</button>
+            <button id="exportPdfBtn" class="btn btnPrimary" type="button">Exportar PDF</button>
+          </div>
+
+          <div class="hint">El PDF se genera en el navegador con jsPDF + autoTable.</div>
+        </section>
+      </div>
+    </aside>
+
+    <!-- =========================
+         MAIN: REPORTE
+         ========================= -->
+    <main class="card" aria-label="Reporte">
+      <div class="cardHeader">
+        <h2>Reporte</h2>
+        <p id="reportMeta" class="reportMeta">Aún no calculado.</p>
       </div>
 
-      <div class="hr"></div>
-
-      <h2>3) Agregar grupos</h2>
-
-      <div>
-        <label for="groupName">Nombre del grupo</label>
-        <input id="groupName" type="text" placeholder="Ej. 1022" style="width:100%;" />
+      <div class="cardBody">
+        <div id="reportArea" class="list"></div>
       </div>
+    </main>
+  </div>
 
-      <div class="hr"></div>
-
-      <!-- Horario semanal -->
-      <div>
-        <div class="row" style="justify-content: space-between;">
-          <h2 style="margin:0; font-size: 14px;">Horario semanal del grupo</h2>
-          <button class="primary" id="addScheduleRowBtn" type="button">Agregar día</button>
-        </div>
-
-        <!-- Aquí se agregan dinámicamente las filas Día + Horas + Quitar -->
-        <div id="scheduleRows" class="list" style="margin-top:10px;"></div>
-
-        <div class="hint">Ejemplo: Lunes 2 horas, Martes 2 horas, Viernes 1 hora.</div>
-      </div>
-
-      <div class="hr"></div>
-
-      <div class="actionBar">
-        <button class="primary" id="saveGroupBtn" type="button">Guardar grupo</button>
-        <button class="danger" id="clearGroupsBtn" type="button">Eliminar todos los grupos</button>
-      </div>
-
-      <div class="hr"></div>
-
-      <h2>Grupos registrados</h2>
-      <div id="groupsList" class="list"></div>
-
-      <div class="hr"></div>
-
-      <div class="actionBar">
-        <button class="primary" id="calculateBtn" type="button">Calcular reporte</button>
-        <button class="primary" id="exportPdfBtn" type="button">Exportar PDF</button>
-      </div>
-
-      <div class="hint">
-        El PDF se genera en tu navegador usando <span class="kbd">jsPDF</span> + <span class="kbd">autoTable</span>.
-      </div>
-    </section>
-
-    <!-- =========================================================
-         PANEL DERECHO: Reporte
-         ========================================================= -->
-    <section class="card">
-      <h2>Reporte</h2>
-      <div class="muted" id="reportMeta">Aún no calculado.</div>
-      <div class="hr"></div>
-      <div id="reportArea" class="list"></div>
-    </section>
-  </main>
-
-  <!-- =========================================================
-       Librerías para PDF
-       - jsPDF: crea el PDF
-       - autoTable: crea tablas fácilmente en PDF
-       ========================================================= -->
+  <!-- Librerías PDF -->
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.5.31/dist/jspdf.plugin.autotable.min.js"></script>
 
   <script>
-    /* =========================================================
-       Toggle de tema (Claro/Oscuro) con emojis 🌙☀️
-       - Guardamos preferencia en localStorage para que se recuerde
-       ========================================================= */
-    const THEME_KEY = "calcTheme";
-    const toggleBtn = document.getElementById("toggleThemeBtn");
-    const themeLabel = document.getElementById("themeLabel");
+    /* ============================================================
+       JS: Comentarios tipo “manual para editar”
+       BLOQUES:
+       1) Utilidad $
+       2) Drawer móvil y tema (🌙/☀️)
+       3) Fechas (local, sin desfase UTC)
+       4) Estado de la app
+       5) Render de UI
+       6) UI dinámica: horarios y unidades
+       7) Eventos
+       8) CALCULO DE SESIONES
+       9) CALCULO: UNIDADES ("Se completa Unidad X")
+       10) Render del reporte
+       11) Exportación PDF (incluye unidades)
+       ============================================================ */
+
+    /* ============================================================
+       1) Utilidad para seleccionar elementos por id
+       ============================================================ */
+    const $ = (id) => document.getElementById(id);
+
+    /* ============================================================
+       2) Drawer móvil y tema
+       ============================================================ */
+    const sidebar = $("sidebar");
+    const backdrop = $("backdrop");
+    const menuBtn = $("menuBtn");
+
+    function openDrawer(){
+      sidebar.classList.add("open");
+      backdrop.classList.add("open");
+    }
+    function closeDrawer(){
+      sidebar.classList.remove("open");
+      backdrop.classList.remove("open");
+    }
+
+    menuBtn.addEventListener("click", openDrawer);
+    backdrop.addEventListener("click", closeDrawer);
+
+    window.addEventListener("resize", () => {
+      if (window.innerWidth > 980) closeDrawer();
+    });
+
+    const THEME_KEY = "semester_sessions_theme";
+    const themeBtn = $("themeBtn");
 
     function applyTheme(theme){
-      // Ponemos el atributo data-theme en <html> para que el CSS cambie variables
       document.documentElement.setAttribute("data-theme", theme);
-
-      const isLight = theme === "light";
-      themeLabel.textContent = isLight ? "☀️" : "🌙";
-      toggleBtn.textContent = isLight ? "☀️" : "🌙";
-
-      // Guardamos la preferencia
+      themeBtn.textContent = (theme === "light") ? "☀️ Claro" : "🌙 Oscuro";
       localStorage.setItem(THEME_KEY, theme);
     }
 
-    // Cargamos el tema guardado (si no hay, usamos oscuro)
     const savedTheme = localStorage.getItem(THEME_KEY);
     applyTheme(savedTheme === "light" ? "light" : "dark");
 
-    // Al dar clic, cambiamos de tema
-    toggleBtn.addEventListener("click", () => {
+    themeBtn.addEventListener("click", () => {
       const current = document.documentElement.getAttribute("data-theme") || "dark";
       applyTheme(current === "dark" ? "light" : "dark");
     });
 
-    /* =========================================================
-       Helpers de fechas
-       - parseLocalDate: convierte "YYYY-MM-DD" a Date (en horario local)
-       - formatISO: regresa "YYYY-MM-DD" para comparaciones y listas
-       ========================================================= */
-    function parseLocalDate(yyyyMmDd) {
-      if (!yyyyMmDd) return null;
-      const [y, m, d] = yyyyMmDd.split("-").map(Number);
+    /* ============================================================
+       3) Fechas (local)
+       ============================================================ */
+    const weekdayNames = ["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
+
+    function parseLocalDate(iso){
+      if (!iso) return null;
+      const [y, m, d] = iso.split("-").map(Number);
       return new Date(y, m - 1, d, 0, 0, 0, 0);
     }
 
-    function formatISO(date) {
+    function formatISO(date){
       const y = date.getFullYear();
       const m = String(date.getMonth() + 1).padStart(2, "0");
       const d = String(date.getDate()).padStart(2, "0");
       return `${y}-${m}-${d}`;
     }
 
-    function addDays(date, n) {
+    function addDays(date, n){
       const d = new Date(date.getTime());
       d.setDate(d.getDate() + n);
       return d;
     }
 
-    function isDateInRange(date, start, end) {
-      // Rango inclusivo
-      return date.getTime() >= start.getTime() && date.getTime() <= end.getTime();
+    function inRange(date, start, end){
+      const t = date.getTime();
+      return t >= start.getTime() && t <= end.getTime();
     }
 
-    // Nombres de días (JavaScript usa 0=Domingo ... 6=Sábado)
-    const weekdayNames = ["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
-
-    /* =========================================================
-       Estado en memoria
-       - groups: grupos guardados con su horario
-       - holidays: festivos (fechas sueltas)
-       - vacations: rangos de vacaciones
-       - lastReport: último reporte calculado (para exportar PDF sin recalcular)
-       ========================================================= */
-    let groups = [];          // {id, name, schedule:[{weekday,hours}]}
-    let holidays = new Set(); // "YYYY-MM-DD"
+    /* ============================================================
+       4) Estado de la app
+       ============================================================ */
+    let groups = [];          // [{id, name, schedule:[{weekday,hours}], units:[{name,hours}]}]
+    let holidays = new Set(); // Set("YYYY-MM-DD")
     let vacations = [];       // [{startISO,endISO}]
-    let lastReport = null;
+    let lastReport = null;    // cache del último reporte calculado (para PDF)
 
-    /* =========================================================
-       UI: Filas del horario del grupo
-       - Cada fila tiene: Día (select), Horas (input), Quitar (button)
-       - Usamos la clase scheduleRow para que sea 100% responsiva
-       ========================================================= */
-    const scheduleRowsEl = document.getElementById("scheduleRows");
+    /* ============================================================
+       5) Render de UI
+       ============================================================ */
+    const holidaysListEl  = $("holidaysList");
+    const vacationsListEl = $("vacationsList");
+    const groupsListEl    = $("groupsList");
 
-    function makeScheduleRow(weekday = 1, hours = 2) {
-      const wrap = document.createElement("div");
-      wrap.className = "groupCard scheduleRow";
+    const scheduleRowsEl  = $("scheduleRows");
+    const unitRowsEl      = $("unitRows");
 
-      // Columna 1: select de día
-      const dayDiv = document.createElement("div");
-      const dayLabel = document.createElement("label");
-      dayLabel.textContent = "Día";
-      const daySelect = document.createElement("select");
+    const reportMetaEl = $("reportMeta");
+    const reportAreaEl = $("reportArea");
 
-      weekdayNames.forEach((name, i) => {
-        const opt = document.createElement("option");
-        opt.value = String(i);
-        opt.textContent = name;
-        daySelect.appendChild(opt);
-      });
-
-      daySelect.value = String(weekday);
-      dayDiv.appendChild(dayLabel);
-      dayDiv.appendChild(daySelect);
-
-      // Columna 2: input de horas
-      const hoursDiv = document.createElement("div");
-      const hoursLabel = document.createElement("label");
-      hoursLabel.textContent = "Horas por sesión";
-
-      const hoursInput = document.createElement("input");
-      hoursInput.type = "number";
-      hoursInput.min = "0.5";
-      hoursInput.step = "0.5";
-      hoursInput.value = String(hours);
-
-      hoursDiv.appendChild(hoursLabel);
-      hoursDiv.appendChild(hoursInput);
-
-      // Columna 3: botón quitar
-      const delBtn = document.createElement("button");
-      delBtn.className = "danger removeBtn";
-      delBtn.type = "button";
-      delBtn.textContent = "Quitar";
-      delBtn.addEventListener("click", () => wrap.remove());
-
-      // Armamos la fila
-      wrap.appendChild(dayDiv);
-      wrap.appendChild(hoursDiv);
-      wrap.appendChild(delBtn);
-
-      // Guardamos una función para leer el valor de esta fila cuando guardemos el grupo
-      wrap._getValue = () => ({
-        weekday: Number(daySelect.value),
-        hours: Number(hoursInput.value)
-      });
-
-      return wrap;
-    }
-
-    function addScheduleRow(defaultWeekday, defaultHours) {
-      scheduleRowsEl.appendChild(makeScheduleRow(defaultWeekday, defaultHours));
-    }
-
-    // Arrancamos con 2 filas de ejemplo (puedes borrarlas y empezar en blanco si quieres)
-    addScheduleRow(1, 2); // Lunes 2h
-    addScheduleRow(2, 2); // Martes 2h
-
-    // Botón: agregar otra fila de horario
-    document.getElementById("addScheduleRowBtn")
-      .addEventListener("click", () => addScheduleRow(5, 1)); // Viernes 1h
-
-    /* =========================================================
-       UI: Festivos y vacaciones
-       - Renderiza "píldoras" con botón eliminar
-       ========================================================= */
-    const holidaysListEl = document.getElementById("holidaysList");
-    const vacationsListEl = document.getElementById("vacationsList");
-
-    function renderHolidays() {
+    function renderHolidays(){
       holidaysListEl.innerHTML = "";
       const arr = Array.from(holidays).sort();
 
-      if (arr.length === 0) {
-        holidaysListEl.innerHTML = `<div class="muted">Sin festivos registrados.</div>`;
+      if (arr.length === 0){
+        holidaysListEl.innerHTML = `<div class="groupMeta">Sin festivos registrados.</div>`;
         return;
       }
 
       arr.forEach(iso => {
-        const pill = document.createElement("div");
-        pill.className = "pill";
-        pill.innerHTML = `<small>Festivo</small> <span>${iso}</span>`;
+        const chip = document.createElement("div");
+        chip.className = "chip";
+        chip.innerHTML = `
+          <div class="chipInfo">
+            <b>Festivo</b>
+            <span>${escapeHtml(iso)}</span>
+          </div>
+        `;
 
         const btn = document.createElement("button");
-        btn.className = "danger";
+        btn.className = "btn btnDanger";
         btn.type = "button";
         btn.textContent = "Eliminar";
         btn.addEventListener("click", () => {
@@ -743,16 +873,16 @@
           renderHolidays();
         });
 
-        pill.appendChild(btn);
-        holidaysListEl.appendChild(pill);
+        chip.appendChild(btn);
+        holidaysListEl.appendChild(chip);
       });
     }
 
-    function renderVacations() {
+    function renderVacations(){
       vacationsListEl.innerHTML = "";
 
-      if (vacations.length === 0) {
-        vacationsListEl.innerHTML = `<div class="muted">Sin periodos vacacionales registrados.</div>`;
+      if (vacations.length === 0){
+        vacationsListEl.innerHTML = `<div class="groupMeta">Sin vacaciones registradas.</div>`;
         return;
       }
 
@@ -760,12 +890,17 @@
         .slice()
         .sort((a,b) => a.startISO.localeCompare(b.startISO))
         .forEach((v, idx) => {
-          const pill = document.createElement("div");
-          pill.className = "pill";
-          pill.innerHTML = `<small>Vacaciones</small> <span>${v.startISO} a ${v.endISO}</span>`;
+          const chip = document.createElement("div");
+          chip.className = "chip";
+          chip.innerHTML = `
+            <div class="chipInfo">
+              <b>Vacaciones</b>
+              <span>${escapeHtml(v.startISO)} a ${escapeHtml(v.endISO)}</span>
+            </div>
+          `;
 
           const btn = document.createElement("button");
-          btn.className = "danger";
+          btn.className = "btn btnDanger";
           btn.type = "button";
           btn.textContent = "Eliminar";
           btn.addEventListener("click", () => {
@@ -773,67 +908,16 @@
             renderVacations();
           });
 
-          pill.appendChild(btn);
-          vacationsListEl.appendChild(pill);
+          chip.appendChild(btn);
+          vacationsListEl.appendChild(chip);
         });
     }
 
-    // Botón: agregar festivo
-    document.getElementById("addHolidayBtn").addEventListener("click", () => {
-      const iso = document.getElementById("holidayDate").value;
-      if (!iso) return;
-
-      holidays.add(iso);
-      document.getElementById("holidayDate").value = "";
-      renderHolidays();
-    });
-
-    // Botón: limpiar festivos
-    document.getElementById("clearHolidaysBtn").addEventListener("click", () => {
-      holidays.clear();
-      renderHolidays();
-    });
-
-    // Botón: agregar vacaciones
-    document.getElementById("addVacationBtn").addEventListener("click", () => {
-      const startISO = document.getElementById("vacStart").value;
-      const endISO = document.getElementById("vacEnd").value;
-      if (!startISO || !endISO) return;
-
-      const s = parseLocalDate(startISO);
-      const e = parseLocalDate(endISO);
-      if (!s || !e) return;
-
-      // Si alguien pone fin antes que inicio, lo arreglamos
-      const start = s.getTime() <= e.getTime() ? startISO : endISO;
-      const end = s.getTime() <= e.getTime() ? endISO : startISO;
-
-      vacations.push({ startISO: start, endISO: end });
-
-      document.getElementById("vacStart").value = "";
-      document.getElementById("vacEnd").value = "";
-      renderVacations();
-    });
-
-    // Botón: limpiar vacaciones
-    document.getElementById("clearVacationsBtn").addEventListener("click", () => {
-      vacations = [];
-      renderVacations();
-    });
-
-    renderHolidays();
-    renderVacations();
-
-    /* =========================================================
-       UI: Grupos registrados
-       ========================================================= */
-    const groupsListEl = document.getElementById("groupsList");
-
-    function renderGroups() {
+    function renderGroups(){
       groupsListEl.innerHTML = "";
 
-      if (groups.length === 0) {
-        groupsListEl.innerHTML = `<div class="muted">Aún no has agregado grupos.</div>`;
+      if (groups.length === 0){
+        groupsListEl.innerHTML = `<div class="groupMeta">Aún no hay grupos registrados.</div>`;
         return;
       }
 
@@ -847,16 +931,26 @@
           .map(s => `${weekdayNames[s.weekday]}: ${s.hours}h`)
           .join(" | ");
 
+        // Resumen de unidades (si existen)
+        const unitsCount = (g.units || []).length;
+        const unitsHours = (g.units || []).reduce((acc, u) => acc + (Number(u.hours) || 0), 0);
+
+        const unitsTxt = unitsCount
+          ? `Unidades: ${unitsCount} (${fmtHours(unitsHours)} h)`
+          : `Unidades: (sin plan)`;
+
         card.innerHTML = `
           <h3>${escapeHtml(g.name)}</h3>
-          <div class="meta">${escapeHtml(scheduleTxt)}</div>
+          <div class="groupMeta">${escapeHtml(scheduleTxt)}</div>
+          <div class="groupMeta">${escapeHtml(unitsTxt)}</div>
         `;
 
         const row = document.createElement("div");
-        row.className = "row wrap";
+        row.className = "row";
+        row.style.marginTop = "10px";
 
         const del = document.createElement("button");
-        del.className = "danger";
+        del.className = "btn btnDanger";
         del.type = "button";
         del.textContent = "Eliminar";
         del.addEventListener("click", () => {
@@ -866,72 +960,246 @@
 
         row.appendChild(del);
         card.appendChild(row);
+
         groupsListEl.appendChild(card);
       });
     }
 
-    // Botón: guardar grupo
-    document.getElementById("saveGroupBtn").addEventListener("click", () => {
-      const name = document.getElementById("groupName").value.trim();
+    /* ============================================================
+       6) UI dinámica: Horarios y Unidades
+       ============================================================ */
+
+    // ---------- Horarios ----------
+    function makeScheduleRow(weekday = 1, hours = 2){
+      const row = document.createElement("div");
+      row.className = "scheduleRow";
+
+      const dayWrap = document.createElement("div");
+      const dayLabel = document.createElement("label");
+      dayLabel.textContent = "Día";
+      const daySelect = document.createElement("select");
+      weekdayNames.forEach((name, i) => {
+        const opt = document.createElement("option");
+        opt.value = String(i);
+        opt.textContent = name;
+        daySelect.appendChild(opt);
+      });
+      daySelect.value = String(weekday);
+      dayWrap.appendChild(dayLabel);
+      dayWrap.appendChild(daySelect);
+
+      const hoursWrap = document.createElement("div");
+      const hoursLabel = document.createElement("label");
+      hoursLabel.textContent = "Horas por sesión";
+      const hoursInput = document.createElement("input");
+      hoursInput.type = "number";
+      hoursInput.min = "0.5";
+      hoursInput.step = "0.5";
+      hoursInput.value = String(hours);
+      hoursWrap.appendChild(hoursLabel);
+      hoursWrap.appendChild(hoursInput);
+
+      const removeBtn = document.createElement("button");
+      removeBtn.className = "btn btnDanger removeBtn";
+      removeBtn.type = "button";
+      removeBtn.textContent = "Quitar";
+      removeBtn.addEventListener("click", () => row.remove());
+
+      row.appendChild(dayWrap);
+      row.appendChild(hoursWrap);
+      row.appendChild(removeBtn);
+
+      // Método para leer valores (el guardado usa esto)
+      row._getValue = () => ({
+        weekday: Number(daySelect.value),
+        hours: Number(hoursInput.value)
+      });
+
+      return row;
+    }
+
+    function addScheduleRow(weekday, hours){
+      scheduleRowsEl.appendChild(makeScheduleRow(weekday, hours));
+    }
+
+    // ---------- Unidades (NUEVO) ----------
+    function makeUnitRow(name = "", hours = 0){
+      const row = document.createElement("div");
+      row.className = "unitRow";
+
+      const nameWrap = document.createElement("div");
+      const nameLabel = document.createElement("label");
+      nameLabel.textContent = "Unidad";
+      const nameInput = document.createElement("input");
+      nameInput.type = "text";
+      nameInput.placeholder = "Ej. Unidad 1";
+      nameInput.value = String(name || "");
+      nameWrap.appendChild(nameLabel);
+      nameWrap.appendChild(nameInput);
+
+      const hoursWrap = document.createElement("div");
+      const hoursLabel = document.createElement("label");
+      hoursLabel.textContent = "Horas";
+      const hoursInput = document.createElement("input");
+      hoursInput.type = "number";
+      hoursInput.min = "0.5";
+      hoursInput.step = "0.5";
+      hoursInput.value = (hours && Number(hours) > 0) ? String(hours) : "";
+      hoursWrap.appendChild(hoursLabel);
+      hoursWrap.appendChild(hoursInput);
+
+      const removeBtn = document.createElement("button");
+      removeBtn.className = "btn btnDanger removeBtn";
+      removeBtn.type = "button";
+      removeBtn.textContent = "Quitar";
+      removeBtn.addEventListener("click", () => row.remove());
+
+      row.appendChild(nameWrap);
+      row.appendChild(hoursWrap);
+      row.appendChild(removeBtn);
+
+      // Método para leer valores (el guardado usa esto)
+      row._getValue = () => ({
+        name: String(nameInput.value || "").trim(),
+        hours: Number(hoursInput.value)
+      });
+
+      return row;
+    }
+
+    function addUnitRow(name, hours){
+      unitRowsEl.appendChild(makeUnitRow(name, hours));
+    }
+
+    /* ============================================================
+       7) Eventos
+       ============================================================ */
+    $("addHolidayBtn").addEventListener("click", () => {
+      const iso = $("holidayDate").value;
+      if (!iso) return;
+      holidays.add(iso);
+      $("holidayDate").value = "";
+      renderHolidays();
+    });
+
+    $("clearHolidaysBtn").addEventListener("click", () => {
+      holidays.clear();
+      renderHolidays();
+    });
+
+    $("addVacationBtn").addEventListener("click", () => {
+      const startISO = $("vacStart").value;
+      const endISO   = $("vacEnd").value;
+      if (!startISO || !endISO) return;
+
+      const s = parseLocalDate(startISO);
+      const e = parseLocalDate(endISO);
+      if (!s || !e) return;
+
+      const start = (s.getTime() <= e.getTime()) ? startISO : endISO;
+      const end   = (s.getTime() <= e.getTime()) ? endISO   : startISO;
+
+      vacations.push({ startISO: start, endISO: end });
+      $("vacStart").value = "";
+      $("vacEnd").value = "";
+      renderVacations();
+    });
+
+    $("clearVacationsBtn").addEventListener("click", () => {
+      vacations = [];
+      renderVacations();
+    });
+
+    $("addScheduleRowBtn").addEventListener("click", () => addScheduleRow(5, 1));
+    $("addUnitRowBtn").addEventListener("click", () => {
+      // Sugerencia: auto-nombrar según cuántas ya hay (Unidad 1, 2, 3...)
+      const next = unitRowsEl.children.length + 1;
+      addUnitRow(`Unidad ${next}`, "");
+    });
+
+    $("saveGroupBtn").addEventListener("click", () => {
+      const name = $("groupName").value.trim();
       if (!name) return;
 
-      const rows = Array.from(scheduleRowsEl.children);
-
-      // Leemos cada fila y filtramos solo las válidas
-      const schedule = rows
-        .map(r => r._getValue ? r._getValue() : null)
+      // --- Leer horario ---
+      const schedRows = Array.from(scheduleRowsEl.children);
+      const schedule = schedRows
+        .map(r => (r._getValue ? r._getValue() : null))
         .filter(Boolean)
         .filter(s => Number.isFinite(s.hours) && s.hours > 0);
 
       if (schedule.length === 0) return;
 
-      const id = cryptoRandomId();
-      groups.push({ id, name, schedule });
+      // --- Leer unidades (opcional) ---
+      // Regla: solo guardamos unidades válidas (horas > 0). Nombre vacío se auto-ajusta luego.
+      const unitRows = Array.from(unitRowsEl.children);
+      let unitsRaw = unitRows
+        .map(r => (r._getValue ? r._getValue() : null))
+        .filter(Boolean);
 
-      // Reseteamos el formulario de grupo
-      document.getElementById("groupName").value = "";
+      // Si hay filas pero todas vacías o inválidas, simplemente no se guardan
+      unitsRaw = unitsRaw.filter(u => Number.isFinite(u.hours) && u.hours > 0);
+
+      // Normalizamos nombres (si están vacíos)
+      const units = unitsRaw.map((u, i) => ({
+        name: u.name ? u.name : `Unidad ${i + 1}`,
+        hours: Number(u.hours)
+      }));
+
+      groups.push({
+        id: cryptoRandomId(),
+        name,
+        schedule,
+        units
+      });
+
+      // Reset del form (para capturar siguiente grupo)
+      $("groupName").value = "";
       scheduleRowsEl.innerHTML = "";
+      unitRowsEl.innerHTML = "";
+
       addScheduleRow(1, 2);
       addScheduleRow(2, 2);
+
+      // Unidades: no forzamos filas por defecto; si quieres, descomenta:
+      // addUnitRow("Unidad 1", 0);
 
       renderGroups();
     });
 
-    // Botón: eliminar todos los grupos
-    document.getElementById("clearGroupsBtn").addEventListener("click", () => {
+    $("clearGroupsBtn").addEventListener("click", () => {
       groups = [];
       renderGroups();
     });
 
-    renderGroups();
+    $("calculateBtn").addEventListener("click", () => renderReport(buildReport()));
+    $("quickCalcBtn").addEventListener("click", () => { renderReport(buildReport()); closeDrawer(); });
 
-    /* =========================================================
-       Cálculo del reporte
-       - Recorre cada día del rango
-       - Si el día coincide con el horario del grupo y NO está excluido, suma
-       ========================================================= */
-    function isExcluded(date) {
+    $("exportPdfBtn").addEventListener("click", exportPdf);
+    $("quickPdfBtn").addEventListener("click", () => { exportPdf(); closeDrawer(); });
+
+    /* ============================================================
+       8) CALCULO DE SESIONES
+       - Cuenta sesiones reales (rango - exclusiones) para cada grupo.
+       ============================================================ */
+    function isExcluded(date){
       const iso = formatISO(date);
-
-      // 1) Festivos sueltos
       if (holidays.has(iso)) return true;
 
-      // 2) Vacaciones por rango
-      for (const v of vacations) {
+      for (const v of vacations){
         const s = parseLocalDate(v.startISO);
         const e = parseLocalDate(v.endISO);
-        if (s && e && isDateInRange(date, s, e)) return true;
+        if (s && e && inRange(date, s, e)) return true;
       }
-
       return false;
     }
 
-    function buildReport() {
-      const start = parseLocalDate(document.getElementById("startDate").value);
-      const end = parseLocalDate(document.getElementById("endDate").value);
+    function buildReport(){
+      const start = parseLocalDate($("startDate").value);
+      const end   = parseLocalDate($("endDate").value);
 
       if (!start || !end) return { error: "Falta capturar el rango del semestre (inicio y fin)." };
-      if (start.getTime() > end.getTime()) return { error: "El inicio del semestre no puede ser posterior al fin." };
+      if (start.getTime() > end.getTime()) return { error: "El inicio no puede ser posterior al fin." };
       if (groups.length === 0) return { error: "No hay grupos registrados." };
 
       const meta = {
@@ -944,54 +1212,179 @@
       const byGroup = [];
       let grandTotalHours = 0;
 
-      for (const g of groups) {
-        // Consolidamos horas por día por si se repite el mismo día dos veces
+      for (const g of groups){
+        // Consolidar horas por weekday (por si repites un día en el horario)
         const hoursByWeekday = new Map();
-        for (const s of g.schedule) {
+        for (const s of g.schedule){
           hoursByWeekday.set(s.weekday, (hoursByWeekday.get(s.weekday) || 0) + s.hours);
         }
 
         const sessions = [];
         let totalHours = 0;
+        let cumulative = 0;
 
-        // Recorremos el rango día por día
-        for (let d = new Date(start.getTime()); d.getTime() <= end.getTime(); d = addDays(d, 1)) {
+        // Recorremos cada fecha del rango
+        for (let d = new Date(start.getTime()); d.getTime() <= end.getTime(); d = addDays(d, 1)){
           const wd = d.getDay();
-
-          // Si ese día NO está en el horario, seguimos
           if (!hoursByWeekday.has(wd)) continue;
-
-          // Si es festivo o vacaciones, se omite
           if (isExcluded(d)) continue;
 
           const hours = hoursByWeekday.get(wd);
+          cumulative += hours;
+          totalHours += hours;
 
           sessions.push({
             iso: formatISO(d),
             weekday: weekdayNames[wd],
-            hours
+            hours,
+            cumulativeHours: cumulative
           });
-
-          totalHours += hours;
         }
 
         grandTotalHours += totalHours;
-        byGroup.push({ group: g, sessions, totalHours });
+
+        // =========================================================
+        // 9) CALCULO: UNIDADES ("Se completa Unidad X")  (NUEVO)
+        // =========================================================
+        const unitsPlan = (g.units || []).slice();
+        const unitSummary = computeUnitCompletions(unitsPlan, sessions, totalHours);
+
+        byGroup.push({
+          group: g,
+          sessions,
+          totalHours,
+          unitSummary
+        });
       }
 
       return { meta, byGroup, grandTotalHours };
     }
 
-    /* =========================================================
-       Render del reporte en pantalla
-       ========================================================= */
-    const reportAreaEl = document.getElementById("reportArea");
-    const reportMetaEl = document.getElementById("reportMeta");
+    /* ============================================================
+       9) CALCULO: UNIDADES ("Se completa Unidad X")
+       - Entrada:
+         unitsPlan: [{name,hours}] (puede venir vacío)
+         sessions:  [{iso,weekday,hours,cumulativeHours}]
+         totalHours: número
+       - Salida:
+         {
+           requiredHours,
+           diffHours,              // planned - required
+           diffLabel,              // "Sobran" o "Faltan" o "Exacto"
+           unitRows: [{
+             name,
+             unitHours,
+             threshold,
+             completed,           // boolean
+             completedISO,        // fecha si se completa
+             sessionHours,        // horas de esa sesión (si aplica)
+             note                // texto docente-friendly
+           }]
+         }
+       ============================================================ */
+    function computeUnitCompletions(unitsPlan, sessions, totalHours){
+      const cleanUnits = (unitsPlan || [])
+        .filter(u => u && Number.isFinite(Number(u.hours)) && Number(u.hours) > 0)
+        .map((u, i) => ({
+          name: (String(u.name || "").trim()) || `Unidad ${i + 1}`,
+          hours: Number(u.hours)
+        }));
 
-    function renderReport(report) {
+      const requiredHours = cleanUnits.reduce((acc, u) => acc + u.hours, 0);
+
+      // Si no hay plan de unidades, regresamos estructura vacía para UI
+      if (cleanUnits.length === 0){
+        return {
+          hasPlan: false,
+          requiredHours: 0,
+          diffHours: 0,
+          diffLabel: "Sin plan",
+          unitRows: []
+        };
+      }
+
+      // diffHours: positivo = sobran horas en calendario; negativo = faltan
+      const diffHours = totalHours - requiredHours;
+      const diffLabel =
+        diffHours > 0 ? "Sobran" :
+        diffHours < 0 ? "Faltan" :
+        "Exacto";
+
+      // Calculamos umbrales acumulados (U1, U1+U2, U1+U2+U3, ...)
+      let threshold = 0;
+      const unitRows = [];
+
+      for (let i = 0; i < cleanUnits.length; i++){
+        const u = cleanUnits[i];
+        threshold += u.hours;
+
+        // Buscamos la PRIMERA sesión donde el acumulado >= threshold
+        const hit = sessions.find(s => s.cumulativeHours >= threshold);
+
+        if (!hit){
+          const missing = threshold - totalHours;
+          unitRows.push({
+            name: u.name,
+            unitHours: u.hours,
+            threshold,
+            completed: false,
+            completedISO: "",
+            sessionHours: "",
+            note: `No se completa (faltan ${fmtHours(missing)} h)`
+          });
+          continue;
+        }
+
+        // Queremos saber si se completa exacto o "a mitad de sesión"
+        const priorCum = hit.cumulativeHours - hit.hours;
+        const hoursIntoSession = threshold - priorCum; // cuánto de esa sesión se necesita para llegar al umbral
+        const note = buildUnitNote(hoursIntoSession, hit.hours);
+
+        unitRows.push({
+          name: u.name,
+          unitHours: u.hours,
+          threshold,
+          completed: true,
+          completedISO: hit.iso,
+          sessionHours: hit.hours,
+          note
+        });
+      }
+
+      return {
+        hasPlan: true,
+        requiredHours,
+        diffHours,
+        diffLabel,
+        unitRows
+      };
+    }
+
+    // Nota humanita: "al final de la sesión" o "a la hora X de Y"
+    function buildUnitNote(hoursIntoSession, sessionHours){
+      const x = fmtHours(hoursIntoSession);
+      const y = fmtHours(sessionHours);
+
+      // Por redondeos, tolerancia mínima
+      const eps = 1e-9;
+
+      if (Math.abs(hoursIntoSession - sessionHours) < eps){
+        return `Se completa al final de la sesión (${y} h)`;
+      }
+      // Si por alguna razón cayera muy cerca de 0, lo normalizamos a 0.5 mínimo, etc.
+      if (hoursIntoSession <= eps){
+        return `Se completa al inicio de la sesión (${y} h)`;
+      }
+      return `Se completa durante la sesión: a la hora ${x} de ${y}`;
+    }
+
+    /* ============================================================
+       10) Render del reporte (incluye unidades)
+       ============================================================ */
+    function renderReport(report){
       reportAreaEl.innerHTML = "";
 
-      if (report.error) {
+      if (report.error){
         reportMetaEl.textContent = report.error;
         lastReport = null;
         return;
@@ -1000,27 +1393,24 @@
       const { meta, byGroup, grandTotalHours } = report;
 
       reportMetaEl.textContent =
-        `Semestre: ${meta.startISO} a ${meta.endISO} | Grupos: ${byGroup.length} | Total general: ${grandTotalHours.toFixed(1)} horas`;
+        `Semestre: ${meta.startISO} a ${meta.endISO} | Grupos: ${byGroup.length} | Total: ${fmtHours(grandTotalHours)} horas`;
 
-      // Tarjeta de exclusiones aplicadas
-      const exclCard = document.createElement("div");
-      exclCard.className = "groupCard";
+      // Tarjeta: exclusiones
+      const excl = document.createElement("div");
+      excl.className = "groupCard";
 
-      const vacText = meta.vacations.length
-        ? meta.vacations.map(v => `${v.startISO} a ${v.endISO}`).join(" | ")
-        : "Ninguno";
+      const holTxt = meta.holidays.length ? meta.holidays.join(" | ") : "Ninguno";
+      const vacTxt = meta.vacations.length ? meta.vacations.map(v => `${v.startISO} a ${v.endISO}`).join(" | ") : "Ninguno";
 
-      const holText = meta.holidays.length ? meta.holidays.join(" | ") : "Ninguno";
-
-      exclCard.innerHTML = `
+      excl.innerHTML = `
         <h3>Exclusiones aplicadas</h3>
-        <div class="meta"><b>Festivos:</b> ${escapeHtml(holText)}</div>
-        <div class="meta"><b>Vacaciones:</b> ${escapeHtml(vacText)}</div>
+        <div class="groupMeta"><b>Festivos:</b> ${escapeHtml(holTxt)}</div>
+        <div class="groupMeta"><b>Vacaciones:</b> ${escapeHtml(vacTxt)}</div>
       `;
-      reportAreaEl.appendChild(exclCard);
+      reportAreaEl.appendChild(excl);
 
-      // Tarjeta por cada grupo
-      byGroup.forEach(entry => {
+      // Tarjeta por grupo
+      for (const entry of byGroup){
         const g = entry.group;
 
         const scheduleTxt = g.schedule
@@ -1034,16 +1424,99 @@
 
         card.innerHTML = `
           <h3>${escapeHtml(g.name)}</h3>
-          <div class="meta">Horario: ${escapeHtml(scheduleTxt)}</div>
-          <div class="totals">
-            <div class="pill"><small>Sesiones</small> <span>${entry.sessions.length}</span></div>
-            <div class="pill"><small>Total horas</small> <span>${entry.totalHours.toFixed(1)}</span></div>
+          <div class="groupMeta">Horario: ${escapeHtml(scheduleTxt)}</div>
+          <div class="badges">
+            <span class="badge">Sesiones: ${entry.sessions.length}</span>
+            <span class="badge">Horas calendario: ${fmtHours(entry.totalHours)}</span>
           </div>
         `;
 
-        // Tabla de sesiones
-        const tableWrap = document.createElement("div");
-        tableWrap.className = "tableWrap";
+        // =========================
+        // SECCIÓN NUEVA: UNIDADES
+        // =========================
+        const us = entry.unitSummary;
+
+        const unitsWrap = document.createElement("div");
+        unitsWrap.style.marginTop = "10px";
+
+        if (!us.hasPlan){
+          const noPlan = document.createElement("div");
+          noPlan.className = "groupMeta";
+          noPlan.innerHTML = `<b>Unidades:</b> sin plan capturado para este grupo.`;
+          unitsWrap.appendChild(noPlan);
+        } else {
+          // Encaje: sobran/faltan
+          const required = us.requiredHours;
+          const diff = us.diffHours;
+
+          const badge = document.createElement("div");
+          badge.className = "badges";
+
+          // Etiqueta de encaje
+          const bReq = document.createElement("span");
+          bReq.className = "badge";
+          bReq.textContent = `Horas por unidades: ${fmtHours(required)}`;
+
+          const bDiff = document.createElement("span");
+          const absDiff = Math.abs(diff);
+
+          if (diff > 0){
+            bDiff.className = "badge badgeWarn";
+            bDiff.textContent = `Sobran ${fmtHours(absDiff)} h fuera del plan`;
+          } else if (diff < 0){
+            bDiff.className = "badge badgeDanger";
+            bDiff.textContent = `Faltan ${fmtHours(absDiff)} h para completar unidades`;
+          } else {
+            bDiff.className = "badge";
+            bDiff.textContent = `Encaja exacto (0 h fuera)`;
+          }
+
+          badge.appendChild(bReq);
+          badge.appendChild(bDiff);
+
+          const title = document.createElement("div");
+          title.className = "subTitle";
+          title.textContent = "Se completa Unidad X";
+
+          unitsWrap.appendChild(badge);
+          unitsWrap.appendChild(title);
+
+          // Tabla de completado por unidad
+          const uTableWrap = document.createElement("div");
+          uTableWrap.className = "tableWrap";
+
+          const uTable = document.createElement("table");
+          uTable.innerHTML = `
+            <thead>
+              <tr>
+                <th>Unidad</th>
+                <th style="width:110px;">Horas</th>
+                <th style="width:140px;">Se completa</th>
+                <th>Nota</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${us.unitRows.map(r => `
+                <tr>
+                  <td>${escapeHtml(r.name)}</td>
+                  <td>${escapeHtml(fmtHours(r.unitHours))}</td>
+                  <td>${escapeHtml(r.completed ? r.completedISO : "No se completa")}</td>
+                  <td>${escapeHtml(r.note)}</td>
+                </tr>
+              `).join("")}
+            </tbody>
+          `;
+          uTableWrap.appendChild(uTable);
+          unitsWrap.appendChild(uTableWrap);
+        }
+
+        card.appendChild(unitsWrap);
+
+        // =========================
+        // Sesiones (agregamos acumulado para que sea útil)
+        // =========================
+        const wrap = document.createElement("div");
+        wrap.className = "tableWrap";
 
         const table = document.createElement("table");
         table.innerHTML = `
@@ -1052,6 +1525,7 @@
               <th style="width:140px;">Fecha</th>
               <th>Día</th>
               <th style="width:90px;">Horas</th>
+              <th style="width:120px;">Acumulado</th>
             </tr>
           </thead>
           <tbody>
@@ -1059,47 +1533,37 @@
               <tr>
                 <td>${escapeHtml(s.iso)}</td>
                 <td>${escapeHtml(s.weekday)}</td>
-                <td>${escapeHtml(String(s.hours))}</td>
+                <td>${escapeHtml(fmtHours(s.hours))}</td>
+                <td>${escapeHtml(fmtHours(s.cumulativeHours))}</td>
               </tr>
             `).join("")}
           </tbody>
         `;
-        tableWrap.appendChild(table);
 
-        const hr = document.createElement("div");
-        hr.className = "hr";
+        wrap.appendChild(table);
+        card.appendChild(wrap);
 
-        card.appendChild(hr);
-        card.appendChild(tableWrap);
         reportAreaEl.appendChild(card);
-      });
+      }
 
       // Resumen final
-      const finalCard = document.createElement("div");
-      finalCard.className = "groupCard";
-      finalCard.innerHTML = `
+      const summary = document.createElement("div");
+      summary.className = "groupCard";
+      summary.innerHTML = `
         <h3>Resumen general</h3>
-        <div class="meta">Total general de horas programadas (todos los grupos): <b>${grandTotalHours.toFixed(1)}</b></div>
+        <div class="groupMeta">Total de horas programadas (todos los grupos): <b>${fmtHours(grandTotalHours)}</b></div>
       `;
-      reportAreaEl.appendChild(finalCard);
+      reportAreaEl.appendChild(summary);
 
       lastReport = report;
     }
 
-    // Botón: calcular reporte
-    document.getElementById("calculateBtn").addEventListener("click", () => {
-      renderReport(buildReport());
-    });
-
-    /* =========================================================
-       Exportar a PDF
-       - Usa el último reporte si ya se calculó
-       - Si no, calcula y exporta
-       ========================================================= */
-    document.getElementById("exportPdfBtn").addEventListener("click", () => {
-      const report = lastReport && !lastReport.error ? lastReport : buildReport();
-
-      if (report.error) {
+    /* ============================================================
+       11) Exportación PDF (incluye "Se completa Unidad X")
+       ============================================================ */
+    function exportPdf(){
+      const report = (lastReport && !lastReport.error) ? lastReport : buildReport();
+      if (report.error){
         renderReport(report);
         return;
       }
@@ -1110,7 +1574,7 @@
       const marginX = 40;
       let y = 44;
 
-      // Encabezado del PDF
+      // Encabezado
       doc.setFont("helvetica", "bold");
       doc.setFontSize(16);
       doc.text("Reporte de sesiones por grupo", marginX, y);
@@ -1122,26 +1586,26 @@
       y += 14;
 
       const hol = report.meta.holidays.length ? report.meta.holidays.join(", ") : "Ninguno";
-      const vac = report.meta.vacations.length ? report.meta.vacations.map(v => `${v.startISO} a ${v.endISO}`).join(" | ") : "Ninguno";
+      const vac = report.meta.vacations.length
+        ? report.meta.vacations.map(v => `${v.startISO} a ${v.endISO}`).join(" | ")
+        : "Ninguno";
 
-      doc.text(`Festivos excluidos: ${hol}`, marginX, y);
-      y += 14;
-      doc.text(`Vacaciones excluidas: ${vac}`, marginX, y);
-      y += 16;
+      doc.text(`Festivos excluidos: ${hol}`, marginX, y); y += 14;
+      doc.text(`Vacaciones excluidas: ${vac}`, marginX, y); y += 16;
 
-      doc.text(`Total general de horas (todos los grupos): ${report.grandTotalHours.toFixed(1)}`, marginX, y);
+      doc.text(`Total general de horas: ${fmtHours(report.grandTotalHours)}`, marginX, y);
       y += 18;
 
-      // Tabla resumen
+      // Resumen por grupo
       const summaryBody = report.byGroup.map(e => ([
         e.group.name,
         String(e.sessions.length),
-        e.totalHours.toFixed(1)
+        fmtHours(e.totalHours)
       ]));
 
       doc.autoTable({
         startY: y,
-        head: [["Grupo","Sesiones","Total horas"]],
+        head: [["Grupo","Sesiones","Horas calendario"]],
         body: summaryBody,
         styles: { font: "helvetica", fontSize: 10, cellPadding: 6 },
         headStyles: { fontStyle: "bold" },
@@ -1150,9 +1614,9 @@
 
       y = doc.lastAutoTable.finalY + 14;
 
-      // Sección por grupo
-      for (const entry of report.byGroup) {
-        if (y > 700) { doc.addPage(); y = 44; }
+      // Detalle por grupo
+      for (const entry of report.byGroup){
+        if (y > 700){ doc.addPage(); y = 44; }
 
         doc.setFont("helvetica", "bold");
         doc.setFontSize(13);
@@ -1168,19 +1632,62 @@
           .map(s => `${weekdayNames[s.weekday]}: ${s.hours}h`)
           .join(" | ");
 
-        doc.text(`Horario semanal: ${scheduleTxt}`, marginX, y);
-        y += 12;
-
-        doc.text(`Sesiones: ${entry.sessions.length} | Total horas: ${entry.totalHours.toFixed(1)}`, marginX, y);
+        doc.text(`Horario semanal: ${scheduleTxt}`, marginX, y); y += 12;
+        doc.text(`Sesiones: ${entry.sessions.length} | Horas calendario: ${fmtHours(entry.totalHours)}`, marginX, y);
         y += 10;
 
-        const body = entry.sessions.map(s => ([s.iso, s.weekday, String(s.hours)]));
+        // ====== PDF: Unidades (si hay plan) ======
+        const us = entry.unitSummary;
+
+        if (us.hasPlan){
+          const required = fmtHours(us.requiredHours);
+          const diff = us.diffHours;
+          const absDiff = fmtHours(Math.abs(diff));
+
+          const encaje =
+            diff > 0 ? `Sobran ${absDiff} h fuera del plan` :
+            diff < 0 ? `Faltan ${absDiff} h para completar unidades` :
+            `Encaja exacto (0 h fuera)`;
+
+          doc.setFont("helvetica", "bold");
+          doc.text("Se completa Unidad X", marginX, y);
+          y += 12;
+
+          doc.setFont("helvetica", "normal");
+          doc.text(`Horas por unidades: ${required} | ${encaje}`, marginX, y);
+          y += 8;
+
+          const uBody = us.unitRows.map(r => ([
+            r.name,
+            fmtHours(r.unitHours),
+            r.completed ? r.completedISO : "No se completa",
+            r.note
+          ]));
+
+          doc.autoTable({
+            startY: y + 6,
+            head: [["Unidad","Horas","Se completa","Nota"]],
+            body: uBody,
+            styles: { font: "helvetica", fontSize: 9, cellPadding: 6 },
+            headStyles: { fontStyle: "bold" },
+            margin: { left: marginX, right: marginX },
+            pageBreak: "auto"
+          });
+
+          y = doc.lastAutoTable.finalY + 14;
+        } else {
+          doc.text("Unidades: sin plan capturado para este grupo.", marginX, y);
+          y += 14;
+        }
+
+        // ====== PDF: Sesiones (con acumulado) ======
+        const sBody = entry.sessions.map(s => ([s.iso, s.weekday, fmtHours(s.hours), fmtHours(s.cumulativeHours)]));
 
         doc.autoTable({
           startY: y + 6,
-          head: [["Fecha","Día","Horas"]],
-          body,
-          styles: { font: "helvetica", fontSize: 10, cellPadding: 6 },
+          head: [["Fecha","Día","Horas","Acumulado"]],
+          body: sBody,
+          styles: { font: "helvetica", fontSize: 9, cellPadding: 6 },
           headStyles: { fontStyle: "bold" },
           margin: { left: marginX, right: marginX },
           pageBreak: "auto"
@@ -1189,16 +1696,14 @@
         y = doc.lastAutoTable.finalY + 18;
       }
 
-      // Guardamos el archivo
       const filename = `reporte_sesiones_${report.meta.startISO}_a_${report.meta.endISO}.pdf`;
       doc.save(filename);
-    });
+    }
 
-    /* =========================================================
-       Utilidades generales
-       ========================================================= */
-    function escapeHtml(str) {
-      // Evita que texto con caracteres especiales rompa el HTML
+    /* ============================================================
+       Utilidades
+       ============================================================ */
+    function escapeHtml(str){
       return String(str)
         .replaceAll("&", "&amp;")
         .replaceAll("<", "&lt;")
@@ -1207,12 +1712,34 @@
         .replaceAll("'", "&#039;");
     }
 
-    function cryptoRandomId() {
-      // ID corto y suficientemente único para uso local
+    function cryptoRandomId(){
       const a = new Uint32Array(2);
       crypto.getRandomValues(a);
       return `${a[0].toString(16)}${a[1].toString(16)}`;
     }
+
+    // Formato de horas: 2 -> "2", 2.5 -> "2.5"
+    function fmtHours(n){
+      const x = Number(n) || 0;
+      const s = x.toFixed(2).replace(/\.?0+$/,""); // quita ceros finales
+      return s;
+    }
+
+    /* ============================================================
+       INIT
+       - Añadimos filas de horario de ejemplo para que no empieces en blanco
+       - Unidades las dejamos vacías para que tú decidas si usarlo
+       ============================================================ */
+    function init(){
+      addScheduleRow(1, 2); // Lunes 2h
+      addScheduleRow(2, 2); // Martes 2h
+
+      renderHolidays();
+      renderVacations();
+      renderGroups();
+    }
+
+    init();
   </script>
 </body>
 </html>
