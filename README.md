@@ -1,95 +1,156 @@
-# Semester Class Sessions Calculator (by Group)
+# Semester Sessions Calculator 📚⏱️
 
-A simple, responsive web app to calculate how many class sessions and total hours you will teach per group during a semester.  
-It supports weekly schedules, holidays, vacation periods (date ranges), and exports a detailed PDF report.
+A lightweight, single-file web app to calculate how many class sessions and hours you will have during a semester **per group**, automatically excluding **holidays** and **vacation periods**.  
+It also generates a **PDF report** with all sessions, totals, and (optionally) **unit completion milestones** (e.g., _“Se completa Unidad 1”_).
 
-## Features
+---
 
-- Add multiple groups (e.g., `1022`, `1041`, etc.)
-- Define a weekly schedule per group (e.g., Monday 2h, Friday 1h)
-- Exclude:
-  - Holidays (single dates)
-  - Vacation periods (date ranges)
-- Generate an on-screen report:
-  - Session list per group (date, weekday, hours)
-  - Total sessions and hours per group
-  - Grand total hours across all groups
-- Export a PDF report (jsPDF + autoTable)
-- Light/Dark mode toggle (☀️/🌙) with saved preference
-- Responsive layout for small and large screens (I'll try to improve it in later versions, promise!💜)
+## ✨ Features
 
-## Quick Start
+- ✅ Add **multiple groups** with different weekly schedules (e.g., Mon 2h, Tue 2h, Fri 1h)
+- 🗓️ Define a **semester date range**
+- 🚫 Exclude:
+  - 🎉 **Holidays** (single dates)
+  - 🏖️ **Vacations** (date ranges)
+- 🧮 Generate a detailed **report per group**:
+  - session list with dates
+  - total sessions
+  - total hours
+  - cumulative hours
+- 📄 Export a **PDF** (browser-side) with:
+  - summary table by group
+  - full session tables per group
+- 🧩 Optional: **Units plan** per group to compute:
+  - **“Se completa Unidad X”** date
+  - whether hours **fit**, **fall short**, or **exceed** the unit plan
 
-### Option A) Run locally (no setup)
+---
 
-1. Download or clone this repository.
-2. Open `index.html` in your browser (Chrome/Firefox/Safari).
+## 🧠 Unit Completion (Curriculum Fit)
 
-### Option B) Run with a local server (recommended)
+Many courses have a curriculum organized into units with assigned hours.  
+This app can contrast:
 
-This avoids some browser restrictions and behaves closer to production.
+- **Planned calendar hours** (your real sessions after exclusions)
+vs
+- **Required unit hours** (sum of units)
 
-- Using Python:
-  ```bash
-  python -m http.server 8000
-  ```
-  Then open `http://localhost:8000`
+It then reports:
 
-- Using Node (http-server):
-  ```bash
-  npx http-server .
-  ```
-  Then open the provided local URL.
+- 📌 **Se completa Unidad 1 / 2 / 3…** (date when cumulative hours reach each unit threshold)
+- ⚠️ **Faltan X horas** (not enough calendar hours to finish all units)
+- ✅ **Encaja exacto** (perfect match)
+- 🟡 **Sobran X horas fuera del plan** (extra hours you can use for review, exams, projects, contingencies)
 
-## How to Use
+---
 
-1. **Set the semester range**
-   - Choose Start and End dates.
+## 🚀 Quick Start
 
+### Option A: Just open the file (recommended)
+1. Download or clone this repo
+2. Open `index.html` in your browser (Chrome, Firefox, Edge, Safari)
+
+### Option B: Run a tiny local server (helps with some browser settings)
+```bash
+# Python 3
+python -m http.server 8000
+```
+Then open:
+- http://localhost:8000
+
+---
+
+## 🧭 How to Use (English)
+
+1. **Set semester range**
+   - Choose `Start` and `End` dates.
 2. **Add exclusions**
-   - Add **holidays** as single dates.
-   - Add **vacation periods** as date ranges.
-   - These dates will be omitted from the final count.
-
-3. **Create groups**
-   - Enter a group name.
-   - Add one or more weekly schedule rows:
-     - Select weekday
-     - Enter hours per session
-   - Click **Save group**.
-
-4. **Generate report**
-   - Click **Calculate report** to view the full breakdown on screen.
-
+   - Add **holidays** (single dates)
+   - Add **vacations** (start/end ranges)
+3. **Add a group**
+   - Name the group (e.g., `1022`)
+   - Add weekly schedule rows (weekday + hours)
+   - (Optional) Add **units** (name + hours)
+   - Click **Save group**
+4. **Calculate**
+   - Click **🧮 Calculate**
 5. **Export PDF**
-   - Click **Export PDF** to generate a downloadable report including:
-     - Semester summary and exclusions
-     - Summary table per group
-     - Detailed session tables per group
+   - Click **📄 PDF**
 
-## PDF Export Notes
+---
 
-- PDF generation runs entirely in the browser.
-- Powered by:
-  - `jsPDF`
-  - `jspdf-autotable`
+## 🇲🇽 Instrucciones rápidas (Español) 😄
 
-## Tech Stack
+1) **Define el semestre** 🗓️  
+   - Captura la fecha de **inicio** y **fin**.
 
-- HTML + CSS + Vanilla JavaScript
-- jsPDF + autoTable (CDN)
+2) **Agrega exclusiones** 🚫  
+   - Festivos 🎉 (fecha suelta)  
+   - Vacaciones 🏖️ (rango de fechas)
 
-## Contributing
+3) **Registra un grupo** 👩‍🏫  
+   - Nombre del grupo (ej. `1042`)  
+   - Horario semanal (día + horas) ⏱️  
+   - (Opcional) Plan de **unidades** (Unidad 1: 20h, Unidad 2: 24h…) 🧩
 
-Contributions are welcome! Feel free to:
+4) **Calcula** 🧮  
+   - El reporte mostrará sesiones, horas y acumulado.
 
-- Fork the repo
-- Create a feature branch
-- Submit a Pull Request
+5) **Revisa “Se completa Unidad X”** ✅  
+   - Verás la fecha en que se completa cada unidad (si capturaste unidades).
 
-If you fork or reuse the project, please provide **credit** by referencing this repository in your fork and/or documentation.  
-(And if you improve it, even better: PRs are appreciated. 😄)
+6) **Exporta el PDF** 📄  
+   - Incluye tablas por grupo, resumen y unidades.
 
-## License
+---
 
-MIT License. See `LICENSE` for details.
+## 🗂️ Data Model (Conceptual)
+
+Each group is stored roughly as:
+
+- `name`: string  
+- `schedule`: list of `{ weekday, hours }`  
+- `units` (optional): list of `{ name, hours }`
+
+Session generation is chronological:
+
+- A date becomes a session if:
+  1) it matches a scheduled weekday, and  
+  2) it is **not** excluded by holidays/vacations.
+
+Unit completion is computed by cumulative hours reaching each unit threshold.
+
+---
+
+## 📄 PDF Export Details
+
+The PDF is generated entirely in the browser using:
+
+- **jsPDF**
+- **jsPDF-AutoTable**
+
+No server required ✅
+
+---
+
+## 🤝 Contributing
+
+Forks and contributions are welcome! 🎉
+
+- 🍴 You can freely **fork** this project and build on it.
+- ✅ Please **give credit** and reference the original project/repo when you share or publish derivatives.
+- 🧪 PRs are encouraged (bug fixes, UX improvements, new features, docs).
+
+---
+
+## 🧾 License (MIT)
+
+This project is licensed under the **MIT License**.  
+You are free to use, modify, and distribute it, including commercially, under the terms of the license.
+
+---
+
+## 🙌 Credits
+
+Created and maintained by the project authors and community contributors.  
+If you build something cool with it, consider sharing it back as a PR. 🚀
