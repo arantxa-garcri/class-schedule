@@ -152,5 +152,5 @@ You are free to use, modify, and distribute it, including commercially, under th
 
 ## 🙌 Credits
 
-Created and maintained by the project authors and community contributors.  
+Created and maintained by Arantxa GC and community contributors (hopefully in the near future!).  
 If you build something cool with it, consider sharing it back as a PR. 🚀
