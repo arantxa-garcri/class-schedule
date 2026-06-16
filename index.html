@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="es" data-theme="dark">
+<html lang="es" data-theme="light">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -7,62 +7,68 @@
 
   <style>
     :root{
-      --teal:#2f8fa3;
-      --aqua:#74c8c4;
-      --cream:#ffe2af;
-      --coral:#f96e5b;
-      --green:#65c18c;
-      --yellow:#f6c85f;
-      --red:#f26b61;
+      --teal:#0f8f9f;
+      --aqua:#2dd4bf;
+      --cream:#ffcf66;
+      --coral:#f9735b;
+      --green:#22a06b;
+      --yellow:#d89000;
+      --red:#d94b4b;
       --font:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      --radius:14px;
-      --radius-sm:10px;
-      --gap:14px;
-      --maxw:1240px;
-      --sidew:390px;
-      --bg0:#061014;
-      --bg1:#0b1b22;
-      --text:#eaf4f6;
-      --muted:rgba(234,244,246,.7);
-      --glass:rgba(255,255,255,.07);
-      --glass2:rgba(255,255,255,.1);
-      --bd:rgba(255,255,255,.13);
-      --bd2:rgba(255,255,255,.2);
-      --focus:rgba(116,200,196,.48);
-      --shadow:0 18px 50px rgba(0,0,0,.26);
-      --btn:rgba(255,255,255,.07);
-      --btnHover:rgba(255,255,255,.12);
-      --primaryBg:rgba(47,143,163,.22);
-      --primaryBd:rgba(47,143,163,.68);
-      --dangerBg:rgba(249,110,91,.16);
-      --dangerBd:rgba(249,110,91,.65);
-      --warnBg:rgba(255,226,175,.16);
-      --warnBd:rgba(255,226,175,.6);
-      --okBg:rgba(101,193,140,.16);
-      --okBd:rgba(101,193,140,.6);
+      --radius:12px;
+      --radius-sm:9px;
+      --gap:18px;
+      --maxw:1280px;
+      --sidew:430px;
+      --bg0:#f6f8fb;
+      --bg1:#e9f7f5;
+      --surface:#ffffff;
+      --surface2:#f7fbfd;
+      --text:#17242d;
+      --muted:#5c6c77;
+      --glass:#ffffff;
+      --glass2:#f7fbfd;
+      --bd:#d9e5ea;
+      --bd2:#c7d7df;
+      --focus:rgba(15,143,159,.28);
+      --shadow:0 16px 40px rgba(24,48,64,.10);
+      --btn:#ffffff;
+      --btnHover:#f0f7fa;
+      --primaryBg:#0f8f9f;
+      --primaryBd:#087586;
+      --primaryText:#ffffff;
+      --dangerBg:#fff1ef;
+      --dangerBd:#f3a396;
+      --warnBg:#fff7e6;
+      --warnBd:#e9b84f;
+      --okBg:#eaf8f0;
+      --okBd:#7bc99f;
     }
 
-    html[data-theme="light"]{
-      --bg0:#f5fbfb;
-      --bg1:#edf7f7;
-      --text:#10262e;
-      --muted:rgba(16,38,46,.64);
-      --glass:rgba(255,255,255,.88);
-      --glass2:rgba(255,255,255,.72);
-      --bd:rgba(16,38,46,.12);
-      --bd2:rgba(16,38,46,.18);
-      --focus:rgba(47,143,163,.34);
-      --shadow:0 18px 50px rgba(2,6,23,.12);
-      --btn:rgba(255,255,255,.75);
-      --btnHover:rgba(255,255,255,.94);
-      --primaryBg:rgba(47,143,163,.15);
-      --primaryBd:rgba(47,143,163,.42);
-      --dangerBg:rgba(249,110,91,.12);
-      --dangerBd:rgba(249,110,91,.45);
-      --warnBg:rgba(255,226,175,.28);
-      --warnBd:rgba(185,135,28,.34);
-      --okBg:rgba(101,193,140,.14);
-      --okBd:rgba(68,145,101,.36);
+    html[data-theme="dark"]{
+      --bg0:#101820;
+      --bg1:#0b2c36;
+      --surface:#13232c;
+      --surface2:#172c36;
+      --text:#f3fbfc;
+      --muted:#a9bcc5;
+      --glass:#13232c;
+      --glass2:#172c36;
+      --bd:#2b4652;
+      --bd2:#3a5967;
+      --focus:rgba(45,212,191,.32);
+      --shadow:0 18px 48px rgba(0,0,0,.26);
+      --btn:#172c36;
+      --btnHover:#1e3945;
+      --primaryBg:#2dd4bf;
+      --primaryBd:#5eead4;
+      --primaryText:#08262b;
+      --dangerBg:#3d2020;
+      --dangerBd:#f9735b;
+      --warnBg:#3a2c13;
+      --warnBd:#ffcf66;
+      --okBg:#143328;
+      --okBd:#22a06b;
     }
 
     *{box-sizing:border-box}
@@ -72,9 +78,7 @@
       font-family:var(--font);
       color:var(--text);
       background:
-        radial-gradient(850px 520px at 12% 0%,rgba(116,200,196,.16),transparent 60%),
-        radial-gradient(850px 520px at 88% 7%,rgba(47,143,163,.14),transparent 60%),
-        linear-gradient(180deg,var(--bg0),var(--bg1));
+        linear-gradient(180deg,var(--bg0) 0%,var(--bg1) 46%,var(--bg0) 100%);
       overflow-x:hidden;
     }
 
@@ -83,9 +87,9 @@
       top:0;
       z-index:50;
       border-bottom:1px solid var(--bd);
-      background:color-mix(in srgb,var(--bg1) 84%,transparent);
+      background:color-mix(in srgb,var(--surface) 92%,transparent);
       backdrop-filter:blur(12px);
-      padding:14px 16px;
+      padding:12px 16px;
     }
     .topbarInner{
       max-width:var(--maxw);
@@ -98,13 +102,13 @@
     .brand{min-width:0}
     .brandTitle{
       display:flex;
-      align-items:baseline;
+      align-items:center;
       gap:10px;
       min-width:0;
     }
     h1{
       margin:0;
-      font-size:17px;
+      font-size:18px;
       letter-spacing:0;
       white-space:nowrap;
       overflow:hidden;
@@ -115,6 +119,10 @@
       font-size:12px;
       font-weight:900;
       white-space:nowrap;
+      padding:5px 9px;
+      border:1px solid var(--bd);
+      border-radius:999px;
+      background:var(--surface2);
     }
     .brandSub{
       margin:4px 0 0;
@@ -132,7 +140,7 @@
     .app{
       max-width:var(--maxw);
       margin:0 auto;
-      padding:16px;
+      padding:18px 16px 28px;
       display:grid;
       grid-template-columns:var(--sidew) 1fr;
       gap:var(--gap);
@@ -143,7 +151,7 @@
     .backdrop{display:none}
     .sidebar{
       position:sticky;
-      top:84px;
+      top:88px;
       align-self:start;
     }
     @media(max-width:980px){
@@ -175,51 +183,58 @@
     .card{
       border:1px solid var(--bd);
       border-radius:var(--radius);
-      background:var(--glass);
+      background:var(--surface);
       box-shadow:var(--shadow);
     }
     .cardHeader{
-      padding:14px 14px 10px;
+      padding:16px 16px 12px;
       border-bottom:1px solid var(--bd);
-      background:color-mix(in srgb,var(--glass) 84%,transparent);
-      backdrop-filter:blur(12px);
+      background:linear-gradient(180deg,var(--surface),var(--surface2));
       border-top-left-radius:var(--radius);
       border-top-right-radius:var(--radius);
     }
-    .cardHeader h2{margin:0;font-size:14px;letter-spacing:0}
-    .cardHeader p{margin:6px 0 0;color:var(--muted);font-size:12px;line-height:1.35}
-    .cardBody{padding:14px}
+    .cardHeader h2{margin:0;font-size:16px;letter-spacing:0}
+    .cardHeader p{margin:6px 0 0;color:var(--muted);font-size:13px;line-height:1.45}
+    .cardBody{padding:16px}
+    .cardBody > section{
+      padding:14px;
+      border:1px solid var(--bd);
+      border-radius:var(--radius);
+      background:var(--surface2);
+    }
+    .cardBody > section + .divider{margin:12px 0;border:0;background:transparent;height:0}
     .divider{height:1px;background:var(--bd);margin:14px 0}
     .stepLabel{
       display:inline-flex;
       align-items:center;
       gap:8px;
-      font-size:12px;
+      font-size:13px;
       font-weight:950;
-      color:var(--muted);
-      margin-bottom:10px;
+      color:var(--text);
+      margin-bottom:12px;
     }
     .stepNumber{
-      width:24px;
-      height:24px;
+      width:28px;
+      height:28px;
       border-radius:999px;
       display:inline-grid;
       place-items:center;
-      color:var(--text);
+      color:var(--primaryText);
       background:var(--primaryBg);
       border:1px solid var(--primaryBd);
-      font-size:12px;
+      font-size:13px;
+      box-shadow:0 6px 16px color-mix(in srgb,var(--primaryBg) 25%,transparent);
     }
 
-    label{display:block;margin-bottom:6px;color:var(--muted);font-size:12px;font-weight:900}
+    label{display:block;margin-bottom:6px;color:var(--text);font-size:12px;font-weight:900}
     input,select,textarea,button{
       font:inherit;
       color:var(--text);
       border:1px solid var(--bd2);
       border-radius:var(--radius-sm);
-      background:color-mix(in srgb,var(--glass2) 72%,transparent);
-      padding:10px;
-      font-size:13px;
+      background:var(--surface);
+      padding:11px 12px;
+      font-size:14px;
       outline:none;
       min-width:0;
     }
@@ -237,7 +252,12 @@
     }
     .btn{background:var(--btn);border-color:var(--bd2)}
     .btn:hover{background:var(--btnHover)}
-    .btnPrimary{background:var(--primaryBg);border-color:var(--primaryBd)}
+    .btnPrimary{
+      background:var(--primaryBg);
+      border-color:var(--primaryBd);
+      color:var(--primaryText);
+      box-shadow:0 8px 18px color-mix(in srgb,var(--primaryBg) 20%,transparent);
+    }
     .btnDanger{background:var(--dangerBg);border-color:var(--dangerBd)}
     .btnWarn{background:var(--warnBg);border-color:var(--warnBd)}
     .chipBtn{
@@ -246,7 +266,7 @@
       align-items:center;
       justify-content:center;
       gap:8px;
-      padding:10px 12px;
+      padding:10px 13px;
     }
     .grid2{
       display:grid;
@@ -266,25 +286,25 @@
       gap:10px;
       margin-top:10px;
     }
-    .hint{margin-top:8px;color:var(--muted);font-size:12px;line-height:1.35}
+    .hint{margin-top:8px;color:var(--muted);font-size:12px;line-height:1.45}
     .smallNote{margin-top:6px;color:var(--muted);font-size:11px;line-height:1.35}
     .notice{
       padding:11px;
       border-radius:var(--radius-sm);
       border:1px solid var(--warnBd);
       background:var(--warnBg);
-      font-size:12px;
-      line-height:1.4;
+      font-size:13px;
+      line-height:1.45;
     }
     .list{display:grid;gap:10px}
     .groupCard{
       padding:12px;
       border-radius:var(--radius);
       border:1px solid var(--bd);
-      background:color-mix(in srgb,var(--glass2) 70%,transparent);
+      background:var(--surface);
     }
-    .groupCard h3{margin:0;font-size:14px}
-    .groupMeta{margin-top:6px;color:var(--muted);font-size:12px;line-height:1.35}
+    .groupCard h3{margin:0;font-size:15px}
+    .groupMeta{margin-top:6px;color:var(--muted);font-size:13px;line-height:1.45}
     .chip{
       display:flex;
       justify-content:space-between;
@@ -293,13 +313,13 @@
       border:1px solid var(--bd2);
       border-radius:999px;
       padding:10px;
-      background:color-mix(in srgb,var(--glass2) 70%,transparent);
+      background:var(--surface);
     }
     .chipInfo{display:flex;flex-direction:column;gap:2px;min-width:0}
-    .chipInfo b{font-size:12px}
+    .chipInfo b{font-size:13px}
     .chipInfo span{
       color:var(--muted);
-      font-size:12px;
+      font-size:13px;
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
@@ -319,8 +339,8 @@
     .summaryItem{
       border:1px solid var(--bd);
       border-radius:var(--radius-sm);
-      padding:9px;
-      background:color-mix(in srgb,var(--glass2) 64%,transparent);
+      padding:10px;
+      background:var(--surface);
     }
     .summaryItem span{display:block;color:var(--muted);font-size:11px;font-weight:900}
     .summaryItem b{display:block;margin-top:3px;font-size:13px;overflow-wrap:anywhere}
@@ -334,7 +354,7 @@
       padding:12px;
       border-radius:var(--radius);
       border:1px solid var(--bd);
-      background:color-mix(in srgb,var(--glass2) 70%,transparent);
+      background:var(--surface);
     }
     .unitRow{grid-template-columns:minmax(0,1.2fr) minmax(0,.75fr) auto}
     .removeBtn{white-space:nowrap}
@@ -352,7 +372,7 @@
       padding:8px 10px;
       border-radius:999px;
       border:1px solid color-mix(in srgb,var(--aqua) 28%,var(--bd2));
-      background:color-mix(in srgb,var(--aqua) 14%,var(--glass2) 70%);
+      background:color-mix(in srgb,var(--aqua) 13%,var(--surface) 87%);
       font-size:12px;
       font-weight:950;
     }
@@ -364,7 +384,7 @@
       padding:12px;
       border-radius:var(--radius);
       border:1px solid var(--bd);
-      background:color-mix(in srgb,var(--glass2) 65%,transparent);
+      background:var(--surface2);
     }
     .status-ok{border-color:var(--okBd);background:var(--okBg)}
     .status-warn{border-color:var(--warnBd);background:var(--warnBg)}
@@ -381,7 +401,7 @@
       overflow:auto;
       border-radius:var(--radius);
       border:1px solid var(--bd);
-      background:color-mix(in srgb,var(--glass2) 60%,transparent);
+      background:var(--surface);
     }
     table{width:100%;border-collapse:collapse;font-size:12px}
     th,td{padding:10px;border-bottom:1px solid var(--bd);vertical-align:top}
@@ -389,12 +409,56 @@
       text-align:left;
       position:sticky;
       top:0;
-      background:color-mix(in srgb,var(--glass) 86%,transparent);
-      backdrop-filter:blur(8px);
+      background:var(--surface2);
       font-weight:950;
     }
     .reportMeta{color:var(--muted);font-size:12px;line-height:1.35}
     .subTitle{margin:14px 0 0;font-size:12px;font-weight:950}
+    .flowSteps{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:8px;
+      margin-top:12px;
+    }
+    .flowStep{
+      padding:9px;
+      border:1px solid var(--bd);
+      border-radius:var(--radius-sm);
+      background:var(--surface);
+      color:var(--muted);
+      font-size:11px;
+      font-weight:900;
+      line-height:1.25;
+    }
+    .emptyGrid{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:10px;
+      margin-top:12px;
+    }
+    .emptyItem{
+      padding:12px;
+      border:1px solid var(--bd);
+      border-radius:var(--radius);
+      background:var(--surface2);
+    }
+    .emptyItem b{display:block;font-size:13px}
+    .emptyItem span{display:block;margin-top:5px;color:var(--muted);font-size:12px;line-height:1.35}
+    @media(max-width:760px){
+      .flowSteps,.emptyGrid{grid-template-columns:1fr}
+      .topbarInner{align-items:flex-start;flex-direction:column}
+      .actionsTop{
+        width:100%;
+        display:grid;
+        grid-template-columns:1fr 1fr;
+      }
+      .actionsTop .chipBtn{width:100%}
+      h1{white-space:normal;line-height:1.15}
+    }
+    @media(max-width:520px){
+      .tag{display:none}
+      .brandSub{font-size:13px}
+    }
   </style>
 </head>
 
@@ -406,15 +470,15 @@
       <div class="brand">
         <div class="brandTitle">
           <h1>Calculadora de sesiones efectivas</h1>
-          <span class="tag">apoyo para planeación</span>
+          <span class="tag">Planeación docente</span>
         </div>
-        <p class="brandSub">Calcula horas reales de clase y verifica el margen DGIRE de ±10% frente a las horas del programa.</p>
+        <p class="brandSub">Elige una asignatura, registra el horario y obtén horas reales, semanas de clase y estado DGIRE.</p>
       </div>
       <div class="actionsTop">
-        <button id="menuBtn" class="btn chipBtn" type="button">☰ Pasos</button>
-        <button id="themeBtn" class="btn chipBtn" type="button">Tema</button>
+        <button id="menuBtn" class="btn chipBtn" type="button">Abrir pasos</button>
+        <button id="themeBtn" class="btn chipBtn" type="button">Cambiar tema</button>
         <button id="quickCalcBtn" class="btn btnPrimary chipBtn" type="button">Calcular</button>
-        <button id="quickPdfBtn" class="btn btnPrimary chipBtn" type="button">PDF</button>
+        <button id="quickPdfBtn" class="btn btnPrimary chipBtn" type="button">Exportar PDF</button>
       </div>
     </div>
   </header>
@@ -422,8 +486,13 @@
   <div class="app">
     <aside id="sidebar" class="sidebar card" aria-label="Captura de datos">
       <div class="cardHeader">
-        <h2>Datos del cálculo</h2>
-        <p>Avanza por los pasos: asignatura, grupo y horario, calendario y días sin clase.</p>
+        <h2>Completa estos datos</h2>
+        <p>Captura solo lo necesario. El resultado se actualizará cuando presiones Calcular.</p>
+        <div class="flowSteps" aria-hidden="true">
+          <div class="flowStep">1. Asignatura</div>
+          <div class="flowStep">2. Horario</div>
+          <div class="flowStep">3. Calendario</div>
+        </div>
       </div>
 
       <div class="cardBody">
@@ -454,10 +523,10 @@
               <input id="weeklyHours" type="number" min="0.5" step="0.5" />
             </div>
           </div>
-          <div class="hint">Revisa y confirma las horas del programa antes de calcular. Este dato es indispensable para comparar el margen DGIRE.</div>
+          <div class="hint">Confirma las horas del programa. Con ese dato la app compara tus horas reales contra el margen DGIRE.</div>
 
           <div class="divider"></div>
-          <label>¿No aparece tu asignatura?</label>
+          <label>Si no aparece en el catálogo</label>
           <button id="customSubjectBtn" class="btn btnWarn" type="button">Usar asignatura personalizada para este cálculo</button>
           <div id="customSubjectPanel" class="hidden" style="margin-top:10px;">
             <div class="notice">
@@ -525,7 +594,7 @@
               <button id="addScheduleRowBtn" class="btn btnPrimary" type="button">Agregar día</button>
             </div>
             <div id="scheduleRows" class="list" style="margin-top:10px;"></div>
-            <div class="hint">Agrega al menos un día de clase para este grupo.</div>
+            <div class="hint">Usa las horas reales de cada sesión. Si un día se repite, se sumará.</div>
           </div>
 
           <div class="divider"></div>
@@ -536,7 +605,7 @@
               <button id="addUnitRowBtn" class="btn btnPrimary" type="button">Agregar unidad</button>
             </div>
             <div id="unitRows" class="list" style="margin-top:10px;"></div>
-            <div class="hint">Puedes capturar las horas por unidad si deseas estimar cuándo se completa cada una. Este paso es opcional y no sustituye la planeación didáctica.</div>
+            <div class="hint">Opcional: sirve para estimar cuándo se completa cada unidad. Puedes dejarlo vacío.</div>
           </div>
 
           <div class="actionsGrid">
@@ -560,7 +629,7 @@
               <input id="endDate" type="date" />
             </div>
           </div>
-          <div class="hint">Los días sin clase se restan del cálculo de sesiones efectivas.</div>
+          <div class="hint">La app cuenta solo las clases que caen dentro de este rango y descuenta los días sin clase.</div>
 
           <div class="divider"></div>
           <label for="holidayDate">Días sin clase (fechas sueltas)</label>
@@ -601,14 +670,19 @@
     <main class="card" aria-label="Resultado">
       <div class="cardHeader">
         <h2>Resultado</h2>
-        <p id="reportMeta" class="reportMeta">Aún no calculado. Completa los pasos y presiona Calcular resultado.</p>
+        <p id="reportMeta" class="reportMeta">Completa los datos y presiona Calcular resultado.</p>
       </div>
       <div class="cardBody">
         <div class="stepLabel"><span class="stepNumber">4</span> Resultado</div>
         <div id="reportArea" class="list">
           <div class="groupCard">
-            <h3>Empieza seleccionando una asignatura</h3>
-            <div class="groupMeta">Después registra grupo, horario, rango del semestre y días sin clase. Aquí aparecerán las sesiones efectivas, horas reales de clase y estado DGIRE.</div>
+            <h3>Tu reporte aparecerá aquí</h3>
+            <div class="groupMeta">Cuando calcules, verás un resumen claro para decidir si las horas reales cumplen con el margen DGIRE.</div>
+            <div class="emptyGrid">
+              <div class="emptyItem"><b>Horas reales</b><span>Total de horas disponibles después de quitar días sin clase.</span></div>
+              <div class="emptyItem"><b>Semanas de clase</b><span>Conteo desde la semana de inicio hasta la última clase.</span></div>
+              <div class="emptyItem"><b>Estado DGIRE</b><span>Semáforo con diferencia, variación y recomendación.</span></div>
+            </div>
           </div>
         </div>
       </div>
@@ -679,7 +753,7 @@
     const THEME_KEY = "semester_sessions_theme";
     function applyTheme(theme){
       document.documentElement.setAttribute("data-theme", theme);
-      $("themeBtn").textContent = theme === "light" ? "Claro" : "Oscuro";
+      $("themeBtn").textContent = theme === "light" ? "Modo oscuro" : "Modo claro";
       localStorage.setItem(THEME_KEY, theme);
     }
     applyTheme(localStorage.getItem(THEME_KEY) === "light" ? "light" : "dark");
