@@ -3,558 +3,398 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Calculadora de sesiones por semestre</title>
+  <title>Calculadora de sesiones efectivas</title>
 
   <style>
-    /* ============================================================
-       GUÍA RÁPIDA PARA MODIFICAR (sin perderte)
-       1) Colores/tema: busca "CONFIG: COLORES Y TEMA"
-       2) Layout responsivo: busca "CONFIG: LAYOUT"
-       3) Componentes UI: busca "CONFIG: COMPONENTES"
-       4) Cálculo de sesiones: en JS busca "CALCULO DE SESIONES"
-       5) Unidades: en JS busca "CALCULO: UNIDADES" y "UI: UNIDADES"
-       ============================================================ */
-
-    /* ============================================================
-       CONFIG: COLORES Y TEMA
-       - Cambia variables aquí y cambias todo el look.
-       ============================================================ */
     :root{
-      --teal:  #3F9AAE;
-      --aqua:  #79C9C5;
-      --cream: #FFE2AF;
-      --coral: #F96E5B;
-
-      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      --radius: 18px;
-      --radius-sm: 12px;
-      --gap: 14px;
-
-      --shadow: 0 18px 50px rgba(0,0,0,0.28);
-      --blur: 12px;
-
-      --maxw: 1220px;
-      --sidebarW: 360px;
-
-      /* ========== TEMA OSCURO ========== */
-      --bg0: #061014;
-      --bg1: #0b1b22;
-
-      --text: #EAF4F6;
-      --muted: rgba(234,244,246,0.70);
-
-      --glass: rgba(255,255,255,0.07);
-      --glass2: rgba(255,255,255,0.10);
-
-      --bd: rgba(255,255,255,0.12);
-      --bd2: rgba(255,255,255,0.18);
-
-      --focus: rgba(121,201,197,0.55);
-
-      --btn: rgba(255,255,255,0.06);
-      --btnHover: rgba(255,255,255,0.10);
-
-      --primaryBg: rgba(63,154,174,0.20);
-      --primaryBd: rgba(63,154,174,0.62);
-
-      --dangerBg: rgba(249,110,91,0.16);
-      --dangerBd: rgba(249,110,91,0.62);
-
-      --warnBg: rgba(255,226,175,0.16);
-      --warnBd: rgba(255,226,175,0.60);
+      --teal:#2f8fa3;
+      --aqua:#74c8c4;
+      --cream:#ffe2af;
+      --coral:#f96e5b;
+      --green:#65c18c;
+      --yellow:#f6c85f;
+      --red:#f26b61;
+      --font:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      --radius:14px;
+      --radius-sm:10px;
+      --gap:14px;
+      --maxw:1240px;
+      --sidew:390px;
+      --bg0:#061014;
+      --bg1:#0b1b22;
+      --text:#eaf4f6;
+      --muted:rgba(234,244,246,.7);
+      --glass:rgba(255,255,255,.07);
+      --glass2:rgba(255,255,255,.1);
+      --bd:rgba(255,255,255,.13);
+      --bd2:rgba(255,255,255,.2);
+      --focus:rgba(116,200,196,.48);
+      --shadow:0 18px 50px rgba(0,0,0,.26);
+      --btn:rgba(255,255,255,.07);
+      --btnHover:rgba(255,255,255,.12);
+      --primaryBg:rgba(47,143,163,.22);
+      --primaryBd:rgba(47,143,163,.68);
+      --dangerBg:rgba(249,110,91,.16);
+      --dangerBd:rgba(249,110,91,.65);
+      --warnBg:rgba(255,226,175,.16);
+      --warnBd:rgba(255,226,175,.6);
+      --okBg:rgba(101,193,140,.16);
+      --okBd:rgba(101,193,140,.6);
     }
 
-    /* ========== TEMA CLARO ========== */
     html[data-theme="light"]{
-      --bg0: #f5fbfb;
-      --bg1: #eef7f7;
-
-      --text: #0f262d;
-      --muted: rgba(15,38,45,0.62);
-
-      --glass: rgba(255,255,255,0.86);
-      --glass2: rgba(255,255,255,0.68);
-
-      --bd: rgba(15,38,45,0.12);
-      --bd2: rgba(15,38,45,0.18);
-
-      --shadow: 0 18px 50px rgba(2,6,23,0.12);
-      --focus: rgba(63,154,174,0.33);
-
-      --btn: rgba(255,255,255,0.72);
-      --btnHover: rgba(255,255,255,0.88);
-
-      --primaryBg: rgba(63,154,174,0.16);
-      --primaryBd: rgba(63,154,174,0.40);
-
-      --dangerBg: rgba(249,110,91,0.12);
-      --dangerBd: rgba(249,110,91,0.45);
-
-      --warnBg: rgba(255,226,175,0.22);
-      --warnBd: rgba(255,226,175,0.55);
+      --bg0:#f5fbfb;
+      --bg1:#edf7f7;
+      --text:#10262e;
+      --muted:rgba(16,38,46,.64);
+      --glass:rgba(255,255,255,.88);
+      --glass2:rgba(255,255,255,.72);
+      --bd:rgba(16,38,46,.12);
+      --bd2:rgba(16,38,46,.18);
+      --focus:rgba(47,143,163,.34);
+      --shadow:0 18px 50px rgba(2,6,23,.12);
+      --btn:rgba(255,255,255,.75);
+      --btnHover:rgba(255,255,255,.94);
+      --primaryBg:rgba(47,143,163,.15);
+      --primaryBd:rgba(47,143,163,.42);
+      --dangerBg:rgba(249,110,91,.12);
+      --dangerBd:rgba(249,110,91,.45);
+      --warnBg:rgba(255,226,175,.28);
+      --warnBd:rgba(185,135,28,.34);
+      --okBg:rgba(101,193,140,.14);
+      --okBd:rgba(68,145,101,.36);
     }
 
-    /* ============================================================
-       BASE
-       ============================================================ */
-    *{ box-sizing: border-box; }
-    html, body{ height: 100%; }
-
+    *{box-sizing:border-box}
+    html,body{height:100%}
     body{
-      margin: 0;
-      font-family: var(--font);
-      color: var(--text);
-      overflow-x: hidden;
-
+      margin:0;
+      font-family:var(--font);
+      color:var(--text);
       background:
-        radial-gradient(900px 520px at 12% 0%, rgba(121,201,197,0.18), transparent 60%),
-        radial-gradient(900px 520px at 88% 8%, rgba(63,154,174,0.16), transparent 60%),
-        linear-gradient(180deg, var(--bg0), var(--bg1));
+        radial-gradient(850px 520px at 12% 0%,rgba(116,200,196,.16),transparent 60%),
+        radial-gradient(850px 520px at 88% 7%,rgba(47,143,163,.14),transparent 60%),
+        linear-gradient(180deg,var(--bg0),var(--bg1));
+      overflow-x:hidden;
     }
 
-    /* ============================================================
-       CONFIG: LAYOUT
-       ============================================================ */
     .topbar{
-      position: sticky;
-      top: 0;
-      z-index: 50;
-
-      border-bottom: 1px solid var(--bd);
-      background: color-mix(in srgb, var(--bg1) 82%, transparent);
-      backdrop-filter: blur(var(--blur));
-
-      padding: 14px 16px;
+      position:sticky;
+      top:0;
+      z-index:50;
+      border-bottom:1px solid var(--bd);
+      background:color-mix(in srgb,var(--bg1) 84%,transparent);
+      backdrop-filter:blur(12px);
+      padding:14px 16px;
     }
-
     .topbarInner{
-      max-width: var(--maxw);
-      margin: 0 auto;
-
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
+      max-width:var(--maxw);
+      margin:0 auto;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
     }
-
-    .brand{
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      min-width: 0;
-    }
-
+    .brand{min-width:0}
     .brandTitle{
-      display: flex;
-      align-items: baseline;
-      gap: 10px;
-      min-width: 0;
+      display:flex;
+      align-items:baseline;
+      gap:10px;
+      min-width:0;
     }
-
-    .brandTitle h1{
-      margin: 0;
-      font-size: 16px;
-      letter-spacing: 0.2px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+    h1{
+      margin:0;
+      font-size:17px;
+      letter-spacing:0;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
     }
-
-    .brandTitle .tag{
-      font-size: 12px;
-      font-weight: 900;
-      color: var(--muted);
-      white-space: nowrap;
+    .tag{
+      color:var(--muted);
+      font-size:12px;
+      font-weight:900;
+      white-space:nowrap;
     }
-
     .brandSub{
-      margin: 0;
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.3;
+      margin:4px 0 0;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.35;
     }
-
     .actionsTop{
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-      align-items: center;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
     }
 
     .app{
-      max-width: var(--maxw);
-      margin: 0 auto;
-      padding: 16px;
-
-      display: grid;
-      grid-template-columns: var(--sidebarW) 1fr;
-      gap: var(--gap);
-      align-items: start;
+      max-width:var(--maxw);
+      margin:0 auto;
+      padding:16px;
+      display:grid;
+      grid-template-columns:var(--sidew) 1fr;
+      gap:var(--gap);
+      align-items:start;
     }
+    @media(max-width:980px){.app{grid-template-columns:1fr}}
 
-    @media (max-width: 980px){
-      .app{ grid-template-columns: 1fr; }
-    }
-
-    .backdrop{ display: none; }
-
+    .backdrop{display:none}
     .sidebar{
-      position: sticky;
-      top: 82px;
-      align-self: start;
+      position:sticky;
+      top:84px;
+      align-self:start;
     }
-
-    @media (max-width: 980px){
+    @media(max-width:980px){
       .sidebar{
-        position: fixed;
-        top: 0;
-        left: 0;
-        height: 100%;
-        width: min(92vw, 420px);
-        transform: translateX(-110%);
-        transition: transform 220ms ease;
-
-        z-index: 60;
-        overflow: auto;
-        padding: 16px;
+        position:fixed;
+        inset:0 auto 0 0;
+        width:min(92vw,430px);
+        transform:translateX(-110%);
+        transition:transform .22s ease;
+        z-index:60;
+        overflow:auto;
+        padding:16px;
       }
-      .sidebar.open{ transform: translateX(0); }
-
+      .sidebar.open{transform:translateX(0)}
       .backdrop{
-        display: block;
-        position: fixed;
-        inset: 0;
-        background: rgba(0,0,0,0.35);
-        backdrop-filter: blur(2px);
-        z-index: 55;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 220ms ease;
+        display:block;
+        position:fixed;
+        inset:0;
+        background:rgba(0,0,0,.36);
+        backdrop-filter:blur(2px);
+        opacity:0;
+        pointer-events:none;
+        z-index:55;
+        transition:opacity .22s ease;
       }
-      .backdrop.open{
-        opacity: 1;
-        pointer-events: auto;
-      }
+      .backdrop.open{opacity:1;pointer-events:auto}
     }
 
-    /* ============================================================
-       CONFIG: COMPONENTES
-       ============================================================ */
     .card{
-      border: 1px solid var(--bd);
-      border-radius: var(--radius);
-      background: var(--glass);
-      box-shadow: var(--shadow);
+      border:1px solid var(--bd);
+      border-radius:var(--radius);
+      background:var(--glass);
+      box-shadow:var(--shadow);
     }
-
     .cardHeader{
-      padding: 14px 14px 10px;
-      border-bottom: 1px solid var(--bd);
-      background: color-mix(in srgb, var(--glass) 82%, transparent);
-      backdrop-filter: blur(var(--blur));
-      border-top-left-radius: var(--radius);
-      border-top-right-radius: var(--radius);
+      padding:14px 14px 10px;
+      border-bottom:1px solid var(--bd);
+      background:color-mix(in srgb,var(--glass) 84%,transparent);
+      backdrop-filter:blur(12px);
+      border-top-left-radius:var(--radius);
+      border-top-right-radius:var(--radius);
+    }
+    .cardHeader h2{margin:0;font-size:14px;letter-spacing:0}
+    .cardHeader p{margin:6px 0 0;color:var(--muted);font-size:12px;line-height:1.35}
+    .cardBody{padding:14px}
+    .divider{height:1px;background:var(--bd);margin:14px 0}
+    .stepLabel{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-size:12px;
+      font-weight:950;
+      color:var(--muted);
+      margin-bottom:10px;
+    }
+    .stepNumber{
+      width:24px;
+      height:24px;
+      border-radius:999px;
+      display:inline-grid;
+      place-items:center;
+      color:var(--text);
+      background:var(--primaryBg);
+      border:1px solid var(--primaryBd);
+      font-size:12px;
     }
 
-    .cardHeader h2{
-      margin: 0;
-      font-size: 14px;
-      letter-spacing: 0.2px;
+    label{display:block;margin-bottom:6px;color:var(--muted);font-size:12px;font-weight:900}
+    input,select,textarea,button{
+      font:inherit;
+      color:var(--text);
+      border:1px solid var(--bd2);
+      border-radius:var(--radius-sm);
+      background:color-mix(in srgb,var(--glass2) 72%,transparent);
+      padding:10px;
+      font-size:13px;
+      outline:none;
+      min-width:0;
     }
-
-    .cardHeader p{
-      margin: 6px 0 0;
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.35;
+    input,select,textarea{width:100%}
+    textarea{resize:vertical;min-height:72px}
+    input:focus,select:focus,textarea:focus,button:focus-visible{
+      box-shadow:0 0 0 3px color-mix(in srgb,var(--focus) 60%,transparent);
+      border-color:color-mix(in srgb,var(--aqua) 50%,var(--bd2));
     }
-
-    .cardBody{ padding: 14px; }
-
-    .divider{
-      height: 1px;
-      background: var(--bd);
-      margin: 14px 0;
-    }
-
-    label{
-      display: block;
-      font-size: 12px;
-      font-weight: 900;
-      color: var(--muted);
-      margin-bottom: 6px;
-    }
-
-    input, select, button, textarea{
-      font: inherit;
-      color: var(--text);
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--bd2);
-      background: color-mix(in srgb, var(--glass2) 72%, transparent);
-
-      padding: 10px 10px;
-      font-size: 13px;
-      outline: none;
-      min-width: 0;
-    }
-
-    input:focus, select:focus, textarea:focus{
-      box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 60%, transparent);
-      border-color: color-mix(in srgb, var(--aqua) 45%, var(--bd2));
-    }
-
-    .grid2{
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-    @media (max-width: 520px){
-      .grid2{ grid-template-columns: 1fr; }
-    }
-
-    .row{
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
-    .hint{
-      margin-top: 8px;
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.35;
-    }
-
-    /* Botones: flexibles, no se desbordan por texto */
     button{
-      cursor: pointer;
-      font-weight: 950;
-      white-space: normal;
-      line-height: 1.15;
+      cursor:pointer;
+      font-weight:950;
+      line-height:1.15;
+      white-space:normal;
     }
-
-    .btn{
-      background: var(--btn);
-      border-color: var(--bd2);
-    }
-    .btn:hover{ background: var(--btnHover); }
-
-    .btnPrimary{
-      background: var(--primaryBg);
-      border-color: var(--primaryBd);
-    }
-    .btnPrimary:hover{
-      background: color-mix(in srgb, var(--primaryBg) 72%, var(--teal) 12%);
-    }
-
-    .btnDanger{
-      background: var(--dangerBg);
-      border-color: var(--dangerBd);
-    }
-    .btnDanger:hover{
-      background: color-mix(in srgb, var(--dangerBg) 72%, var(--coral) 12%);
-    }
-
-    .btnWarn{
-      background: var(--warnBg);
-      border-color: var(--warnBd);
-    }
-    .btnWarn:hover{
-      background: color-mix(in srgb, var(--warnBg) 70%, var(--cream) 14%);
-    }
-
+    .btn{background:var(--btn);border-color:var(--bd2)}
+    .btn:hover{background:var(--btnHover)}
+    .btnPrimary{background:var(--primaryBg);border-color:var(--primaryBd)}
+    .btnDanger{background:var(--dangerBg);border-color:var(--dangerBd)}
+    .btnWarn{background:var(--warnBg);border-color:var(--warnBd)}
     .chipBtn{
-      border-radius: 999px;
-      padding: 10px 12px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding:10px 12px;
     }
-
+    .grid2{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+    .grid3{
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr;
+      gap:10px;
+    }
+    @media(max-width:640px){.grid2,.grid3{grid-template-columns:1fr}}
+    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
     .actionsGrid{
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-      gap: 10px;
-      margin-top: 10px;
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+      gap:10px;
+      margin-top:10px;
     }
-
-    /* Listas */
-    .list{ display: grid; gap: 10px; }
-
-    .chip{
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-
-      padding: 10px 10px;
-      border-radius: 999px;
-      border: 1px solid var(--bd2);
-      background: color-mix(in srgb, var(--glass2) 70%, transparent);
+    .hint{margin-top:8px;color:var(--muted);font-size:12px;line-height:1.35}
+    .smallNote{margin-top:6px;color:var(--muted);font-size:11px;line-height:1.35}
+    .notice{
+      padding:11px;
+      border-radius:var(--radius-sm);
+      border:1px solid var(--warnBd);
+      background:var(--warnBg);
+      font-size:12px;
+      line-height:1.4;
     }
-
-    .chipInfo{
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      min-width: 0;
-    }
-
-    .chipInfo b{ font-size: 12px; letter-spacing: 0.2px; }
-    .chipInfo span{
-      font-size: 12px;
-      color: var(--muted);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .chip button{
-      white-space: nowrap;
-      border-radius: 999px;
-      padding: 8px 10px;
-    }
-
-    /* Tarjetas internas */
+    .list{display:grid;gap:10px}
     .groupCard{
-      padding: 12px;
-      border-radius: var(--radius);
-      border: 1px solid var(--bd);
-      background: color-mix(in srgb, var(--glass2) 70%, transparent);
+      padding:12px;
+      border-radius:var(--radius);
+      border:1px solid var(--bd);
+      background:color-mix(in srgb,var(--glass2) 70%,transparent);
     }
-    .groupCard h3{ margin: 0; font-size: 14px; }
-    .groupMeta{
-      margin-top: 6px;
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.35;
+    .groupCard h3{margin:0;font-size:14px}
+    .groupMeta{margin-top:6px;color:var(--muted);font-size:12px;line-height:1.35}
+    .chip{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      border:1px solid var(--bd2);
+      border-radius:999px;
+      padding:10px;
+      background:color-mix(in srgb,var(--glass2) 70%,transparent);
     }
+    .chipInfo{display:flex;flex-direction:column;gap:2px;min-width:0}
+    .chipInfo b{font-size:12px}
+    .chipInfo span{
+      color:var(--muted);
+      font-size:12px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .chip button{border-radius:999px;padding:8px 10px;white-space:nowrap}
 
-    /* Filas: horario */
-    .scheduleRow{
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
-      gap: 10px;
-      align-items: end;
-
-      padding: 12px;
-      border-radius: var(--radius);
-      border: 1px solid var(--bd);
-      background: color-mix(in srgb, var(--glass2) 70%, transparent);
+    .subjectSummary{
+      display:grid;
+      gap:8px;
+      margin-top:10px;
     }
-
-    .scheduleRow .removeBtn{
-      white-space: nowrap;
-      padding: 10px 12px;
-      border-radius: var(--radius-sm);
+    .summaryGrid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:8px;
     }
-
-    @media (max-width: 760px){
-      .scheduleRow{ grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-      .scheduleRow .removeBtn{ grid-column: 1 / -1; width: 100%; }
+    .summaryItem{
+      border:1px solid var(--bd);
+      border-radius:var(--radius-sm);
+      padding:9px;
+      background:color-mix(in srgb,var(--glass2) 64%,transparent);
     }
-    @media (max-width: 460px){
-      .scheduleRow{ grid-template-columns: 1fr; }
-    }
+    .summaryItem span{display:block;color:var(--muted);font-size:11px;font-weight:900}
+    .summaryItem b{display:block;margin-top:3px;font-size:13px;overflow-wrap:anywhere}
+    .hidden{display:none!important}
 
-    /* UI: filas de unidades */
-    .unitRow{
-      display: grid;
-      grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.7fr) auto;
-      gap: 10px;
-      align-items: end;
-
-      padding: 12px;
-      border-radius: var(--radius);
-      border: 1px solid var(--bd);
-      background: color-mix(in srgb, var(--glass2) 70%, transparent);
+    .scheduleRow,.unitRow{
+      display:grid;
+      grid-template-columns:minmax(0,1fr) minmax(0,.82fr) auto;
+      gap:10px;
+      align-items:end;
+      padding:12px;
+      border-radius:var(--radius);
+      border:1px solid var(--bd);
+      background:color-mix(in srgb,var(--glass2) 70%,transparent);
     }
-
-    .unitRow .removeBtn{
-      white-space: nowrap;
-      padding: 10px 12px;
-      border-radius: var(--radius-sm);
+    .unitRow{grid-template-columns:minmax(0,1.2fr) minmax(0,.75fr) auto}
+    .removeBtn{white-space:nowrap}
+    @media(max-width:760px){
+      .scheduleRow,.unitRow{grid-template-columns:1fr 1fr}
+      .removeBtn{grid-column:1/-1;width:100%}
     }
+    @media(max-width:460px){.scheduleRow,.unitRow{grid-template-columns:1fr}}
 
-    @media (max-width: 760px){
-      .unitRow{ grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-      .unitRow .removeBtn{ grid-column: 1 / -1; width: 100%; }
-    }
-    @media (max-width: 460px){
-      .unitRow{ grid-template-columns: 1fr; }
-    }
-
-    /* Reporte */
-    .reportMeta{
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.35;
-    }
-
-    .badges{
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 10px;
-    }
-
+    .badges{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
     .badge{
-      padding: 8px 10px;
-      border-radius: 999px;
-      border: 1px solid color-mix(in srgb, var(--aqua) 26%, var(--bd2));
-      background: color-mix(in srgb, var(--aqua) 14%, var(--glass2) 70%);
-      font-size: 12px;
-      font-weight: 950;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid color-mix(in srgb,var(--aqua) 28%,var(--bd2));
+      background:color-mix(in srgb,var(--aqua) 14%,var(--glass2) 70%);
+      font-size:12px;
+      font-weight:950;
     }
-
-    .badgeWarn{
-      border-color: color-mix(in srgb, var(--cream) 45%, var(--bd2));
-      background: color-mix(in srgb, var(--cream) 16%, var(--glass2) 70%);
+    .badgeOk{border-color:var(--okBd);background:var(--okBg)}
+    .badgeWarn{border-color:var(--warnBd);background:var(--warnBg)}
+    .badgeDanger{border-color:var(--dangerBd);background:var(--dangerBg)}
+    .statusPanel{
+      margin-top:12px;
+      padding:12px;
+      border-radius:var(--radius);
+      border:1px solid var(--bd);
+      background:color-mix(in srgb,var(--glass2) 65%,transparent);
     }
-
-    .badgeDanger{
-      border-color: color-mix(in srgb, var(--coral) 40%, var(--bd2));
-      background: color-mix(in srgb, var(--coral) 14%, var(--glass2) 70%);
+    .status-ok{border-color:var(--okBd);background:var(--okBg)}
+    .status-warn{border-color:var(--warnBd);background:var(--warnBg)}
+    .status-danger{border-color:var(--dangerBd);background:var(--dangerBg)}
+    .summaryText{
+      width:100%;
+      margin-top:10px;
+      min-height:110px;
+      line-height:1.45;
     }
-
     .tableWrap{
-      margin-top: 12px;
-      max-height: 360px;
-      overflow: auto;
-      border-radius: var(--radius);
-      border: 1px solid var(--bd);
-      background: color-mix(in srgb, var(--glass2) 60%, transparent);
+      margin-top:12px;
+      max-height:360px;
+      overflow:auto;
+      border-radius:var(--radius);
+      border:1px solid var(--bd);
+      background:color-mix(in srgb,var(--glass2) 60%,transparent);
     }
-
-    table{
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 12px;
-    }
-    th, td{
-      padding: 10px 10px;
-      border-bottom: 1px solid var(--bd);
-      vertical-align: top;
-    }
+    table{width:100%;border-collapse:collapse;font-size:12px}
+    th,td{padding:10px;border-bottom:1px solid var(--bd);vertical-align:top}
     th{
-      text-align: left;
-      font-weight: 980;
-      position: sticky;
-      top: 0;
-      background: color-mix(in srgb, var(--glass) 82%, transparent);
-      backdrop-filter: blur(8px);
+      text-align:left;
+      position:sticky;
+      top:0;
+      background:color-mix(in srgb,var(--glass) 86%,transparent);
+      backdrop-filter:blur(8px);
+      font-weight:950;
     }
-
-    .subTitle{
-      margin: 14px 0 0;
-      font-size: 12px;
-      font-weight: 980;
-      color: color-mix(in srgb, var(--text) 88%, white 12%);
-      letter-spacing: 0.2px;
-    }
+    .reportMeta{color:var(--muted);font-size:12px;line-height:1.35}
+    .subTitle{margin:14px 0 0;font-size:12px;font-weight:950}
   </style>
 </head>
 
@@ -565,70 +405,174 @@
     <div class="topbarInner">
       <div class="brand">
         <div class="brandTitle">
-          <h1>Calculadora de sesiones</h1>
-          <span class="tag">por grupo</span>
+          <h1>Calculadora de sesiones efectivas</h1>
+          <span class="tag">apoyo para planeación</span>
         </div>
-        <p class="brandSub">Con exclusiones y PDF. Ahora incluye: “Se completa unidad”.</p>
+        <p class="brandSub">Calcula horas reales de clase y verifica el margen DGIRE de ±10% frente a las horas del programa.</p>
       </div>
-
       <div class="actionsTop">
-        <button id="menuBtn" class="btn chipBtn" type="button" title="Abrir configuración (móvil)">☰ Menú</button>
-        <button id="themeBtn" class="btn chipBtn" type="button" title="Cambiar tema">🌙/☀️</button>
-        <button id="quickCalcBtn" class="btn btnPrimary chipBtn" type="button" title="Calcular reporte">🧮 Calcular</button>
-        <button id="quickPdfBtn" class="btn btnPrimary chipBtn" type="button" title="Exportar PDF">📄 PDF</button>
+        <button id="menuBtn" class="btn chipBtn" type="button">☰ Pasos</button>
+        <button id="themeBtn" class="btn chipBtn" type="button">Tema</button>
+        <button id="quickCalcBtn" class="btn btnPrimary chipBtn" type="button">Calcular</button>
+        <button id="quickPdfBtn" class="btn btnPrimary chipBtn" type="button">PDF</button>
       </div>
     </div>
   </header>
 
   <div class="app">
-    <!-- =========================
-         SIDEBAR
-         ========================= -->
-    <aside id="sidebar" class="sidebar card" aria-label="Configuración">
+    <aside id="sidebar" class="sidebar card" aria-label="Captura de datos">
       <div class="cardHeader">
-        <h2>Configuración</h2>
-        <p>Rango, exclusiones, grupos, y plan de unidades (para saber cuándo se completa cada unidad).</p>
+        <h2>Datos del cálculo</h2>
+        <p>Avanza por los pasos: asignatura, grupo y horario, calendario y días sin clase.</p>
       </div>
 
       <div class="cardBody">
-        <!-- Rango del semestre -->
-        <section aria-label="Rango del semestre">
-          <label>Rango del semestre</label>
-          <div class="grid2">
+        <section aria-label="Asignatura">
+          <div class="stepLabel"><span class="stepNumber">1</span> Asignatura</div>
+          <label for="semesterFilter">Semestre</label>
+          <select id="semesterFilter"></select>
+
+          <div style="margin-top:10px;">
+            <label for="subjectSearch">Buscar por clave o nombre</label>
+            <input id="subjectSearch" type="search" placeholder="Ej. Matemáticas I o 1101" />
+          </div>
+
+          <div style="margin-top:10px;">
+            <label for="subjectSelect">Asignatura del catálogo</label>
+            <select id="subjectSelect"></select>
+          </div>
+
+          <div id="subjectSummary" class="subjectSummary"></div>
+
+          <div class="grid2" style="margin-top:10px;">
             <div>
-              <label for="startDate">Inicio</label>
-              <input id="startDate" type="date" />
+              <label for="programHours">Horas del programa</label>
+              <input id="programHours" type="number" min="0.5" step="0.5" />
             </div>
             <div>
-              <label for="endDate">Fin</label>
-              <input id="endDate" type="date" />
+              <label for="weeklyHours">Horas por semana</label>
+              <input id="weeklyHours" type="number" min="0.5" step="0.5" />
             </div>
           </div>
-          <div class="hint">Captura el rango primero. Luego agrega festivos/vacaciones y grupos.</div>
+          <div class="hint">Revisa y confirma las horas del programa antes de calcular. Este dato es indispensable para comparar el margen DGIRE.</div>
+
+          <div class="divider"></div>
+          <label>¿No aparece tu asignatura?</label>
+          <button id="customSubjectBtn" class="btn btnWarn" type="button">Usar asignatura personalizada para este cálculo</button>
+          <div id="customSubjectPanel" class="hidden" style="margin-top:10px;">
+            <div class="notice">
+              Esta opción permite capturar una asignatura de manera temporal únicamente para realizar el cálculo actual de sesiones efectivas y horas disponibles. La información ingresada no se guardará en el catálogo base, no modificará los datos oficiales de las asignaturas y no quedará registrada para futuros cálculos. Para asignaturas incluidas en el plan de estudios, se recomienda utilizar el catálogo base de la aplicación.
+            </div>
+            <div class="grid2" style="margin-top:10px;">
+              <div>
+                <label for="customName">Nombre de asignatura</label>
+                <input id="customName" type="text" placeholder="Ej. Asignatura especial" />
+              </div>
+              <div>
+                <label for="customKey">Clave (opcional)</label>
+                <input id="customKey" type="text" placeholder="Opcional" />
+              </div>
+            </div>
+            <div class="grid3" style="margin-top:10px;">
+              <div>
+                <label for="customSemester">Semestre</label>
+                <select id="customSemester"></select>
+              </div>
+              <div>
+                <label for="customType">Tipo</label>
+                <select id="customType">
+                  <option>Obligatoria</option>
+                  <option>Optativa</option>
+                </select>
+              </div>
+              <div>
+                <label for="customCredits">Créditos</label>
+                <input id="customCredits" type="number" min="0" step="1" placeholder="Opcional" />
+              </div>
+            </div>
+            <div class="grid2" style="margin-top:10px;">
+              <div>
+                <label for="customWeeklyHours">Horas por semana</label>
+                <input id="customWeeklyHours" type="number" min="0.5" step="0.5" />
+              </div>
+              <div>
+                <label for="customProgramHours">Horas del programa</label>
+                <input id="customProgramHours" type="number" min="0.5" step="0.5" />
+              </div>
+            </div>
+            <div style="margin-top:10px;">
+              <label for="customNotes">Observaciones (opcional)</label>
+              <textarea id="customNotes" placeholder="Notas para este cálculo"></textarea>
+            </div>
+            <div class="actionsGrid">
+              <button id="useCustomSubjectBtn" class="btn btnPrimary" type="button">Continuar con esta asignatura</button>
+              <button id="cancelCustomSubjectBtn" class="btn" type="button">Volver al catálogo</button>
+            </div>
+            <div class="smallNote">Esta asignatura se usará solo para el cálculo actual. No se guardará en el catálogo.</div>
+          </div>
         </section>
 
         <div class="divider"></div>
 
-        <!-- Festivos -->
-        <section aria-label="Festivos">
-          <label>Festivos (fechas sueltas)</label>
-          <div class="row">
-            <input id="holidayDate" type="date" />
+        <section aria-label="Grupo y horario">
+          <div class="stepLabel"><span class="stepNumber">2</span> Grupo y horario</div>
+          <label for="groupName">Nombre del grupo</label>
+          <input id="groupName" type="text" placeholder="Ej. 1022" />
+
+          <div style="margin-top:12px;">
+            <div class="row" style="justify-content:space-between;">
+              <label style="margin:0;">Horario semanal</label>
+              <button id="addScheduleRowBtn" class="btn btnPrimary" type="button">Agregar día</button>
+            </div>
+            <div id="scheduleRows" class="list" style="margin-top:10px;"></div>
+            <div class="hint">Agrega al menos un día de clase para este grupo.</div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div>
+            <div class="row" style="justify-content:space-between;">
+              <label style="margin:0;">Distribución opcional por unidades</label>
+              <button id="addUnitRowBtn" class="btn btnPrimary" type="button">Agregar unidad</button>
+            </div>
+            <div id="unitRows" class="list" style="margin-top:10px;"></div>
+            <div class="hint">Puedes capturar las horas por unidad si deseas estimar cuándo se completa cada una. Este paso es opcional y no sustituye la planeación didáctica.</div>
           </div>
 
           <div class="actionsGrid">
-            <button id="addHolidayBtn" class="btn btnPrimary" type="button">Agregar festivo</button>
-            <button id="clearHolidaysBtn" class="btn" type="button">Limpiar festivos</button>
+            <button id="saveGroupBtn" class="btn btnPrimary" type="button">Guardar grupo</button>
+            <button id="clearGroupsBtn" class="btn btnDanger" type="button">Eliminar todos</button>
           </div>
-
-          <div id="holidaysList" class="list" style="margin-top:10px;"></div>
+          <div id="groupsList" class="list" style="margin-top:12px;"></div>
         </section>
 
         <div class="divider"></div>
 
-        <!-- Vacaciones -->
-        <section aria-label="Vacaciones">
-          <label>Vacaciones (rangos)</label>
+        <section aria-label="Calendario y días sin clase">
+          <div class="stepLabel"><span class="stepNumber">3</span> Calendario y días sin clase</div>
+          <div class="grid2">
+            <div>
+              <label for="startDate">Inicio del semestre</label>
+              <input id="startDate" type="date" />
+            </div>
+            <div>
+              <label for="endDate">Fin del semestre</label>
+              <input id="endDate" type="date" />
+            </div>
+          </div>
+          <div class="hint">Los días sin clase se restan del cálculo de sesiones efectivas.</div>
+
+          <div class="divider"></div>
+          <label for="holidayDate">Días sin clase (fechas sueltas)</label>
+          <input id="holidayDate" type="date" />
+          <div class="actionsGrid">
+            <button id="addHolidayBtn" class="btn btnPrimary" type="button">Agregar día sin clase</button>
+            <button id="clearHolidaysBtn" class="btn" type="button">Limpiar fechas</button>
+          </div>
+          <div id="holidaysList" class="list" style="margin-top:10px;"></div>
+
+          <div class="divider"></div>
+          <label>Vacaciones o periodos sin clase</label>
           <div class="grid2">
             <div>
               <label for="vacStart">Inicio</label>
@@ -639,1060 +583,851 @@
               <input id="vacEnd" type="date" />
             </div>
           </div>
-
           <div class="actionsGrid">
-            <button id="addVacationBtn" class="btn btnPrimary" type="button">Agregar vacaciones</button>
-            <button id="clearVacationsBtn" class="btn" type="button">Limpiar vacaciones</button>
+            <button id="addVacationBtn" class="btn btnPrimary" type="button">Agregar periodo</button>
+            <button id="clearVacationsBtn" class="btn" type="button">Limpiar periodos</button>
           </div>
-
           <div id="vacationsList" class="list" style="margin-top:10px;"></div>
         </section>
 
         <div class="divider"></div>
-
-        <!-- Grupos -->
-        <section aria-label="Grupos">
-          <label>Agregar grupo</label>
-
-          <div>
-            <label for="groupName">Nombre del grupo</label>
-            <input id="groupName" type="text" placeholder="Ej. 1022" style="width:100%;" />
-          </div>
-
-          <!-- Horario -->
-          <div style="margin-top:12px;">
-            <div class="row" style="justify-content: space-between;">
-              <label style="margin:0;">Horario semanal</label>
-              <button id="addScheduleRowBtn" class="btn btnPrimary" type="button">+ Agregar día</button>
-            </div>
-
-            <div id="scheduleRows" class="list" style="margin-top:10px;"></div>
-
-            <div class="hint">Ejemplo: Lunes 2h, Martes 2h, Viernes 1h.</div>
-          </div>
-
-          <div class="divider"></div>
-
-          <!-- =========================
-               UI: UNIDADES (NUEVO)
-               - Capturas las horas por unidad.
-               - Con esto el reporte puede decir: “Se completa Unidad X” y si sobran/faltan horas.
-               ========================= -->
-          <div>
-            <div class="row" style="justify-content: space-between;">
-              <label style="margin:0;">Plan de unidades (opcional)</label>
-              <button id="addUnitRowBtn" class="btn btnPrimary" type="button">+ Agregar unidad</button>
-            </div>
-
-            <div id="unitRows" class="list" style="margin-top:10px;"></div>
-
-            <div class="hint">
-              Captura las horas asignadas a cada unidad. El sistema calculará en qué fecha se completa cada una,
-              y si sobran o faltan horas respecto al calendario real.
-            </div>
-          </div>
-
-          <div class="actionsGrid">
-            <button id="saveGroupBtn" class="btn btnPrimary" type="button">Guardar grupo</button>
-            <button id="clearGroupsBtn" class="btn btnDanger" type="button">Eliminar todos</button>
-          </div>
-
-          <div class="divider"></div>
-
-          <label>Grupos registrados</label>
-          <div id="groupsList" class="list"></div>
-
-          <div class="divider"></div>
-
-          <div class="actionsGrid">
-            <button id="calculateBtn" class="btn btnPrimary" type="button">Calcular reporte</button>
-            <button id="exportPdfBtn" class="btn btnPrimary" type="button">Exportar PDF</button>
-          </div>
-
-          <div class="hint">El PDF se genera en el navegador con jsPDF + autoTable.</div>
-        </section>
+        <div class="actionsGrid">
+          <button id="calculateBtn" class="btn btnPrimary" type="button">Calcular resultado</button>
+          <button id="exportPdfBtn" class="btn btnPrimary" type="button">Exportar PDF</button>
+        </div>
       </div>
     </aside>
 
-    <!-- =========================
-         MAIN: REPORTE
-         ========================= -->
-    <main class="card" aria-label="Reporte">
+    <main class="card" aria-label="Resultado">
       <div class="cardHeader">
-        <h2>Reporte</h2>
-        <p id="reportMeta" class="reportMeta">Aún no calculado.</p>
+        <h2>Resultado</h2>
+        <p id="reportMeta" class="reportMeta">Aún no calculado. Completa los pasos y presiona Calcular resultado.</p>
       </div>
-
       <div class="cardBody">
-        <div id="reportArea" class="list"></div>
+        <div class="stepLabel"><span class="stepNumber">4</span> Resultado</div>
+        <div id="reportArea" class="list">
+          <div class="groupCard">
+            <h3>Empieza seleccionando una asignatura</h3>
+            <div class="groupMeta">Después registra grupo, horario, rango del semestre y días sin clase. Aquí aparecerán las sesiones efectivas, horas reales de clase y estado DGIRE.</div>
+          </div>
+        </div>
       </div>
     </main>
   </div>
 
-  <!-- Librerías PDF -->
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.5.31/dist/jspdf.plugin.autotable.min.js"></script>
 
   <script>
-    /* ============================================================
-       JS: Comentarios tipo “manual para editar”
-       BLOQUES:
-       1) Utilidad $
-       2) Drawer móvil y tema (🌙/☀️)
-       3) Fechas (local, sin desfase UTC)
-       4) Estado de la app
-       5) Render de UI
-       6) UI dinámica: horarios y unidades
-       7) Eventos
-       8) CALCULO DE SESIONES
-       9) CALCULO: UNIDADES ("Se completa Unidad X")
-       10) Render del reporte
-       11) Exportación PDF (incluye unidades)
-       ============================================================ */
-
-    /* ============================================================
-       1) Utilidad para seleccionar elementos por id
-       ============================================================ */
     const $ = (id) => document.getElementById(id);
 
-    /* ============================================================
-       2) Drawer móvil y tema
-       ============================================================ */
+    const weekdayNames = ["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
+    const CUSTOM_DISCLAIMER = "Asignatura personalizada capturada manualmente para fines de cálculo. No forma parte del catálogo base de asignaturas de la aplicación.";
+
+    /* Catálogo base de asignaturas CCH. Las horas del programa se pueden confirmar o editar antes de calcular. */
+    const SUBJECTS_CCH = [
+      { clave:"1101", nombre:"Matemáticas I", semestre:1, creditos:10, tipo:"Obligatoria", horasSemana:5, horasPrograma:80, origen:"catalogo" },
+      { clave:"1102", nombre:"Taller de Cómputo", semestre:1, creditos:8, tipo:"Obligatoria", horasSemana:4, horasPrograma:64, origen:"catalogo" },
+      { clave:"1103", nombre:"Química I", semestre:1, creditos:10, tipo:"Obligatoria", horasSemana:5, horasPrograma:80, origen:"catalogo" },
+      { clave:"1104", nombre:"Historia Universal Moderna y Contemporánea I", semestre:1, creditos:8, tipo:"Obligatoria", horasSemana:4, horasPrograma:64, origen:"catalogo" },
+      { clave:"1105", nombre:"Taller de Lectura, Redacción e Iniciación a la Investigación Documental I", semestre:1, creditos:8, tipo:"Obligatoria", horasSemana:4, horasPrograma:64, origen:"catalogo" },
+      { clave:"1106", nombre:"Inglés I", semestre:1, creditos:8, tipo:"Obligatoria", horasSemana:4, horasPrograma:64, origen:"catalogo" },
+      { clave:"1201", nombre:"Matemáticas II", semestre:2, creditos:10, tipo:"Obligatoria", horasSemana:5, horasPrograma:80, origen:"catalogo" },
+      { clave:"1202", nombre:"Química II", semestre:2, creditos:10, tipo:"Obligatoria", horasSemana:5, horasPrograma:80, origen:"catalogo" },
+      { clave:"1203", nombre:"Historia Universal Moderna y Contemporánea II", semestre:2, creditos:8, tipo:"Obligatoria", horasSemana:4, horasPrograma:64, origen:"catalogo" },
+      { clave:"1204", nombre:"Taller de Lectura, Redacción e Iniciación a la Investigación Documental II", semestre:2, creditos:8, tipo:"Obligatoria", horasSemana:4, horasPrograma:64, origen:"catalogo" },
+      { clave:"1205", nombre:"Inglés II", semestre:2, creditos:8, tipo:"Obligatoria", horasSemana:4, horasPrograma:64, origen:"catalogo" },
+      { clave:"1301", nombre:"Matemáticas III", semestre:3, creditos:10, tipo:"Obligatoria", horasSemana:5, horasPrograma:80, origen:"catalogo" },
+      { clave:"1302", nombre:"Física I", semestre:3, creditos:10, tipo:"Obligatoria", horasSemana:5, horasPrograma:80, origen:"catalogo" },
+      { clave:"1303", nombre:"Biología I", semestre:3, creditos:10, tipo:"Obligatoria", horasSemana:5, horasPrograma:80, origen:"catalogo" },
+      { clave:"1304", nombre:"Historia de México I", semestre:3, creditos:8, tipo:"Obligatoria", horasSemana:4, horasPrograma:64, origen:"catalogo" },
+      { clave:"1305", nombre:"Taller de Lectura, Redacción e Iniciación a la Investigación Documental III", semestre:3, creditos:8, tipo:"Obligatoria", horasSemana:4, horasPrograma:64, origen:"catalogo" },
+      { clave:"1306", nombre:"Inglés III", semestre:3, creditos:8, tipo:"Obligatoria", horasSemana:4, horasPrograma:64, origen:"catalogo" },
+      { clave:"1401", nombre:"Matemáticas IV", semestre:4, creditos:10, tipo:"Obligatoria", horasSemana:5, horasPrograma:80, origen:"catalogo" },
+      { clave:"1402", nombre:"Física II", semestre:4, creditos:10, tipo:"Obligatoria", horasSemana:5, horasPrograma:80, origen:"catalogo" },
+      { clave:"1403", nombre:"Biología II", semestre:4, creditos:10, tipo:"Obligatoria", horasSemana:5, horasPrograma:80, origen:"catalogo" },
+      { clave:"1404", nombre:"Historia de México II", semestre:4, creditos:8, tipo:"Obligatoria", horasSemana:4, horasPrograma:64, origen:"catalogo" },
+      { clave:"1405", nombre:"Taller de Lectura, Redacción e Iniciación a la Investigación Documental IV", semestre:4, creditos:8, tipo:"Obligatoria", horasSemana:4, horasPrograma:64, origen:"catalogo" },
+      { clave:"1406", nombre:"Inglés IV", semestre:4, creditos:8, tipo:"Obligatoria", horasSemana:4, horasPrograma:64, origen:"catalogo" },
+      { clave:"1501", nombre:"Cálculo Diferencial e Integral I", semestre:5, creditos:10, tipo:"Optativa", horasSemana:5, horasPrograma:80, origen:"catalogo" },
+      { clave:"1502", nombre:"Estadística y Probabilidad I", semestre:5, creditos:8, tipo:"Optativa", horasSemana:4, horasPrograma:64, origen:"catalogo" },
+      { clave:"1503", nombre:"Biología III", semestre:5, creditos:8, tipo:"Optativa", horasSemana:4, horasPrograma:64, origen:"catalogo" },
+      { clave:"1504", nombre:"Física III", semestre:5, creditos:8, tipo:"Optativa", horasSemana:4, horasPrograma:64, origen:"catalogo" },
+      { clave:"1505", nombre:"Derecho I", semestre:5, creditos:8, tipo:"Optativa", horasSemana:4, horasPrograma:64, origen:"catalogo" },
+      { clave:"1506", nombre:"Filosofía I", semestre:5, creditos:8, tipo:"Obligatoria", horasSemana:4, horasPrograma:64, origen:"catalogo" },
+      { clave:"1601", nombre:"Cálculo Diferencial e Integral II", semestre:6, creditos:10, tipo:"Optativa", horasSemana:5, horasPrograma:80, origen:"catalogo" },
+      { clave:"1602", nombre:"Estadística y Probabilidad II", semestre:6, creditos:8, tipo:"Optativa", horasSemana:4, horasPrograma:64, origen:"catalogo" },
+      { clave:"1603", nombre:"Biología IV", semestre:6, creditos:8, tipo:"Optativa", horasSemana:4, horasPrograma:64, origen:"catalogo" },
+      { clave:"1604", nombre:"Física IV", semestre:6, creditos:8, tipo:"Optativa", horasSemana:4, horasPrograma:64, origen:"catalogo" },
+      { clave:"1605", nombre:"Derecho II", semestre:6, creditos:8, tipo:"Optativa", horasSemana:4, horasPrograma:64, origen:"catalogo" },
+      { clave:"1606", nombre:"Filosofía II", semestre:6, creditos:8, tipo:"Obligatoria", horasSemana:4, horasPrograma:64, origen:"catalogo" }
+    ];
+
     const sidebar = $("sidebar");
     const backdrop = $("backdrop");
-    const menuBtn = $("menuBtn");
-
-    function openDrawer(){
+    $("menuBtn").addEventListener("click", () => {
       sidebar.classList.add("open");
       backdrop.classList.add("open");
-    }
+    });
+    backdrop.addEventListener("click", closeDrawer);
+    window.addEventListener("resize", () => { if (window.innerWidth > 980) closeDrawer(); });
     function closeDrawer(){
       sidebar.classList.remove("open");
       backdrop.classList.remove("open");
     }
 
-    menuBtn.addEventListener("click", openDrawer);
-    backdrop.addEventListener("click", closeDrawer);
-
-    window.addEventListener("resize", () => {
-      if (window.innerWidth > 980) closeDrawer();
-    });
-
     const THEME_KEY = "semester_sessions_theme";
-    const themeBtn = $("themeBtn");
-
     function applyTheme(theme){
       document.documentElement.setAttribute("data-theme", theme);
-      themeBtn.textContent = (theme === "light") ? "☀️ Claro" : "🌙 Oscuro";
+      $("themeBtn").textContent = theme === "light" ? "Claro" : "Oscuro";
       localStorage.setItem(THEME_KEY, theme);
     }
-
-    const savedTheme = localStorage.getItem(THEME_KEY);
-    applyTheme(savedTheme === "light" ? "light" : "dark");
-
-    themeBtn.addEventListener("click", () => {
+    applyTheme(localStorage.getItem(THEME_KEY) === "light" ? "light" : "dark");
+    $("themeBtn").addEventListener("click", () => {
       const current = document.documentElement.getAttribute("data-theme") || "dark";
       applyTheme(current === "dark" ? "light" : "dark");
     });
 
-    /* ============================================================
-       3) Fechas (local)
-       ============================================================ */
-    const weekdayNames = ["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
+    let selectedSubject = null;
+    let groups = [];
+    let holidays = new Set();
+    let vacations = [];
+    let lastReport = null;
+
+    const scheduleRowsEl = $("scheduleRows");
+    const unitRowsEl = $("unitRows");
+    const groupsListEl = $("groupsList");
+    const reportMetaEl = $("reportMeta");
+    const reportAreaEl = $("reportArea");
 
     function parseLocalDate(iso){
       if (!iso) return null;
-      const [y, m, d] = iso.split("-").map(Number);
+      const [y,m,d] = iso.split("-").map(Number);
       return new Date(y, m - 1, d, 0, 0, 0, 0);
     }
-
     function formatISO(date){
       const y = date.getFullYear();
       const m = String(date.getMonth() + 1).padStart(2, "0");
       const d = String(date.getDate()).padStart(2, "0");
       return `${y}-${m}-${d}`;
     }
-
     function addDays(date, n){
       const d = new Date(date.getTime());
       d.setDate(d.getDate() + n);
       return d;
     }
-
+    function startOfTeachingWeek(date){
+      const d = new Date(date.getTime());
+      const day = d.getDay();
+      const diff = day === 0 ? -6 : 1 - day;
+      d.setDate(d.getDate() + diff);
+      d.setHours(0, 0, 0, 0);
+      return d;
+    }
+    function computeTeachingWeeks(sessions){
+      if (!sessions.length){
+        return { count: 0, firstWeekISO: "", lastWeekISO: "" };
+      }
+      const firstWeek = startOfTeachingWeek(parseLocalDate(sessions[0].iso));
+      const lastWeek = startOfTeachingWeek(parseLocalDate(sessions[sessions.length - 1].iso));
+      const msPerWeek = 7 * 24 * 60 * 60 * 1000;
+      return {
+        count: Math.floor((lastWeek.getTime() - firstWeek.getTime()) / msPerWeek) + 1,
+        firstWeekISO: formatISO(firstWeek),
+        lastWeekISO: formatISO(lastWeek)
+      };
+    }
     function inRange(date, start, end){
       const t = date.getTime();
       return t >= start.getTime() && t <= end.getTime();
     }
 
-    /* ============================================================
-       4) Estado de la app
-       ============================================================ */
-    let groups = [];          // [{id, name, schedule:[{weekday,hours}], units:[{name,hours}]}]
-    let holidays = new Set(); // Set("YYYY-MM-DD")
-    let vacations = [];       // [{startISO,endISO}]
-    let lastReport = null;    // cache del último reporte calculado (para PDF)
+    function initSubjectControls(){
+      $("semesterFilter").innerHTML = `<option value="all">Todos los semestres</option>` +
+        [1,2,3,4,5,6].map(n => `<option value="${n}">${n}° semestre</option>`).join("");
+      $("customSemester").innerHTML = [1,2,3,4,5,6].map(n => `<option value="${n}">${n}° semestre</option>`).join("");
+      $("semesterFilter").addEventListener("change", renderSubjectOptions);
+      $("subjectSearch").addEventListener("input", renderSubjectOptions);
+      $("subjectSelect").addEventListener("change", () => {
+        const subject = SUBJECTS_CCH.find(s => s.clave === $("subjectSelect").value);
+        if (subject) selectSubject({ ...subject });
+      });
+      $("programHours").addEventListener("input", updateSelectedSubjectFromEditableFields);
+      $("weeklyHours").addEventListener("input", updateSelectedSubjectFromEditableFields);
+      $("customSubjectBtn").addEventListener("click", () => $("customSubjectPanel").classList.remove("hidden"));
+      $("cancelCustomSubjectBtn").addEventListener("click", () => $("customSubjectPanel").classList.add("hidden"));
+      $("useCustomSubjectBtn").addEventListener("click", useCustomSubject);
+      renderSubjectOptions();
+      selectSubject({ ...SUBJECTS_CCH[0] });
+    }
 
-    /* ============================================================
-       5) Render de UI
-       ============================================================ */
-    const holidaysListEl  = $("holidaysList");
-    const vacationsListEl = $("vacationsList");
-    const groupsListEl    = $("groupsList");
+    function renderSubjectOptions(){
+      const semester = $("semesterFilter").value;
+      const q = normalize($("subjectSearch").value);
+      const filtered = SUBJECTS_CCH.filter(s => {
+        const semesterOk = semester === "all" || String(s.semestre) === semester;
+        const text = normalize(`${s.clave} ${s.nombre}`);
+        return semesterOk && (!q || text.includes(q));
+      });
+      $("subjectSelect").innerHTML = filtered.length
+        ? filtered.map(s => `<option value="${escapeHtml(s.clave)}">${escapeHtml(s.clave)} - ${escapeHtml(s.nombre)}</option>`).join("")
+        : `<option value="">Sin resultados</option>`;
+      if (filtered.length){
+        const stillVisible = selectedSubject && filtered.some(s => s.clave === selectedSubject.clave);
+        $("subjectSelect").value = stillVisible ? selectedSubject.clave : filtered[0].clave;
+        selectSubject({ ...filtered.find(s => s.clave === $("subjectSelect").value) });
+      }
+    }
 
-    const scheduleRowsEl  = $("scheduleRows");
-    const unitRowsEl      = $("unitRows");
+    function selectSubject(subject){
+      selectedSubject = normalizeSubject(subject);
+      $("programHours").value = selectedSubject.horasPrograma || "";
+      $("weeklyHours").value = selectedSubject.horasSemana || "";
+      renderSubjectSummary();
+      lastReport = null;
+    }
 
-    const reportMetaEl = $("reportMeta");
-    const reportAreaEl = $("reportArea");
+    function updateSelectedSubjectFromEditableFields(){
+      if (!selectedSubject) return;
+      selectedSubject.horasPrograma = Number($("programHours").value) || 0;
+      selectedSubject.horasSemana = Number($("weeklyHours").value) || 0;
+      renderSubjectSummary();
+    }
 
-    function renderHolidays(){
-      holidaysListEl.innerHTML = "";
-      const arr = Array.from(holidays).sort();
+    function useCustomSubject(){
+      const name = $("customName").value.trim();
+      const horasSemana = Number($("customWeeklyHours").value);
+      const horasPrograma = Number($("customProgramHours").value);
+      if (!name) return showError("Captura el nombre de la asignatura personalizada.");
+      if (!Number.isFinite(horasSemana) || horasSemana <= 0) return showError("Captura las horas por semana de la asignatura personalizada.");
+      if (!Number.isFinite(horasPrograma) || horasPrograma <= 0) return showError("Captura las horas del programa para poder comparar.");
 
-      if (arr.length === 0){
-        holidaysListEl.innerHTML = `<div class="groupMeta">Sin festivos registrados.</div>`;
+      selectSubject({
+        clave: $("customKey").value.trim(),
+        nombre: name,
+        semestre: Number($("customSemester").value),
+        creditos: $("customCredits").value ? Number($("customCredits").value) : null,
+        tipo: $("customType").value,
+        horasSemana,
+        horasPrograma,
+        observaciones: $("customNotes").value.trim(),
+        origen: "personalizada"
+      });
+      $("customSubjectPanel").classList.add("hidden");
+      $("subjectSelect").value = "";
+    }
+
+    function normalizeSubject(subject){
+      return {
+        clave: subject.clave || "",
+        nombre: subject.nombre || "",
+        semestre: Number(subject.semestre) || null,
+        creditos: subject.creditos === null || subject.creditos === "" ? null : Number(subject.creditos),
+        tipo: subject.tipo || "Obligatoria",
+        horasSemana: Number(subject.horasSemana) || 0,
+        horasPrograma: Number(subject.horasPrograma) || 0,
+        observaciones: subject.observaciones || "",
+        origen: subject.origen || "catalogo"
+      };
+    }
+
+    function renderSubjectSummary(){
+      const el = $("subjectSummary");
+      if (!selectedSubject){
+        el.innerHTML = `<div class="groupMeta">Falta seleccionar una asignatura.</div>`;
         return;
       }
+      const origin = selectedSubject.origen === "personalizada" ? "Personalizada temporal" : "Catálogo base";
+      el.innerHTML = `
+        <div class="groupCard">
+          <h3>${escapeHtml(selectedSubject.nombre)}</h3>
+          <div class="groupMeta">${escapeHtml(origin)}${selectedSubject.origen === "personalizada" ? " | No se guardará en el catálogo." : ""}</div>
+          <div class="summaryGrid" style="margin-top:10px;">
+            <div class="summaryItem"><span>Clave</span><b>${escapeHtml(selectedSubject.clave || "Sin clave")}</b></div>
+            <div class="summaryItem"><span>Semestre</span><b>${escapeHtml(selectedSubject.semestre || "-")}</b></div>
+            <div class="summaryItem"><span>Tipo</span><b>${escapeHtml(selectedSubject.tipo)}</b></div>
+            <div class="summaryItem"><span>Créditos</span><b>${escapeHtml(selectedSubject.creditos ?? "No indicado")}</b></div>
+          </div>
+          ${selectedSubject.origen === "personalizada" ? `<div class="smallNote">${CUSTOM_DISCLAIMER}</div>` : ""}
+        </div>
+      `;
+    }
 
+    function makeScheduleRow(weekday = 1, hours = 2){
+      const row = document.createElement("div");
+      row.className = "scheduleRow";
+      const dayOptions = weekdayNames.map((name, i) => `<option value="${i}">${escapeHtml(name)}</option>`).join("");
+      row.innerHTML = `
+        <div>
+          <label>Día</label>
+          <select class="scheduleDay">${dayOptions}</select>
+        </div>
+        <div>
+          <label>Horas por sesión</label>
+          <input class="scheduleHours" type="number" min="0.5" step="0.5" value="${escapeHtml(hours)}" />
+        </div>
+        <button class="btn btnDanger removeBtn" type="button">Quitar</button>
+      `;
+      row.querySelector(".scheduleDay").value = String(weekday);
+      row.querySelector(".removeBtn").addEventListener("click", () => row.remove());
+      row._getValue = () => ({
+        weekday: Number(row.querySelector(".scheduleDay").value),
+        hours: Number(row.querySelector(".scheduleHours").value)
+      });
+      return row;
+    }
+    function addScheduleRow(weekday, hours){ scheduleRowsEl.appendChild(makeScheduleRow(weekday, hours)); }
+
+    function makeUnitRow(name = "", hours = ""){
+      const row = document.createElement("div");
+      row.className = "unitRow";
+      row.innerHTML = `
+        <div>
+          <label>Unidad</label>
+          <input class="unitName" type="text" placeholder="Ej. Unidad 1" value="${escapeAttr(name)}" />
+        </div>
+        <div>
+          <label>Horas</label>
+          <input class="unitHours" type="number" min="0.5" step="0.5" value="${escapeAttr(hours)}" />
+        </div>
+        <button class="btn btnDanger removeBtn" type="button">Quitar</button>
+      `;
+      row.querySelector(".removeBtn").addEventListener("click", () => row.remove());
+      row._getValue = () => ({
+        name: row.querySelector(".unitName").value.trim(),
+        hours: Number(row.querySelector(".unitHours").value)
+      });
+      return row;
+    }
+    function addUnitRow(name, hours){ unitRowsEl.appendChild(makeUnitRow(name, hours)); }
+
+    $("addScheduleRowBtn").addEventListener("click", () => addScheduleRow(5, 1));
+    $("addUnitRowBtn").addEventListener("click", () => addUnitRow(`Unidad ${unitRowsEl.children.length + 1}`, ""));
+
+    $("saveGroupBtn").addEventListener("click", () => {
+      const name = $("groupName").value.trim();
+      if (!name) return showError("Captura el nombre del grupo.");
+
+      const schedule = Array.from(scheduleRowsEl.children)
+        .map(r => r._getValue ? r._getValue() : null)
+        .filter(Boolean)
+        .filter(s => Number.isFinite(s.hours) && s.hours > 0);
+      if (schedule.length === 0) return showError("Agrega al menos un día de clase para este grupo.");
+
+      const units = Array.from(unitRowsEl.children)
+        .map(r => r._getValue ? r._getValue() : null)
+        .filter(Boolean)
+        .filter(u => Number.isFinite(u.hours) && u.hours > 0)
+        .map((u, i) => ({ name: u.name || `Unidad ${i + 1}`, hours: Number(u.hours) }));
+
+      groups.push({ id: cryptoRandomId(), name, schedule, units });
+      $("groupName").value = "";
+      scheduleRowsEl.innerHTML = "";
+      unitRowsEl.innerHTML = "";
+      addScheduleRow(1, 2);
+      addScheduleRow(2, 2);
+      renderGroups();
+    });
+
+    $("clearGroupsBtn").addEventListener("click", () => { groups = []; renderGroups(); });
+
+    $("addHolidayBtn").addEventListener("click", () => {
+      const iso = $("holidayDate").value;
+      if (!iso) return showError("Selecciona una fecha sin clase.");
+      holidays.add(iso);
+      $("holidayDate").value = "";
+      renderHolidays();
+    });
+    $("clearHolidaysBtn").addEventListener("click", () => { holidays.clear(); renderHolidays(); });
+    $("addVacationBtn").addEventListener("click", () => {
+      const startISO = $("vacStart").value;
+      const endISO = $("vacEnd").value;
+      if (!startISO || !endISO) return showError("Captura inicio y fin del periodo sin clase.");
+      const s = parseLocalDate(startISO);
+      const e = parseLocalDate(endISO);
+      vacations.push({
+        startISO: s.getTime() <= e.getTime() ? startISO : endISO,
+        endISO: s.getTime() <= e.getTime() ? endISO : startISO
+      });
+      $("vacStart").value = "";
+      $("vacEnd").value = "";
+      renderVacations();
+    });
+    $("clearVacationsBtn").addEventListener("click", () => { vacations = []; renderVacations(); });
+
+    $("calculateBtn").addEventListener("click", () => renderReport(buildReport()));
+    $("quickCalcBtn").addEventListener("click", () => { renderReport(buildReport()); closeDrawer(); });
+    $("exportPdfBtn").addEventListener("click", exportPdf);
+    $("quickPdfBtn").addEventListener("click", () => { exportPdf(); closeDrawer(); });
+
+    function renderHolidays(){
+      const el = $("holidaysList");
+      const arr = Array.from(holidays).sort();
+      el.innerHTML = arr.length ? "" : `<div class="groupMeta">Sin días sin clase registrados.</div>`;
       arr.forEach(iso => {
         const chip = document.createElement("div");
         chip.className = "chip";
-        chip.innerHTML = `
-          <div class="chipInfo">
-            <b>Festivo</b>
-            <span>${escapeHtml(iso)}</span>
-          </div>
-        `;
+        chip.innerHTML = `<div class="chipInfo"><b>Día sin clase</b><span>${escapeHtml(iso)}</span></div>`;
+        const btn = document.createElement("button");
+        btn.className = "btn btnDanger";
+        btn.type = "button";
+        btn.textContent = "Eliminar";
+        btn.addEventListener("click", () => { holidays.delete(iso); renderHolidays(); });
+        chip.appendChild(btn);
+        el.appendChild(chip);
+      });
+    }
 
+    function renderVacations(){
+      const el = $("vacationsList");
+      el.innerHTML = vacations.length ? "" : `<div class="groupMeta">Sin periodos registrados.</div>`;
+      vacations.slice().sort((a,b) => a.startISO.localeCompare(b.startISO)).forEach((v) => {
+        const chip = document.createElement("div");
+        chip.className = "chip";
+        chip.innerHTML = `<div class="chipInfo"><b>Periodo sin clase</b><span>${escapeHtml(v.startISO)} a ${escapeHtml(v.endISO)}</span></div>`;
         const btn = document.createElement("button");
         btn.className = "btn btnDanger";
         btn.type = "button";
         btn.textContent = "Eliminar";
         btn.addEventListener("click", () => {
-          holidays.delete(iso);
-          renderHolidays();
+          vacations = vacations.filter(x => x !== v);
+          renderVacations();
         });
-
         chip.appendChild(btn);
-        holidaysListEl.appendChild(chip);
+        el.appendChild(chip);
       });
     }
 
-    function renderVacations(){
-      vacationsListEl.innerHTML = "";
-
-      if (vacations.length === 0){
-        vacationsListEl.innerHTML = `<div class="groupMeta">Sin vacaciones registradas.</div>`;
-        return;
-      }
-
-      vacations
-        .slice()
-        .sort((a,b) => a.startISO.localeCompare(b.startISO))
-        .forEach((v, idx) => {
-          const chip = document.createElement("div");
-          chip.className = "chip";
-          chip.innerHTML = `
-            <div class="chipInfo">
-              <b>Vacaciones</b>
-              <span>${escapeHtml(v.startISO)} a ${escapeHtml(v.endISO)}</span>
-            </div>
-          `;
-
-          const btn = document.createElement("button");
-          btn.className = "btn btnDanger";
-          btn.type = "button";
-          btn.textContent = "Eliminar";
-          btn.addEventListener("click", () => {
-            vacations.splice(idx, 1);
-            renderVacations();
-          });
-
-          chip.appendChild(btn);
-          vacationsListEl.appendChild(chip);
-        });
-    }
-
     function renderGroups(){
-      groupsListEl.innerHTML = "";
-
-      if (groups.length === 0){
-        groupsListEl.innerHTML = `<div class="groupMeta">Aún no hay grupos registrados.</div>`;
-        return;
-      }
-
+      groupsListEl.innerHTML = groups.length ? "" : `<div class="groupMeta">Aún no hay grupos registrados.</div>`;
       groups.forEach(g => {
+        const scheduleTxt = g.schedule.slice().sort((a,b) => a.weekday - b.weekday)
+          .map(s => `${weekdayNames[s.weekday]}: ${fmtHours(s.hours)} h`).join(" | ");
+        const unitsTxt = g.units.length
+          ? `Unidades: ${g.units.length} (${fmtHours(g.units.reduce((acc,u) => acc + u.hours, 0))} h)`
+          : "Distribución por unidades: opcional, sin capturar";
         const card = document.createElement("div");
         card.className = "groupCard";
-
-        const scheduleTxt = g.schedule
-          .slice()
-          .sort((a,b) => a.weekday - b.weekday)
-          .map(s => `${weekdayNames[s.weekday]}: ${s.hours}h`)
-          .join(" | ");
-
-        // Resumen de unidades (si existen)
-        const unitsCount = (g.units || []).length;
-        const unitsHours = (g.units || []).reduce((acc, u) => acc + (Number(u.hours) || 0), 0);
-
-        const unitsTxt = unitsCount
-          ? `Unidades: ${unitsCount} (${fmtHours(unitsHours)} h)`
-          : `Unidades: (sin plan)`;
-
         card.innerHTML = `
           <h3>${escapeHtml(g.name)}</h3>
           <div class="groupMeta">${escapeHtml(scheduleTxt)}</div>
           <div class="groupMeta">${escapeHtml(unitsTxt)}</div>
         `;
-
         const row = document.createElement("div");
         row.className = "row";
         row.style.marginTop = "10px";
-
         const del = document.createElement("button");
         del.className = "btn btnDanger";
         del.type = "button";
         del.textContent = "Eliminar";
-        del.addEventListener("click", () => {
-          groups = groups.filter(x => x.id !== g.id);
-          renderGroups();
-        });
-
+        del.addEventListener("click", () => { groups = groups.filter(x => x.id !== g.id); renderGroups(); });
         row.appendChild(del);
         card.appendChild(row);
-
         groupsListEl.appendChild(card);
       });
     }
 
-    /* ============================================================
-       6) UI dinámica: Horarios y Unidades
-       ============================================================ */
-
-    // ---------- Horarios ----------
-    function makeScheduleRow(weekday = 1, hours = 2){
-      const row = document.createElement("div");
-      row.className = "scheduleRow";
-
-      const dayWrap = document.createElement("div");
-      const dayLabel = document.createElement("label");
-      dayLabel.textContent = "Día";
-      const daySelect = document.createElement("select");
-      weekdayNames.forEach((name, i) => {
-        const opt = document.createElement("option");
-        opt.value = String(i);
-        opt.textContent = name;
-        daySelect.appendChild(opt);
-      });
-      daySelect.value = String(weekday);
-      dayWrap.appendChild(dayLabel);
-      dayWrap.appendChild(daySelect);
-
-      const hoursWrap = document.createElement("div");
-      const hoursLabel = document.createElement("label");
-      hoursLabel.textContent = "Horas por sesión";
-      const hoursInput = document.createElement("input");
-      hoursInput.type = "number";
-      hoursInput.min = "0.5";
-      hoursInput.step = "0.5";
-      hoursInput.value = String(hours);
-      hoursWrap.appendChild(hoursLabel);
-      hoursWrap.appendChild(hoursInput);
-
-      const removeBtn = document.createElement("button");
-      removeBtn.className = "btn btnDanger removeBtn";
-      removeBtn.type = "button";
-      removeBtn.textContent = "Quitar";
-      removeBtn.addEventListener("click", () => row.remove());
-
-      row.appendChild(dayWrap);
-      row.appendChild(hoursWrap);
-      row.appendChild(removeBtn);
-
-      // Método para leer valores (el guardado usa esto)
-      row._getValue = () => ({
-        weekday: Number(daySelect.value),
-        hours: Number(hoursInput.value)
-      });
-
-      return row;
-    }
-
-    function addScheduleRow(weekday, hours){
-      scheduleRowsEl.appendChild(makeScheduleRow(weekday, hours));
-    }
-
-    // ---------- Unidades (NUEVO) ----------
-    function makeUnitRow(name = "", hours = 0){
-      const row = document.createElement("div");
-      row.className = "unitRow";
-
-      const nameWrap = document.createElement("div");
-      const nameLabel = document.createElement("label");
-      nameLabel.textContent = "Unidad";
-      const nameInput = document.createElement("input");
-      nameInput.type = "text";
-      nameInput.placeholder = "Ej. Unidad 1";
-      nameInput.value = String(name || "");
-      nameWrap.appendChild(nameLabel);
-      nameWrap.appendChild(nameInput);
-
-      const hoursWrap = document.createElement("div");
-      const hoursLabel = document.createElement("label");
-      hoursLabel.textContent = "Horas";
-      const hoursInput = document.createElement("input");
-      hoursInput.type = "number";
-      hoursInput.min = "0.5";
-      hoursInput.step = "0.5";
-      hoursInput.value = (hours && Number(hours) > 0) ? String(hours) : "";
-      hoursWrap.appendChild(hoursLabel);
-      hoursWrap.appendChild(hoursInput);
-
-      const removeBtn = document.createElement("button");
-      removeBtn.className = "btn btnDanger removeBtn";
-      removeBtn.type = "button";
-      removeBtn.textContent = "Quitar";
-      removeBtn.addEventListener("click", () => row.remove());
-
-      row.appendChild(nameWrap);
-      row.appendChild(hoursWrap);
-      row.appendChild(removeBtn);
-
-      // Método para leer valores (el guardado usa esto)
-      row._getValue = () => ({
-        name: String(nameInput.value || "").trim(),
-        hours: Number(hoursInput.value)
-      });
-
-      return row;
-    }
-
-    function addUnitRow(name, hours){
-      unitRowsEl.appendChild(makeUnitRow(name, hours));
-    }
-
-    /* ============================================================
-       7) Eventos
-       ============================================================ */
-    $("addHolidayBtn").addEventListener("click", () => {
-      const iso = $("holidayDate").value;
-      if (!iso) return;
-      holidays.add(iso);
-      $("holidayDate").value = "";
-      renderHolidays();
-    });
-
-    $("clearHolidaysBtn").addEventListener("click", () => {
-      holidays.clear();
-      renderHolidays();
-    });
-
-    $("addVacationBtn").addEventListener("click", () => {
-      const startISO = $("vacStart").value;
-      const endISO   = $("vacEnd").value;
-      if (!startISO || !endISO) return;
-
-      const s = parseLocalDate(startISO);
-      const e = parseLocalDate(endISO);
-      if (!s || !e) return;
-
-      const start = (s.getTime() <= e.getTime()) ? startISO : endISO;
-      const end   = (s.getTime() <= e.getTime()) ? endISO   : startISO;
-
-      vacations.push({ startISO: start, endISO: end });
-      $("vacStart").value = "";
-      $("vacEnd").value = "";
-      renderVacations();
-    });
-
-    $("clearVacationsBtn").addEventListener("click", () => {
-      vacations = [];
-      renderVacations();
-    });
-
-    $("addScheduleRowBtn").addEventListener("click", () => addScheduleRow(5, 1));
-    $("addUnitRowBtn").addEventListener("click", () => {
-      // Sugerencia: auto-nombrar según cuántas ya hay (Unidad 1, 2, 3...)
-      const next = unitRowsEl.children.length + 1;
-      addUnitRow(`Unidad ${next}`, "");
-    });
-
-    $("saveGroupBtn").addEventListener("click", () => {
-      const name = $("groupName").value.trim();
-      if (!name) return;
-
-      // --- Leer horario ---
-      const schedRows = Array.from(scheduleRowsEl.children);
-      const schedule = schedRows
-        .map(r => (r._getValue ? r._getValue() : null))
-        .filter(Boolean)
-        .filter(s => Number.isFinite(s.hours) && s.hours > 0);
-
-      if (schedule.length === 0) return;
-
-      // --- Leer unidades (opcional) ---
-      // Regla: solo guardamos unidades válidas (horas > 0). Nombre vacío se auto-ajusta luego.
-      const unitRows = Array.from(unitRowsEl.children);
-      let unitsRaw = unitRows
-        .map(r => (r._getValue ? r._getValue() : null))
-        .filter(Boolean);
-
-      // Si hay filas pero todas vacías o inválidas, simplemente no se guardan
-      unitsRaw = unitsRaw.filter(u => Number.isFinite(u.hours) && u.hours > 0);
-
-      // Normalizamos nombres (si están vacíos)
-      const units = unitsRaw.map((u, i) => ({
-        name: u.name ? u.name : `Unidad ${i + 1}`,
-        hours: Number(u.hours)
-      }));
-
-      groups.push({
-        id: cryptoRandomId(),
-        name,
-        schedule,
-        units
-      });
-
-      // Reset del form (para capturar siguiente grupo)
-      $("groupName").value = "";
-      scheduleRowsEl.innerHTML = "";
-      unitRowsEl.innerHTML = "";
-
-      addScheduleRow(1, 2);
-      addScheduleRow(2, 2);
-
-      // Unidades: no forzamos filas por defecto; si quieres, descomenta:
-      // addUnitRow("Unidad 1", 0);
-
-      renderGroups();
-    });
-
-    $("clearGroupsBtn").addEventListener("click", () => {
-      groups = [];
-      renderGroups();
-    });
-
-    $("calculateBtn").addEventListener("click", () => renderReport(buildReport()));
-    $("quickCalcBtn").addEventListener("click", () => { renderReport(buildReport()); closeDrawer(); });
-
-    $("exportPdfBtn").addEventListener("click", exportPdf);
-    $("quickPdfBtn").addEventListener("click", () => { exportPdf(); closeDrawer(); });
-
-    /* ============================================================
-       8) CALCULO DE SESIONES
-       - Cuenta sesiones reales (rango - exclusiones) para cada grupo.
-       ============================================================ */
     function isExcluded(date){
       const iso = formatISO(date);
       if (holidays.has(iso)) return true;
-
-      for (const v of vacations){
-        const s = parseLocalDate(v.startISO);
-        const e = parseLocalDate(v.endISO);
-        if (s && e && inRange(date, s, e)) return true;
-      }
-      return false;
+      return vacations.some(v => inRange(date, parseLocalDate(v.startISO), parseLocalDate(v.endISO)));
     }
 
     function buildReport(){
-      const start = parseLocalDate($("startDate").value);
-      const end   = parseLocalDate($("endDate").value);
+      const subject = selectedSubject ? {
+        ...selectedSubject,
+        horasPrograma: Number($("programHours").value) || selectedSubject.horasPrograma,
+        horasSemana: Number($("weeklyHours").value) || selectedSubject.horasSemana
+      } : null;
+      if (!subject || !subject.nombre) return { error: "Falta seleccionar una asignatura." };
+      if (!Number.isFinite(subject.horasPrograma) || subject.horasPrograma <= 0) return { error: "Captura las horas del programa para poder comparar." };
 
+      const start = parseLocalDate($("startDate").value);
+      const end = parseLocalDate($("endDate").value);
       if (!start || !end) return { error: "Falta capturar el rango del semestre (inicio y fin)." };
       if (start.getTime() > end.getTime()) return { error: "El inicio no puede ser posterior al fin." };
-      if (groups.length === 0) return { error: "No hay grupos registrados." };
+      if (groups.length === 0) return { error: "Agrega al menos un grupo con horario." };
 
       const meta = {
+        generatedAt: new Date(),
         startISO: formatISO(start),
         endISO: formatISO(end),
         holidays: Array.from(holidays).sort(),
         vacations: vacations.slice()
       };
 
-      const byGroup = [];
-      let grandTotalHours = 0;
-
-      for (const g of groups){
-        // Consolidar horas por weekday (por si repites un día en el horario)
+      const byGroup = groups.map(g => {
         const hoursByWeekday = new Map();
         for (const s of g.schedule){
-          hoursByWeekday.set(s.weekday, (hoursByWeekday.get(s.weekday) || 0) + s.hours);
+          hoursByWeekday.set(s.weekday, (hoursByWeekday.get(s.weekday) || 0) + Number(s.hours));
         }
 
         const sessions = [];
-        let totalHours = 0;
+        const excludedSessions = [];
         let cumulative = 0;
+        let scheduledSessions = 0;
 
-        // Recorremos cada fecha del rango
         for (let d = new Date(start.getTime()); d.getTime() <= end.getTime(); d = addDays(d, 1)){
           const wd = d.getDay();
           if (!hoursByWeekday.has(wd)) continue;
-          if (isExcluded(d)) continue;
-
           const hours = hoursByWeekday.get(wd);
+          scheduledSessions += 1;
+          const base = { iso: formatISO(d), weekday: weekdayNames[wd], hours };
+          if (isExcluded(d)){
+            excludedSessions.push(base);
+            continue;
+          }
           cumulative += hours;
-          totalHours += hours;
-
-          sessions.push({
-            iso: formatISO(d),
-            weekday: weekdayNames[wd],
-            hours,
-            cumulativeHours: cumulative
-          });
+          sessions.push({ ...base, cumulativeHours: cumulative });
         }
 
-        grandTotalHours += totalHours;
+        const totalHours = sessions.reduce((acc, s) => acc + s.hours, 0);
+        const teachingWeeks = computeTeachingWeeks(sessions);
+        const dgire = computeDgireStatus(totalHours, subject.horasPrograma);
+        const unitSummary = computeUnitCompletions(g.units, sessions, totalHours);
+        const planningSummary = buildPlanningSummary(totalHours, subject.horasPrograma, dgire);
 
-        // =========================================================
-        // 9) CALCULO: UNIDADES ("Se completa Unidad X")  (NUEVO)
-        // =========================================================
-        const unitsPlan = (g.units || []).slice();
-        const unitSummary = computeUnitCompletions(unitsPlan, sessions, totalHours);
-
-        byGroup.push({
+        return {
           group: g,
           sessions,
+          excludedSessions,
+          scheduledSessions,
+          teachingWeeks,
           totalHours,
-          unitSummary
-        });
-      }
+          dgire,
+          unitSummary,
+          planningSummary
+        };
+      });
 
-      return { meta, byGroup, grandTotalHours };
+      return { subject, meta, byGroup };
     }
 
-    /* ============================================================
-       9) CALCULO: UNIDADES ("Se completa Unidad X")
-       - Entrada:
-         unitsPlan: [{name,hours}] (puede venir vacío)
-         sessions:  [{iso,weekday,hours,cumulativeHours}]
-         totalHours: número
-       - Salida:
-         {
-           requiredHours,
-           diffHours,              // planned - required
-           diffLabel,              // "Sobran" o "Faltan" o "Exacto"
-           unitRows: [{
-             name,
-             unitHours,
-             threshold,
-             completed,           // boolean
-             completedISO,        // fecha si se completa
-             sessionHours,        // horas de esa sesión (si aplica)
-             note                // texto docente-friendly
-           }]
-         }
-       ============================================================ */
-    function computeUnitCompletions(unitsPlan, sessions, totalHours){
-      const cleanUnits = (unitsPlan || [])
-        .filter(u => u && Number.isFinite(Number(u.hours)) && Number(u.hours) > 0)
-        .map((u, i) => ({
-          name: (String(u.name || "").trim()) || `Unidad ${i + 1}`,
-          hours: Number(u.hours)
-        }));
-
-      const requiredHours = cleanUnits.reduce((acc, u) => acc + u.hours, 0);
-
-      // Si no hay plan de unidades, regresamos estructura vacía para UI
-      if (cleanUnits.length === 0){
+    /* Cálculo de margen DGIRE: compara horas reales de clase contra horas del programa. */
+    function computeDgireStatus(horasEfectivas, horasPrograma){
+      const difference = horasEfectivas - horasPrograma;
+      const variation = (difference / horasPrograma) * 100;
+      const abs = Math.abs(variation);
+      if (abs <= 8){
         return {
-          hasPlan: false,
-          requiredHours: 0,
-          diffHours: 0,
-          diffLabel: "Sin plan",
-          unitRows: []
+          level: "ok",
+          label: "Cumple",
+          message: "Cumple con el margen DGIRE de ±10%.",
+          difference,
+          variation
         };
       }
-
-      // diffHours: positivo = sobran horas en calendario; negativo = faltan
-      const diffHours = totalHours - requiredHours;
-      const diffLabel =
-        diffHours > 0 ? "Sobran" :
-        diffHours < 0 ? "Faltan" :
-        "Exacto";
-
-      // Calculamos umbrales acumulados (U1, U1+U2, U1+U2+U3, ...)
-      let threshold = 0;
-      const unitRows = [];
-
-      for (let i = 0; i < cleanUnits.length; i++){
-        const u = cleanUnits[i];
-        threshold += u.hours;
-
-        // Buscamos la PRIMERA sesión donde el acumulado >= threshold
-        const hit = sessions.find(s => s.cumulativeHours >= threshold);
-
-        if (!hit){
-          const missing = threshold - totalHours;
-          unitRows.push({
-            name: u.name,
-            unitHours: u.hours,
-            threshold,
-            completed: false,
-            completedISO: "",
-            sessionHours: "",
-            note: `No se completa (faltan ${fmtHours(missing)} h)`
-          });
-          continue;
-        }
-
-        // Queremos saber si se completa exacto o "a mitad de sesión"
-        const priorCum = hit.cumulativeHours - hit.hours;
-        const hoursIntoSession = threshold - priorCum; // cuánto de esa sesión se necesita para llegar al umbral
-        const note = buildUnitNote(hoursIntoSession, hit.hours);
-
-        unitRows.push({
-          name: u.name,
-          unitHours: u.hours,
-          threshold,
-          completed: true,
-          completedISO: hit.iso,
-          sessionHours: hit.hours,
-          note
-        });
+      if (abs <= 10){
+        return {
+          level: "warn",
+          label: "Cerca del límite",
+          message: "Está dentro del margen DGIRE, pero cerca del límite. Se recomienda dar seguimiento.",
+          difference,
+          variation
+        };
       }
-
       return {
-        hasPlan: true,
-        requiredHours,
-        diffHours,
-        diffLabel,
-        unitRows
+        level: "danger",
+        label: "Fuera del margen",
+        message: "Fuera del margen DGIRE de ±10%. Se recomienda revisar el calendario, ajustar la distribución de horas o registrar una observación.",
+        difference,
+        variation
       };
     }
 
-    // Nota humanita: "al final de la sesión" o "a la hora X de Y"
-    function buildUnitNote(hoursIntoSession, sessionHours){
-      const x = fmtHours(hoursIntoSession);
-      const y = fmtHours(sessionHours);
-
-      // Por redondeos, tolerancia mínima
-      const eps = 1e-9;
-
-      if (Math.abs(hoursIntoSession - sessionHours) < eps){
-        return `Se completa al final de la sesión (${y} h)`;
+    /* Generación de resumen para planeación didáctica. */
+    function buildPlanningSummary(horasEfectivas, horasPrograma, dgire){
+      const hEff = fmtHours(horasEfectivas);
+      const hProg = fmtHours(horasPrograma);
+      const pct = fmtPercent(dgire.variation);
+      if (dgire.level === "ok"){
+        return `De acuerdo con el cálculo de sesiones efectivas del semestre, el grupo cuenta con ${hEff} horas reales de clase frente a las ${hProg} horas señaladas por el programa. La diferencia corresponde a una variación de ${pct}, por lo que se mantiene dentro del margen de ±10% establecido por DGIRE.`;
       }
-      // Si por alguna razón cayera muy cerca de 0, lo normalizamos a 0.5 mínimo, etc.
-      if (hoursIntoSession <= eps){
-        return `Se completa al inicio de la sesión (${y} h)`;
+      if (dgire.level === "warn"){
+        return `El cálculo de sesiones efectivas muestra una variación de ${pct} respecto a las horas señaladas por el programa. Aunque se encuentra dentro del margen permitido de ±10%, se recomienda dar seguimiento al avance del curso para evitar rezagos ante posibles suspensiones adicionales.`;
       }
-      return `Se completa durante la sesión: a la hora ${x} de ${y}`;
+      return `El cálculo de sesiones efectivas muestra una variación de ${pct} respecto a las horas señaladas por el programa, por lo que queda fuera del margen de ±10%. Se recomienda revisar el calendario, ajustar la distribución de horas o registrar la observación correspondiente.`;
     }
 
-    /* ============================================================
-       10) Render del reporte (incluye unidades)
-       ============================================================ */
+    function computeUnitCompletions(unitsPlan, sessions, totalHours){
+      const cleanUnits = (unitsPlan || [])
+        .filter(u => Number.isFinite(Number(u.hours)) && Number(u.hours) > 0)
+        .map((u, i) => ({ name: u.name || `Unidad ${i + 1}`, hours: Number(u.hours) }));
+      const requiredHours = cleanUnits.reduce((acc, u) => acc + u.hours, 0);
+      if (!cleanUnits.length){
+        return { hasPlan:false, requiredHours:0, diffHours:0, unitRows:[] };
+      }
+      let threshold = 0;
+      const unitRows = cleanUnits.map(u => {
+        threshold += u.hours;
+        const hit = sessions.find(s => s.cumulativeHours >= threshold);
+        if (!hit){
+          return {
+            name: u.name,
+            unitHours: u.hours,
+            threshold,
+            completed:false,
+            completedISO:"",
+            note:`No se completa (faltan ${fmtHours(threshold - totalHours)} h)`
+          };
+        }
+        const prior = hit.cumulativeHours - hit.hours;
+        const into = threshold - prior;
+        return {
+          name: u.name,
+          unitHours: u.hours,
+          threshold,
+          completed:true,
+          completedISO:hit.iso,
+          note: buildUnitNote(into, hit.hours)
+        };
+      });
+      return { hasPlan:true, requiredHours, diffHours:totalHours - requiredHours, unitRows };
+    }
+
+    function buildUnitNote(hoursIntoSession, sessionHours){
+      const eps = 1e-9;
+      if (Math.abs(hoursIntoSession - sessionHours) < eps) return `Se completa al final de la sesión (${fmtHours(sessionHours)} h)`;
+      if (hoursIntoSession <= eps) return `Se completa al inicio de la sesión (${fmtHours(sessionHours)} h)`;
+      return `Se completa durante la sesión: a la hora ${fmtHours(hoursIntoSession)} de ${fmtHours(sessionHours)}`;
+    }
+
     function renderReport(report){
       reportAreaEl.innerHTML = "";
-
       if (report.error){
-        reportMetaEl.textContent = report.error;
+        showError(report.error);
         lastReport = null;
         return;
       }
-
-      const { meta, byGroup, grandTotalHours } = report;
-
-      reportMetaEl.textContent =
-        `Semestre: ${meta.startISO} a ${meta.endISO} | Grupos: ${byGroup.length} | Total: ${fmtHours(grandTotalHours)} horas`;
-
-      // Tarjeta: exclusiones
-      const excl = document.createElement("div");
-      excl.className = "groupCard";
+      lastReport = report;
+      const { subject, meta, byGroup } = report;
+      const totalHours = byGroup.reduce((acc, e) => acc + e.totalHours, 0);
+      reportMetaEl.textContent = `El cálculo está listo. ${subject.nombre} | ${meta.startISO} a ${meta.endISO} | ${byGroup.length} grupo(s) | ${fmtHours(totalHours)} horas reales acumuladas.`;
 
       const holTxt = meta.holidays.length ? meta.holidays.join(" | ") : "Ninguno";
       const vacTxt = meta.vacations.length ? meta.vacations.map(v => `${v.startISO} a ${v.endISO}`).join(" | ") : "Ninguno";
-
-      excl.innerHTML = `
-        <h3>Exclusiones aplicadas</h3>
-        <div class="groupMeta"><b>Festivos:</b> ${escapeHtml(holTxt)}</div>
-        <div class="groupMeta"><b>Vacaciones:</b> ${escapeHtml(vacTxt)}</div>
+      const subjectCard = document.createElement("div");
+      subjectCard.className = "groupCard";
+      subjectCard.innerHTML = `
+        <h3>${escapeHtml(subject.nombre)}</h3>
+        <div class="groupMeta">Clave: ${escapeHtml(subject.clave || "Sin clave")} | Semestre: ${escapeHtml(subject.semestre || "-")} | Tipo: ${escapeHtml(subject.tipo)} | Origen: ${subject.origen === "personalizada" ? "personalizada temporal" : "catálogo base"}</div>
+        ${subject.origen === "personalizada" ? `<div class="notice" style="margin-top:10px;">${CUSTOM_DISCLAIMER}</div>` : ""}
+        <div class="badges">
+          <span class="badge">Horas del programa: ${fmtHours(subject.horasPrograma)}</span>
+          <span class="badge">Horas por semana: ${fmtHours(subject.horasSemana)}</span>
+          <span class="badge">Días sin clase: ${meta.holidays.length + meta.vacations.length}</span>
+        </div>
+        <div class="groupMeta"><b>Fechas sin clase:</b> ${escapeHtml(holTxt)}</div>
+        <div class="groupMeta"><b>Periodos sin clase:</b> ${escapeHtml(vacTxt)}</div>
       `;
-      reportAreaEl.appendChild(excl);
+      reportAreaEl.appendChild(subjectCard);
 
-      // Tarjeta por grupo
-      for (const entry of byGroup){
-        const g = entry.group;
-
-        const scheduleTxt = g.schedule
-          .slice()
-          .sort((a,b) => a.weekday - b.weekday)
-          .map(s => `${weekdayNames[s.weekday]}: ${s.hours}h`)
-          .join(" | ");
-
+      byGroup.forEach((entry, index) => {
         const card = document.createElement("div");
         card.className = "groupCard";
-
+        const scheduleTxt = entry.group.schedule.slice().sort((a,b) => a.weekday - b.weekday)
+          .map(s => `${weekdayNames[s.weekday]}: ${fmtHours(s.hours)} h`).join(" | ");
+        const dgClass = entry.dgire.level === "ok" ? "badgeOk" : entry.dgire.level === "warn" ? "badgeWarn" : "badgeDanger";
+        const panelClass = entry.dgire.level === "ok" ? "status-ok" : entry.dgire.level === "warn" ? "status-warn" : "status-danger";
         card.innerHTML = `
-          <h3>${escapeHtml(g.name)}</h3>
-          <div class="groupMeta">Horario: ${escapeHtml(scheduleTxt)}</div>
+          <h3>Grupo ${escapeHtml(entry.group.name)}</h3>
+          <div class="groupMeta">Horario semanal: ${escapeHtml(scheduleTxt)}</div>
           <div class="badges">
-            <span class="badge">Sesiones: ${entry.sessions.length}</span>
-            <span class="badge">Horas calendario: ${fmtHours(entry.totalHours)}</span>
+            <span class="badge">Sesiones programadas: ${entry.scheduledSessions}</span>
+            <span class="badge">Sesiones excluidas: ${entry.excludedSessions.length}</span>
+            <span class="badge">Sesiones efectivas: ${entry.sessions.length}</span>
+            <span class="badge">Semanas de clase: ${entry.teachingWeeks.count}</span>
+            <span class="badge">Horas reales de clase: ${fmtHours(entry.totalHours)}</span>
+            <span class="badge ${dgClass}">¿Cumple con el margen DGIRE? ${escapeHtml(entry.dgire.label)}</span>
+          </div>
+          <div class="groupMeta">Conteo de semanas: ${escapeHtml(entry.teachingWeeks.count ? `${entry.teachingWeeks.firstWeekISO} a ${entry.teachingWeeks.lastWeekISO}` : "sin sesiones efectivas")}</div>
+          <div class="statusPanel ${panelClass}">
+            <b>${escapeHtml(entry.dgire.message)}</b>
+            <div class="groupMeta">Horas del programa: ${fmtHours(subject.horasPrograma)} | Horas efectivas calculadas: ${fmtHours(entry.totalHours)} | Diferencia: ${fmtSignedHours(entry.dgire.difference)} h | Variación: ${fmtPercent(entry.dgire.variation)}</div>
           </div>
         `;
 
-        // =========================
-        // SECCIÓN NUEVA: UNIDADES
-        // =========================
-        const us = entry.unitSummary;
+        card.appendChild(renderUnits(entry.unitSummary));
+        card.appendChild(renderPlanningSummary(entry, index));
+        card.appendChild(renderSessionsTable(entry.sessions));
+        reportAreaEl.appendChild(card);
+      });
+    }
 
-        const unitsWrap = document.createElement("div");
-        unitsWrap.style.marginTop = "10px";
-
-        if (!us.hasPlan){
-          const noPlan = document.createElement("div");
-          noPlan.className = "groupMeta";
-          noPlan.innerHTML = `<b>Unidades:</b> sin plan capturado para este grupo.`;
-          unitsWrap.appendChild(noPlan);
-        } else {
-          // Encaje: sobran/faltan
-          const required = us.requiredHours;
-          const diff = us.diffHours;
-
-          const badge = document.createElement("div");
-          badge.className = "badges";
-
-          // Etiqueta de encaje
-          const bReq = document.createElement("span");
-          bReq.className = "badge";
-          bReq.textContent = `Horas por unidades: ${fmtHours(required)}`;
-
-          const bDiff = document.createElement("span");
-          const absDiff = Math.abs(diff);
-
-          if (diff > 0){
-            bDiff.className = "badge badgeWarn";
-            bDiff.textContent = `Sobran ${fmtHours(absDiff)} h fuera del plan`;
-          } else if (diff < 0){
-            bDiff.className = "badge badgeDanger";
-            bDiff.textContent = `Faltan ${fmtHours(absDiff)} h para completar unidades`;
-          } else {
-            bDiff.className = "badge";
-            bDiff.textContent = `Encaja exacto (0 h fuera)`;
-          }
-
-          badge.appendChild(bReq);
-          badge.appendChild(bDiff);
-
-          const title = document.createElement("div");
-          title.className = "subTitle";
-          title.textContent = "Se completa Unidad X";
-
-          unitsWrap.appendChild(badge);
-          unitsWrap.appendChild(title);
-
-          // Tabla de completado por unidad
-          const uTableWrap = document.createElement("div");
-          uTableWrap.className = "tableWrap";
-
-          const uTable = document.createElement("table");
-          uTable.innerHTML = `
-            <thead>
-              <tr>
-                <th>Unidad</th>
-                <th style="width:110px;">Horas</th>
-                <th style="width:140px;">Se completa</th>
-                <th>Nota</th>
-              </tr>
-            </thead>
+    function renderUnits(us){
+      const wrap = document.createElement("div");
+      wrap.style.marginTop = "12px";
+      if (!us.hasPlan){
+        wrap.innerHTML = `<div class="groupMeta"><b>Distribución opcional por unidades:</b> sin captura. El cálculo principal no depende de este paso.</div>`;
+        return wrap;
+      }
+      const diffTxt = us.diffHours > 0
+        ? `Sobran ${fmtHours(Math.abs(us.diffHours))} h fuera de las unidades`
+        : us.diffHours < 0
+          ? `Faltan ${fmtHours(Math.abs(us.diffHours))} h para completar unidades`
+          : "Las horas por unidad encajan con las horas reales";
+      wrap.innerHTML = `
+        <div class="subTitle">Distribución opcional por unidades</div>
+        <div class="badges">
+          <span class="badge">Horas por unidades: ${fmtHours(us.requiredHours)}</span>
+          <span class="badge ${us.diffHours < 0 ? "badgeDanger" : "badgeWarn"}">${escapeHtml(diffTxt)}</span>
+        </div>
+        <div class="tableWrap">
+          <table>
+            <thead><tr><th>Unidad</th><th>Horas</th><th>Se completa</th><th>Nota</th></tr></thead>
             <tbody>
               ${us.unitRows.map(r => `
                 <tr>
                   <td>${escapeHtml(r.name)}</td>
-                  <td>${escapeHtml(fmtHours(r.unitHours))}</td>
+                  <td>${fmtHours(r.unitHours)}</td>
                   <td>${escapeHtml(r.completed ? r.completedISO : "No se completa")}</td>
                   <td>${escapeHtml(r.note)}</td>
                 </tr>
               `).join("")}
             </tbody>
-          `;
-          uTableWrap.appendChild(uTable);
-          unitsWrap.appendChild(uTableWrap);
-        }
+          </table>
+        </div>
+      `;
+      return wrap;
+    }
 
-        card.appendChild(unitsWrap);
+    function renderPlanningSummary(entry, index){
+      const wrap = document.createElement("div");
+      wrap.className = "statusPanel";
+      wrap.innerHTML = `
+        <div class="stepLabel" style="margin-bottom:4px;"><span class="stepNumber">5</span> Exportar o copiar resumen</div>
+        <h3>Resumen para planeación</h3>
+        <textarea id="summaryText_${index}" class="summaryText" readonly>${escapeHtml(entry.planningSummary)}</textarea>
+        <div class="actionsGrid">
+          <button class="btn btnPrimary copySummaryBtn" type="button" data-index="${index}">Copiar resumen</button>
+        </div>
+      `;
+      wrap.querySelector(".copySummaryBtn").addEventListener("click", async () => {
+        await copyText(entry.planningSummary);
+        reportMetaEl.textContent = "Resumen copiado.";
+      });
+      return wrap;
+    }
 
-        // =========================
-        // Sesiones (agregamos acumulado para que sea útil)
-        // =========================
-        const wrap = document.createElement("div");
-        wrap.className = "tableWrap";
-
-        const table = document.createElement("table");
-        table.innerHTML = `
-          <thead>
-            <tr>
-              <th style="width:140px;">Fecha</th>
-              <th>Día</th>
-              <th style="width:90px;">Horas</th>
-              <th style="width:120px;">Acumulado</th>
-            </tr>
-          </thead>
+    function renderSessionsTable(sessions){
+      const wrap = document.createElement("div");
+      wrap.className = "tableWrap";
+      wrap.innerHTML = `
+        <table>
+          <thead><tr><th>Fecha</th><th>Día</th><th>Duración</th><th>Acumulado</th></tr></thead>
           <tbody>
-            ${entry.sessions.map(s => `
+            ${sessions.length ? sessions.map(s => `
               <tr>
                 <td>${escapeHtml(s.iso)}</td>
                 <td>${escapeHtml(s.weekday)}</td>
-                <td>${escapeHtml(fmtHours(s.hours))}</td>
-                <td>${escapeHtml(fmtHours(s.cumulativeHours))}</td>
+                <td>${fmtHours(s.hours)} h</td>
+                <td>${fmtHours(s.cumulativeHours)} h</td>
               </tr>
-            `).join("")}
+            `).join("") : `<tr><td colspan="4">No hay sesiones efectivas con el calendario capturado.</td></tr>`}
           </tbody>
-        `;
-
-        wrap.appendChild(table);
-        card.appendChild(wrap);
-
-        reportAreaEl.appendChild(card);
-      }
-
-      // Resumen final
-      const summary = document.createElement("div");
-      summary.className = "groupCard";
-      summary.innerHTML = `
-        <h3>Resumen general</h3>
-        <div class="groupMeta">Total de horas programadas (todos los grupos): <b>${fmtHours(grandTotalHours)}</b></div>
+        </table>
       `;
-      reportAreaEl.appendChild(summary);
-
-      lastReport = report;
+      return wrap;
     }
 
-    /* ============================================================
-       11) Exportación PDF (incluye "Se completa Unidad X")
-       ============================================================ */
+    /* Exportación PDF con datos de asignatura, margen DGIRE, resumen y tabla de sesiones. */
     function exportPdf(){
-      const report = (lastReport && !lastReport.error) ? lastReport : buildReport();
+      const report = lastReport || buildReport();
       if (report.error){
         renderReport(report);
         return;
       }
+      if (!window.jspdf || !window.jspdf.jsPDF){
+        showError("No se pudo cargar la librería para PDF. Revisa la conexión e intenta de nuevo.");
+        return;
+      }
 
       const { jsPDF } = window.jspdf;
-      const doc = new jsPDF({ unit: "pt", format: "a4" });
-
+      const doc = new jsPDF({ unit:"pt", format:"a4" });
       const marginX = 40;
       let y = 44;
+      const subject = report.subject;
+      const generated = report.meta.generatedAt.toLocaleString("es-MX");
 
-      // Encabezado
-      doc.setFont("helvetica", "bold");
+      doc.setFont("helvetica","bold");
       doc.setFontSize(16);
-      doc.text("Reporte de sesiones por grupo", marginX, y);
+      doc.text("Calculadora de sesiones efectivas", marginX, y);
       y += 18;
-
-      doc.setFont("helvetica", "normal");
+      doc.setFont("helvetica","normal");
       doc.setFontSize(10);
-      doc.text(`Semestre: ${report.meta.startISO} a ${report.meta.endISO}`, marginX, y);
-      y += 14;
+      doc.text(`Fecha de generación: ${generated}`, marginX, y); y += 14;
+      doc.text(`Asignatura: ${subject.nombre}`, marginX, y); y += 14;
+      doc.text(`Origen: ${subject.origen === "personalizada" ? "personalizada temporal" : "catálogo base"} | Clave: ${subject.clave || "Sin clave"} | Semestre: ${subject.semestre || "-"} | Tipo: ${subject.tipo}`, marginX, y); y += 14;
+      doc.text(`Rango del semestre: ${report.meta.startISO} a ${report.meta.endISO}`, marginX, y); y += 14;
+      doc.text(`Días sin clase: ${report.meta.holidays.length ? report.meta.holidays.join(", ") : "Ninguno"}`, marginX, y); y += 14;
+      const vacationsTxt = report.meta.vacations.length ? report.meta.vacations.map(v => `${v.startISO} a ${v.endISO}`).join(" | ") : "Ninguno";
+      doc.text(`Periodos sin clase: ${vacationsTxt}`, marginX, y); y += 16;
+      if (subject.origen === "personalizada"){
+        const lines = doc.splitTextToSize(CUSTOM_DISCLAIMER, 510);
+        doc.text(lines, marginX, y);
+        y += lines.length * 12 + 8;
+      }
 
-      const hol = report.meta.holidays.length ? report.meta.holidays.join(", ") : "Ninguno";
-      const vac = report.meta.vacations.length
-        ? report.meta.vacations.map(v => `${v.startISO} a ${v.endISO}`).join(" | ")
-        : "Ninguno";
-
-      doc.text(`Festivos excluidos: ${hol}`, marginX, y); y += 14;
-      doc.text(`Vacaciones excluidas: ${vac}`, marginX, y); y += 16;
-
-      doc.text(`Total general de horas: ${fmtHours(report.grandTotalHours)}`, marginX, y);
-      y += 18;
-
-      // Resumen por grupo
-      const summaryBody = report.byGroup.map(e => ([
-        e.group.name,
-        String(e.sessions.length),
-        fmtHours(e.totalHours)
-      ]));
-
-      doc.autoTable({
-        startY: y,
-        head: [["Grupo","Sesiones","Horas calendario"]],
-        body: summaryBody,
-        styles: { font: "helvetica", fontSize: 10, cellPadding: 6 },
-        headStyles: { fontStyle: "bold" },
-        margin: { left: marginX, right: marginX }
-      });
-
-      y = doc.lastAutoTable.finalY + 14;
-
-      // Detalle por grupo
       for (const entry of report.byGroup){
-        if (y > 700){ doc.addPage(); y = 44; }
-
-        doc.setFont("helvetica", "bold");
+        if (y > 680){ doc.addPage(); y = 44; }
+        const scheduleTxt = entry.group.schedule.slice().sort((a,b) => a.weekday - b.weekday)
+          .map(s => `${weekdayNames[s.weekday]}: ${fmtHours(s.hours)} h`).join(" | ");
+        doc.setFont("helvetica","bold");
         doc.setFontSize(13);
-        doc.text(`Grupo: ${entry.group.name}`, marginX, y);
-        y += 14;
-
-        doc.setFont("helvetica", "normal");
+        doc.text(`Grupo: ${entry.group.name}`, marginX, y); y += 14;
+        doc.setFont("helvetica","normal");
         doc.setFontSize(10);
-
-        const scheduleTxt = entry.group.schedule
-          .slice()
-          .sort((a,b) => a.weekday - b.weekday)
-          .map(s => `${weekdayNames[s.weekday]}: ${s.hours}h`)
-          .join(" | ");
-
         doc.text(`Horario semanal: ${scheduleTxt}`, marginX, y); y += 12;
-        doc.text(`Sesiones: ${entry.sessions.length} | Horas calendario: ${fmtHours(entry.totalHours)}`, marginX, y);
-        y += 10;
-
-        // ====== PDF: Unidades (si hay plan) ======
-        const us = entry.unitSummary;
-
-        if (us.hasPlan){
-          const required = fmtHours(us.requiredHours);
-          const diff = us.diffHours;
-          const absDiff = fmtHours(Math.abs(diff));
-
-          const encaje =
-            diff > 0 ? `Sobran ${absDiff} h fuera del plan` :
-            diff < 0 ? `Faltan ${absDiff} h para completar unidades` :
-            `Encaja exacto (0 h fuera)`;
-
-          doc.setFont("helvetica", "bold");
-          doc.text("Se completa Unidad X", marginX, y);
-          y += 12;
-
-          doc.setFont("helvetica", "normal");
-          doc.text(`Horas por unidades: ${required} | ${encaje}`, marginX, y);
-          y += 8;
-
-          const uBody = us.unitRows.map(r => ([
-            r.name,
-            fmtHours(r.unitHours),
-            r.completed ? r.completedISO : "No se completa",
-            r.note
-          ]));
-
-          doc.autoTable({
-            startY: y + 6,
-            head: [["Unidad","Horas","Se completa","Nota"]],
-            body: uBody,
-            styles: { font: "helvetica", fontSize: 9, cellPadding: 6 },
-            headStyles: { fontStyle: "bold" },
-            margin: { left: marginX, right: marginX },
-            pageBreak: "auto"
-          });
-
-          y = doc.lastAutoTable.finalY + 14;
-        } else {
-          doc.text("Unidades: sin plan capturado para este grupo.", marginX, y);
-          y += 14;
-        }
-
-        // ====== PDF: Sesiones (con acumulado) ======
-        const sBody = entry.sessions.map(s => ([s.iso, s.weekday, fmtHours(s.hours), fmtHours(s.cumulativeHours)]));
 
         doc.autoTable({
-          startY: y + 6,
-          head: [["Fecha","Día","Horas","Acumulado"]],
-          body: sBody,
-          styles: { font: "helvetica", fontSize: 9, cellPadding: 6 },
-          headStyles: { fontStyle: "bold" },
-          margin: { left: marginX, right: marginX },
-          pageBreak: "auto"
+          startY:y + 4,
+          head:[["Dato","Resultado"]],
+          body:[
+            ["Sesiones programadas", String(entry.scheduledSessions)],
+            ["Sesiones excluidas", String(entry.excludedSessions.length)],
+            ["Sesiones efectivas", String(entry.sessions.length)],
+            ["Semanas de clase", entry.teachingWeeks.count ? `${entry.teachingWeeks.count} (${entry.teachingWeeks.firstWeekISO} a ${entry.teachingWeeks.lastWeekISO})` : "0"],
+            ["Horas del programa", fmtHours(subject.horasPrograma)],
+            ["Horas efectivas", fmtHours(entry.totalHours)],
+            ["Diferencia en horas", `${fmtSignedHours(entry.dgire.difference)} h`],
+            ["Variación porcentual", fmtPercent(entry.dgire.variation)],
+            ["Estado DGIRE", `${entry.dgire.label}. ${entry.dgire.message}`]
+          ],
+          styles:{font:"helvetica",fontSize:9,cellPadding:6},
+          headStyles:{fontStyle:"bold"},
+          margin:{left:marginX,right:marginX}
         });
+        y = doc.lastAutoTable.finalY + 12;
 
+        doc.setFont("helvetica","bold");
+        doc.text("Resumen para planeación", marginX, y); y += 12;
+        doc.setFont("helvetica","normal");
+        const summaryLines = doc.splitTextToSize(entry.planningSummary, 510);
+        doc.text(summaryLines, marginX, y);
+        y += summaryLines.length * 12 + 10;
+
+        if (entry.unitSummary.hasPlan){
+          doc.autoTable({
+            startY:y,
+            head:[["Unidad","Horas","Se completa","Nota"]],
+            body:entry.unitSummary.unitRows.map(r => [r.name, fmtHours(r.unitHours), r.completed ? r.completedISO : "No se completa", r.note]),
+            styles:{font:"helvetica",fontSize:9,cellPadding:6},
+            headStyles:{fontStyle:"bold"},
+            margin:{left:marginX,right:marginX},
+            pageBreak:"auto"
+          });
+          y = doc.lastAutoTable.finalY + 12;
+        }
+
+        doc.autoTable({
+          startY:y,
+          head:[["Fecha","Día","Duración","Acumulado"]],
+          body:entry.sessions.map(s => [s.iso, s.weekday, `${fmtHours(s.hours)} h`, `${fmtHours(s.cumulativeHours)} h`]),
+          styles:{font:"helvetica",fontSize:9,cellPadding:6},
+          headStyles:{fontStyle:"bold"},
+          margin:{left:marginX,right:marginX},
+          pageBreak:"auto"
+        });
         y = doc.lastAutoTable.finalY + 18;
       }
 
@@ -1700,45 +1435,69 @@
       doc.save(filename);
     }
 
-    /* ============================================================
-       Utilidades
-       ============================================================ */
-    function escapeHtml(str){
-      return String(str)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+    function showError(message){
+      reportMetaEl.textContent = message;
+      reportAreaEl.innerHTML = `
+        <div class="groupCard">
+          <h3>No se pudo calcular</h3>
+          <div class="groupMeta">${escapeHtml(message)}</div>
+        </div>
+      `;
     }
 
+    async function copyText(text){
+      if (navigator.clipboard && window.isSecureContext){
+        await navigator.clipboard.writeText(text);
+        return;
+      }
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      textarea.setAttribute("readonly", "");
+      textarea.style.position = "fixed";
+      textarea.style.left = "-9999px";
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      textarea.remove();
+    }
+
+    function escapeHtml(str){
+      return String(str)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+    function escapeAttr(str){ return escapeHtml(str); }
+    function normalize(str){
+      return String(str || "").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
+    }
     function cryptoRandomId(){
       const a = new Uint32Array(2);
       crypto.getRandomValues(a);
       return `${a[0].toString(16)}${a[1].toString(16)}`;
     }
-
-    // Formato de horas: 2 -> "2", 2.5 -> "2.5"
     function fmtHours(n){
+      return (Number(n) || 0).toFixed(2).replace(/\.?0+$/,"");
+    }
+    function fmtSignedHours(n){
       const x = Number(n) || 0;
-      const s = x.toFixed(2).replace(/\.?0+$/,""); // quita ceros finales
-      return s;
+      return `${x > 0 ? "+" : ""}${fmtHours(x)}`;
+    }
+    function fmtPercent(n){
+      const x = Number(n) || 0;
+      return `${x > 0 ? "+" : ""}${x.toFixed(1)}%`;
     }
 
-    /* ============================================================
-       INIT
-       - Añadimos filas de horario de ejemplo para que no empieces en blanco
-       - Unidades las dejamos vacías para que tú decidas si usarlo
-       ============================================================ */
     function init(){
-      addScheduleRow(1, 2); // Lunes 2h
-      addScheduleRow(2, 2); // Martes 2h
-
+      initSubjectControls();
+      addScheduleRow(1, 2);
+      addScheduleRow(2, 2);
       renderHolidays();
       renderVacations();
       renderGroups();
     }
-
     init();
   </script>
 </body>
